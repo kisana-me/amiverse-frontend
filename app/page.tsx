@@ -21,6 +21,9 @@ export default function Home() {
           <br />
           <Link href="/signup">signup!</Link>
           <Link href="/signin">signin!</Link>
+          <br />
+          <a href="/signup">signup!</a>
+          <a href="/signin">signin!</a>
         </div>
       </main>
     </div>

@@ -1,0 +1,130 @@
+header {
+  width: 200px;
+  height: 100vh;
+  top: 0;
+  left: -200px;
+  position: fixed;
+  padding: 30px 5px;
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+  backdrop-filter: blur(3px);
+  background: var(--blur-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 88;
+  transition: left 0.2s ease-in-out;
+}
+header.show-header {
+  left: 0;
+}
+/* 三つの要素 */
+.header-container1 {
+  height: 60px;
+  margin: 0 0 60px 0;
+  position: static;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+nav {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: normal;
+  align-items: center;
+  flex-grow: 1;
+}
+.header-container2 {
+  margin: 60px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* 子要素 */
+.header-list-container {
+  width: 190px;
+  height: 50px;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--font-color);
+}
+.header-list-container:hover {
+  background: var(--hover-color);
+}
+.header-list-icon {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.header-container1 .header-list-icon {
+  height: 50px;
+  width: 50px;
+}
+.header-list-text {
+  margin-left: 7px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-new-item {
+  color: var(--button-font-color);
+  background: var(--button-color);
+}
+.header-list-image {
+  width: 36px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 18px;
+  display: block;
+}
+@media (min-width: 700px) and (min-height: 720px) {
+  header {
+    width: 70px;
+    position: sticky;
+  }
+  .header-list-container {
+    width: 50px;
+    padding: 0;
+    border-radius: 30px;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .header-list-text {
+    display: none;
+  }
+}
+@media (min-width: 1300px) {
+  header {
+    width: 200px;
+  }
+  .header-list-container {
+    width: 190px;
+    padding: 10px;
+    border-radius: 5px;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+  .header-list-text {
+    display: inline-block;
+  }
+}

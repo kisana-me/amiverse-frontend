@@ -1,14 +1,48 @@
-'use client';
+"use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAccount } from '../providers/CurrentAccountProvider';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const [id, setId] = useState("");
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { account, setAccount } = useAccount();
+
+  if (account?.is_signed_in) {
+    // toast
+    router.push('/');
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API 送信や認証処理
-    console.log({ email, password });
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      console.log(data);
+
+      if (res.ok) {
+        setAccount(data.data ?? { is_signed_in: false });
+        router.push('/');
+        router.refresh();
+      } else {
+        setError(data?.error || 'Sign in failed');
+      }
+    } catch {
+      setError('Network error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -16,10 +50,10 @@ export default function SignInPage() {
       <h1 className="text-3xl font-bold mb-6">Sign In</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-sm">
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="ID"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
           className="border p-2 rounded"
           required
         />
@@ -31,11 +65,13 @@ export default function SignInPage() {
           className="border p-2 rounded"
           required
         />
+        {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
+          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
+          disabled={loading}
         >
-          Sign In
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
     </main>
