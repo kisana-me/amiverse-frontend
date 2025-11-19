@@ -2,7 +2,8 @@
 
 import "./style.css"
 import Link from "next/link";
-import { useOverlay } from "../providers/OverlayProvider";
+import { useOverlay } from "@/app/providers/OverlayProvider";
+import Footer from "../footer/Footer";
 
 export default function Aside() {
   const { isAsideMenuOpen } = useOverlay();
@@ -16,7 +17,7 @@ export default function Aside() {
         <br />
         ログイン / サインアップ
       </div>
-      {/* {<Footer />} */}
+      {<Footer />}
     </aside>
   );
 };

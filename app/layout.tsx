@@ -3,14 +3,18 @@ import "./globals.css";
 import "./style.css";
 
 // Components import
-import Header from "./header/Header";
-import Aside from "./aside/Aside";
-import BottomNav from "./bottom_nav/BottomNav";
+import Header from "@/app/components/header/Header";
+import Aside from "@/app/components/aside/Aside";
+import Toast from "@/app/components/toast/Toast";
+import BottomNav from "@/app/components/bottom_nav/BottomNav";
+import Overlay from "@/app/components/overlay/Overlay";
+import InitialLoading from "@/app/components/initial_loading/InitialLoading";
 
 // Providers import
-import { UIProvider } from "./providers/UIProvider";
-import { OverlayProvider } from "./providers/OverlayProvider";
-import { CurrentAccountProvider } from "./providers/CurrentAccountProvider";
+import { UIProvider } from "@/app/providers/UIProvider";
+import { OverlayProvider } from "@/app/providers/OverlayProvider";
+import { ToastProvider } from "@/app/providers/ToastProvider";
+import { CurrentAccountProvider } from "@/app/providers/CurrentAccountProvider";
 
 export const metadata: Metadata = {
   title: "Amiverse",
@@ -28,6 +32,7 @@ export default function RootLayout({
       <body>
         <UIProvider>
         <OverlayProvider>
+        <ToastProvider>
         <CurrentAccountProvider>
           <div className='wrap'>
             <Header />
@@ -37,11 +42,13 @@ export default function RootLayout({
               </div>
             </main>
             <Aside />
-            {/* <Toast /> */}
+            <Toast />
             <BottomNav />
-            {/* <Overlay /> */}
+            <Overlay />
+            <InitialLoading />
           </div>
         </CurrentAccountProvider>
+        </ToastProvider>
         </OverlayProvider>
         </UIProvider>
       </body>

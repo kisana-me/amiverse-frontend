@@ -3,12 +3,13 @@
 import "./style.css"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCurrentAccount } from "../providers/CurrentAccountProvider";
-import { useUI } from "../providers/UIProvider";
+import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useOverlay } from '@/app/providers/OverlayProvider'
 
 export default function Header() {
   const pathname = usePathname();
   const { currentAccountState } = useCurrentAccount();
+  const { isHeaderMenuOpen } = useOverlay();
 
   const renderCurrentAccountStatus = () => {
     if (currentAccountState.status === "signed_in" && currentAccountState.account) {
@@ -60,7 +61,7 @@ export default function Header() {
   };
 
   return (
-    <header className={false ? 'show-header' : ''}>
+    <header className={isHeaderMenuOpen ? 'show-header' : ''}>
       <div className="header-container1">
         <Link href='/' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>

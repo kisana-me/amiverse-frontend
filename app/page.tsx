@@ -1,9 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import MainHeader from "@/app/components/main_header/MainHeader";
+import { useToast } from "./providers/ToastProvider";
 
 export default function Home() {
+  const { addToast } = useToast();
+  const generateToast = () => {
+    addToast({
+      title: "Hello",
+      message: "This is a toast message!",
+      status: "show",
+      date: Date.now(),
+    });
+  };
+
   return (
-    <div className="">
-      <main className="">
+    <>
+      <MainHeader>
+        title!
+      </MainHeader>
+      <div className="">
+        <button onClick={() => generateToast()}>Click me!</button>
         <div className="">
           <h1 className="">
             Done set up.
@@ -25,7 +43,7 @@ export default function Home() {
           <a href="/signup">signup!</a>
           <a href="/signin">signin!</a>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

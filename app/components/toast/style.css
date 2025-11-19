@@ -1,0 +1,9 @@
+.toast {
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 3px;
+  position: fixed;
+  right: 10px;
+  background-color: #4fff67bb;
+  z-index: 200;
+}

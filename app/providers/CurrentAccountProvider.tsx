@@ -8,6 +8,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
+import { useOverlay } from "./OverlayProvider";
 
 export type CurrentAccountStatus = "loading" | "signed_out" | "signed_in";
 
@@ -35,6 +36,7 @@ type CurrentAccountContextType = {
 export const CurrentAccountContext = createContext<CurrentAccountContextType | null>(null);
 
 export function CurrentAccountProvider({ children }: { children: React.ReactNode }) {
+  const { setInitOverlay, doneInitLoading } = useOverlay();
   const [currentAccountState, setCurrentAccountState] = useState<CurrentAccountState>({
     status: "loading",
     account: null,
@@ -42,6 +44,11 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
 
   useEffect(() => {
     const fetchData = async () => {
+      setInitOverlay({
+        is_loading: true,
+        loading_message: "問い合わせ中",
+        loading_progress: 50,
+      });
       try {
         const res = await fetch("/api/start");
         const data = await res.json();
@@ -64,6 +71,7 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
           account: null,
         });
       }
+      doneInitLoading();
     };
 
     fetchData();
@@ -83,8 +91,6 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
 
 export function useCurrentAccount() {
   const context = useContext(CurrentAccountContext);
-  if (!context) {
-    throw new Error("useCurrentAccount must be used within a CurrentAccountProvider");
-  }
+  if (!context) throw new Error("useCurrentAccount must be used within a CurrentAccountProvider");
   return context;
 };
