@@ -176,7 +176,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <UIContext.Provider value={value}>
-      <style>{globalStyles + (effectiveTheme === "light" ? lightThremeGlobalStyles : darkThremeGlobalStyles)}</style>
+      <style suppressHydrationWarning>{globalStyles + (effectiveTheme === "light" ? lightThremeGlobalStyles : darkThremeGlobalStyles)}</style>
       {children}
     </UIContext.Provider>
   );

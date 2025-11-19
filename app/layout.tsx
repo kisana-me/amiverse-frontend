@@ -4,6 +4,8 @@ import "./style.css";
 
 // Components import
 import Header from "./header/Header";
+import Aside from "./aside/Aside";
+import BottomNav from "./bottom_nav/BottomNav";
 
 // Providers import
 import { UIProvider } from "./providers/UIProvider";
@@ -34,9 +36,9 @@ export default function RootLayout({
                 {children}
               </div>
             </main>
-            {/* <Aside /> */}
+            <Aside />
             {/* <Toast /> */}
-            {/* <BottomNav /> */}
+            <BottomNav />
             {/* <Overlay /> */}
           </div>
         </CurrentAccountProvider>
