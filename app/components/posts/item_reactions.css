@@ -1,0 +1,48 @@
+.reactions {
+  height: 22px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+.reactions-content {
+  display: flex;
+}
+.reactions-content:first-child {
+}
+.reactions-content:last-child {
+  scrollbar-width: none;
+  overflow-x: scroll;
+}
+/* button */
+.reaction-button {
+  padding: 0 4px;
+  border: 1px solid #0000;
+  border-radius: 6px;
+  margin: 0 7px 0 0;
+  color: var(--inconspicuous-font-color);
+  background: inherit;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+.reaction-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.reaction-button:hover:not(:disabled) {
+  background: #fff3;
+}
+.rb-reacted {
+  border: 1px solid #0f0;
+}
+/* button inside */
+.reaction-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.reaction-number {
+}

@@ -1,0 +1,61 @@
+.console {
+  height: 22px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.console-content {
+  display: flex;
+}
+.console-content:nth-child(3) {
+  justify-content: center;
+}
+.console-content:nth-child(n+4) {
+  flex-direction: row-reverse;
+}
+/* button */
+.console-button {
+  padding: 0 4px;
+  border: 1px solid #0000;
+  border-radius: 6px;
+  color: var(--inconspicuous-font-color);
+  background: inherit;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+.console-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.console-button:hover:not(:disabled) {
+  background: #fff3;
+}
+.cb-diffused {
+  border: 1px solid #0f0;
+}
+/* center */
+.console-rating {
+  display: flex;
+  width: 100%;
+}
+.console-rating .cb-left {
+  border-right: 0.5px solid;
+  border-radius: 6px 0 0 6px;
+}
+.console-rating .cb-right {
+  border-left: 0.5px solid;
+  border-radius: 0 6px 6px 0;
+}
+/* button inside */
+.console-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.console-number {
+  overflow: hidden;
+}
