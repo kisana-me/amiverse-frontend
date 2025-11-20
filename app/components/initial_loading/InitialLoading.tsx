@@ -21,7 +21,7 @@ export default function InitialLoading() {
     <div className={`${showInitOverlay ? 'show-loading' : 'hide-loading'}`}>
       <div className='loading-logo-wrap'>
         <div className={`loading-logo-ring1 ${initOverlay ? '' : 'loading-logo-ring2'}`}></div>
-        <img className='loading-logo' src='https://kisana.me/images/amiverse/amiverse-logo.png' />
+        <img className='loading-logo' src='/static-assets/images/amiverse-logo-alpha-400.png' />
       </div>
       <div className='loading-details'>
         <div className='loading-message'>{initOverlay.loading_message} / {initOverlay.loading_progress}%</div>

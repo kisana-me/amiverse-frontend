@@ -66,7 +66,7 @@ export default function Header() {
         <Link href='/' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
-              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="75" y="23" width="14" height="14" rx="7" fill="url(#paint0_linear_48_2)"/>
               <path d="M72.5285 48.4869C72.793 43.7254 76.7312 40 81.5 40C86.2688 40 90.207 43.7254 90.4715 48.4869L92 76H71L72.5285 48.4869Z" fill="url(#paint1_linear_48_2)"/>
               <path fillRule="evenodd" clipRule="evenodd" d="M49 37C44.517 37 40.8199 40.5123 40.5903 44.9895L39 76H55H59H75L73.4097 44.9895C73.1801 40.5123 69.483 37 65 37C61.2849 37 58.1095 39.4121 57 42.7865C55.8905 39.4121 52.7151 37 49 37Z" fill="url(#paint2_linear_48_2)"/>
@@ -99,7 +99,8 @@ export default function Header() {
               <stop offset="1" stopColor="#42FF77"/>
               </linearGradient>
               </defs>
-              </svg>
+              </svg> */}
+              <img src="/static-assets/images/amiverse-logo-alpha-400.png" className="header-list-image" />
             </div>
             <div className="header-list-text">
               Amiverse

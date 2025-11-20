@@ -17,7 +17,7 @@ export default function MainHeader({
       <div className="main-header-button-1">
         <button onClick={() => {headerMenuTrigger()}}>
           <Image
-            src="https://kisana.me/images/amiverse/amiverse-logo.png"
+            src="/static-assets/images/amiverse-logo-alpha-400.png"
             alt="Amiverseのロゴ"
             width={40}
             height={40}
