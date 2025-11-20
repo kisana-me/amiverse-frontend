@@ -7,6 +7,7 @@ import {
   useState,
   Dispatch,
   SetStateAction,
+  useCallback,
 } from "react";
 import { useOverlay } from "./OverlayProvider";
 
@@ -42,39 +43,43 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
     account: null,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setInitOverlay({
-        is_loading: true,
-        loading_message: "問い合わせ中",
-        loading_progress: 50,
-      });
-      try {
-        const res = await fetch("/api/start");
-        const data = await res.json();
+  const fetchCurrentAccount = useCallback(async () => {
+    setInitOverlay({
+      is_loading: true,
+      loading_message: "問い合わせ中",
+      loading_progress: 50,
+    });
+    try {
+      const res = await fetch("/api/start");
+      const data = await res.json();
 
-        if (data?.account) {
-            setCurrentAccountState({
-              status: "signed_in",
-              account: data.account,
-            });
-        } else {
+      if (data?.account) {
           setCurrentAccountState({
-            status: "signed_out",
-            account: null,
+            status: "signed_in",
+            account: data.account,
           });
-        }
-      } catch (error) {
-        // toast
+      } else {
         setCurrentAccountState({
           status: "signed_out",
           account: null,
         });
       }
-      doneInitLoading();
-    };
+    } catch (error) {
+      // toast
+      console.error("fetchCurrentAccount error:", error);
+      setCurrentAccountState({
+        status: "signed_out",
+        account: null,
+      });
+    }
+    doneInitLoading();
+  }, [setInitOverlay, doneInitLoading]);
 
-    fetchData();
+  useEffect(() => {
+    async function load() {
+      await fetchCurrentAccount();
+    }
+    load();
   }, []);
 
   const value: CurrentAccountContextType = {

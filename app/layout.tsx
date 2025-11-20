@@ -15,6 +15,7 @@ import { UIProvider } from "@/app/providers/UIProvider";
 import { OverlayProvider } from "@/app/providers/OverlayProvider";
 import { ToastProvider } from "@/app/providers/ToastProvider";
 import { CurrentAccountProvider } from "@/app/providers/CurrentAccountProvider";
+import { TrendsProvider } from "@/app/providers/TrendsProvider";
 
 export const metadata: Metadata = {
   title: "Amiverse",
@@ -34,6 +35,10 @@ export default function RootLayout({
         <OverlayProvider>
         <ToastProvider>
         <CurrentAccountProvider>
+        <TrendsProvider>
+        {/* <AccountsProvider> */}
+        {/* <PostsProvider> */}
+        {/* <FeedsProvider> */}
           <div className='wrap'>
             <Header />
             <main>
@@ -47,6 +52,10 @@ export default function RootLayout({
             <Overlay />
             <InitialLoading />
           </div>
+        </TrendsProvider>
+        {/* </FeedsProvider> */}
+        {/* </AccountsProvider> */}
+        {/* </PostsProvider> */}
         </CurrentAccountProvider>
         </ToastProvider>
         </OverlayProvider>
