@@ -7,7 +7,10 @@ import {
   useMemo,
   Dispatch,
   SetStateAction,
+  useEffect,
+  useCallback,
 } from 'react';
+import { usePathname } from 'next/navigation';
 
 type initOverlayType = {
   is_loading: boolean;
@@ -36,6 +39,7 @@ type OverlayContextType = {
 const OverlayContext = createContext<OverlayContextType | null>(null);
 
 export const OverlayProvider = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
   const [initOverlay, setInitOverlay] = useState<initOverlayType>({
     is_loading: true,
     loading_message: "ロード中",
@@ -54,10 +58,30 @@ export const OverlayProvider = ({ children }: { children: React.ReactNode }) => 
     });
   };
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setIsHeaderMenuOpen(false);
     setIsAsideMenuOpen(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (isHeaderMenuOpen || isAsideMenuOpen) {
+      closeMenu();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isHeaderMenuOpen && !isAsideMenuOpen) return;
+
+    const handleClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('a')) {
+        closeMenu();
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [isHeaderMenuOpen, isAsideMenuOpen, closeMenu]);
 
   const menuOverlay = useMemo(() => {
     return isHeaderMenuOpen || isAsideMenuOpen;
