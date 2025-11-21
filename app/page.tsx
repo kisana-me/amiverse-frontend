@@ -5,31 +5,26 @@ import { useToast } from "./providers/ToastProvider";
 import Feed from "@/app/components/feed/feed";
 import { useEffect, useState } from "react";
 import { PostType } from "@/types/post"
+import { api } from "./lib/axios";
 
 export default function Home() {
   const [isFeedLoading, setIsFeedLoading] = useState(false);
   const [feed, setFeed] = useState<PostType[]>([]);
   const { addToast } = useToast();
 
-  const generateToast = () => {
-    addToast({
-      title: "Hello",
-      message: "This is a toast message!",
-      status: "show",
-      date: Date.now(),
-    });
-  };
-
   const fetchPost = async () => {
     setIsFeedLoading(true);
     try {
-      const res = await fetch('/api/feeds')
-      const data = await res.json();
+      const res = await api.get('/posts/')
+      const data = await res.data;
       if (!data) return
-      setFeed(data.feed);
-      console.log(feed)
+      setFeed(data.posts);
     } catch (e) {
       console.error(e);
+      addToast({
+        title: "タイムライン取得エラー",
+        message: `${e}`,
+      });
     } finally {
       setIsFeedLoading(false)
     }
@@ -47,12 +42,7 @@ export default function Home() {
       <MainHeader>
         Feed
       </MainHeader>
-      <div className="">
-        <button onClick={() => generateToast()}>Click me! Add Toast.</button>
-        <div>
-          <Feed feed={feed} is_loading={isFeedLoading} />
-        </div>
-      </div>
+      <Feed feed={feed} is_loading={isFeedLoading} />
     </>
   );
 }
