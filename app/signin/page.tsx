@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCurrentAccount } from '../providers/CurrentAccountProvider';
+import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
+import { useToast } from '@/app/providers/ToastProvider';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -9,10 +10,14 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { currentAccountState, setCurrentAccount } = useCurrentAccount();
+  const { addToast } = useToast();
+  const { currentAccountStatus, setCurrentAccount } = useCurrentAccount();
 
-  if (currentAccountState?.status === 'signed_in') {
-    // toast
+  if (currentAccountStatus === 'signed_in') {
+    addToast({
+      title: 'サインイン済み',
+      message: 'あなたはすでにサインイン済みです',
+    });
     router.push('/');
     return null;
   }

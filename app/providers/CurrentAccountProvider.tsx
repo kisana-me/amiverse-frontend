@@ -9,7 +9,9 @@ import {
   SetStateAction,
   useCallback,
 } from "react";
+import { api } from "@/app/lib/axios";
 import { useOverlay } from "./OverlayProvider";
+import { useToast } from "./ToastProvider";
 
 export type CurrentAccountStatus = "loading" | "signed_out" | "signed_in";
 
@@ -24,24 +26,20 @@ export type CurrentAccount = {
   statuses_count: number;
 } | null;
 
-export type CurrentAccountState = {
-  status: CurrentAccountStatus;
-  account: CurrentAccount;
-};
-
 type CurrentAccountContextType = {
-  currentAccountState: CurrentAccountState;
-  setCurrentAccountState: Dispatch<SetStateAction<CurrentAccountState>>;
+  currentAccount: CurrentAccount;
+  setCurrentAccount: Dispatch<SetStateAction<CurrentAccount>>;
+  currentAccountStatus: CurrentAccountStatus;
+  setCurrentAccountStatus: Dispatch<SetStateAction<CurrentAccountStatus>>;
 };
 
 export const CurrentAccountContext = createContext<CurrentAccountContextType | null>(null);
 
 export function CurrentAccountProvider({ children }: { children: React.ReactNode }) {
   const { setInitOverlay, doneInitLoading } = useOverlay();
-  const [currentAccountState, setCurrentAccountState] = useState<CurrentAccountState>({
-    status: "loading",
-    account: null,
-  });
+  const { addToast } = useToast();
+  const [ currentAccount, setCurrentAccount ] = useState<CurrentAccount>(null);
+  const [ currentAccountStatus, setCurrentAccountStatus ] = useState<CurrentAccountStatus>("loading");
 
   const fetchCurrentAccount = useCallback(async () => {
     setInitOverlay({
@@ -50,30 +48,25 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
       loading_progress: 50,
     });
     try {
-      const res = await fetch("/api/start");
-      const data = await res.json();
-
-      if (data?.account) {
-          setCurrentAccountState({
-            status: "signed_in",
-            account: data.account,
-          });
+      const res = await api.get("/start");
+      if (res.data?.account) {
+        setCurrentAccount(res.data.account);
+        setCurrentAccountStatus("signed_in");
       } else {
-        setCurrentAccountState({
-          status: "signed_out",
-          account: null,
-        });
+        setCurrentAccount(null);
+        setCurrentAccountStatus("signed_out");
       }
     } catch (error) {
-      // toast
-      console.error("fetchCurrentAccount error:", error);
-      setCurrentAccountState({
-        status: "signed_out",
-        account: null,
+      addToast({
+        title: "アカウント情報取得エラー",
+        message: error instanceof Error ? error.message : String(error),
       });
+      setCurrentAccount(null);
+      setCurrentAccountStatus("signed_out");
+    } finally {
+      doneInitLoading();
     }
-    doneInitLoading();
-  }, [setInitOverlay, doneInitLoading]);
+  }, [setInitOverlay, doneInitLoading, addToast]);
 
   useEffect(() => {
     async function load() {
@@ -83,8 +76,10 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
   }, []);
 
   const value: CurrentAccountContextType = {
-    currentAccountState,
-    setCurrentAccountState,
+    currentAccount,
+    setCurrentAccount,
+    currentAccountStatus,
+    setCurrentAccountStatus,
   };
 
   return (

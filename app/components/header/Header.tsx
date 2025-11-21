@@ -8,26 +8,26 @@ import { useOverlay } from '@/app/providers/OverlayProvider'
 
 export default function Header() {
   const pathname = usePathname();
-  const { currentAccountState } = useCurrentAccount();
+  const { currentAccount, currentAccountStatus } = useCurrentAccount();
   const { isHeaderMenuOpen } = useOverlay();
 
   const renderCurrentAccountStatus = () => {
-    if (currentAccountState.status === "signed_in" && currentAccountState.account) {
+    if (currentAccountStatus === "signed_in" && currentAccount) {
       return (
-        <Link href={ '/@' + currentAccountState.account.name_id } style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link href={ '/@' + currentAccount.name_id } style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
-              <img src={currentAccountState.account.icon_url} className="header-list-image" />
+              <img src={currentAccount.icon_url} className="header-list-image" />
             </div>
             <div className="header-list-text">
-              {currentAccountState.account.name}
+              {currentAccount.name}
             </div>
           </div>
         </Link>
       );
     }
 
-    if (currentAccountState.status === "signed_out") {
+    if (currentAccountStatus === "signed_out") {
       return (
         <Link href='/signin' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>

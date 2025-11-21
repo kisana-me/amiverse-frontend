@@ -1,11 +1,11 @@
 "use client";
 
 import MainHeader from "@/app/components/main_header/MainHeader";
-import { useToast } from "./providers/ToastProvider";
+import { useToast } from "@/app/providers/ToastProvider";
 import Feed from "@/app/components/feed/feed";
 import { useEffect, useState } from "react";
 import { PostType } from "@/types/post"
-import { api } from "./lib/axios";
+import { api } from "@/app/lib/axios";
 
 export default function Home() {
   const [isFeedLoading, setIsFeedLoading] = useState(false);
@@ -15,15 +15,13 @@ export default function Home() {
   const fetchPost = async () => {
     setIsFeedLoading(true);
     try {
-      const res = await api.get('/posts/')
-      const data = await res.data;
-      if (!data) return
-      setFeed(data.posts);
-    } catch (e) {
-      console.error(e);
+      const res = await api.get('/posts')
+      if (!res.data) return
+      setFeed(res.data.posts);
+    } catch (error) {
       addToast({
         title: "タイムライン取得エラー",
-        message: `${e}`,
+        message: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsFeedLoading(false)
