@@ -14,6 +14,7 @@ type FontSize = "small" | "medium" | "large";
 type UIContextType = {
   userTheme: UserTheme;
   setUserTheme: (value: UserTheme) => void;
+  toggleTheme: () => void;
 
   effectiveTheme: EffectiveTheme;
 
@@ -30,34 +31,40 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
   // -------------------------
   // ユーザーの設定（永続化）
   // -------------------------
-  const [userTheme, setUserTheme] = useState<UserTheme>(() => {
-    if (typeof window === "undefined") return "system";
-    return (localStorage.getItem("userTheme") as UserTheme) || "system";
-  });
-
-  const [hue, setHue] = useState<number>(() => {
-    if (typeof window === "undefined") return 200;
-    return Number(localStorage.getItem("themeHue")) || 200;
-  });
-
-  const [fontSize, setFontSize] = useState<FontSize>(() => {
-    if (typeof window === "undefined") return "medium";
-    return (localStorage.getItem("fontSize") as FontSize) || "medium";
-  });
+  const [userTheme, setUserTheme] = useState<UserTheme>("system");
+  const [hue, setHue] = useState<number>(200);
+  const [fontSize, setFontSize] = useState<FontSize>("medium");
 
   // -------------------------
   // OS のテーマ（system 用）
   // -------------------------
-  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(false);
+
+  // クライアントサイドでの初期化
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("userTheme") as UserTheme;
+    if (storedTheme) {
+      setUserTheme(storedTheme);
+    }
+
+    const storedHue = localStorage.getItem("themeHue");
+    if (storedHue) {
+      setHue(Number(storedHue));
+    }
+
+    const storedFontSize = localStorage.getItem("fontSize") as FontSize;
+    if (storedFontSize) {
+      setFontSize(storedFontSize);
+    }
+  }, []);
 
   // system 設定が変わったら追従
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemPrefersDark(mq.matches);
+
     const listener = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
 
     mq.addEventListener("change", listener);
@@ -91,6 +98,15 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
     if (typeof window === "undefined") return;
     localStorage.setItem("fontSize", fontSize);
   }, [fontSize]);
+
+  const toggleTheme = () => {
+    setUserTheme((prev) => {
+      if (prev === "light") return "dark";
+      if (prev === "dark") return "system";
+      if (prev === "system") return "light";
+      return "dark";
+    });
+  };
 
   // -------------------------
   // CSS Variables を注入
@@ -164,6 +180,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
   const value: UIContextType = {
     userTheme,
     setUserTheme,
+    toggleTheme,
 
     effectiveTheme,
 
