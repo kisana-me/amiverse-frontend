@@ -2,7 +2,7 @@
 
 import MainHeader from "@/app/components/main_header/MainHeader";
 import { useToast } from "@/app/providers/ToastProvider";
-import Feed from "@/app/components/feed/feed";
+import Feed from "@/app/components/feed/Feed";
 import { useEffect, useState } from "react";
 import { PostType } from "@/types/post"
 import { api } from "@/app/lib/axios";

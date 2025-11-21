@@ -27,12 +27,12 @@ export default function Post(post: PostType) {
         <ItemAccount {...post} />
         <div className='item-info item-top-info'>
           <div className='iti-left'>
-            <Link href={'/items/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               返信/引用
             </Link>
           </div>
           <div className='iti-right'>
-            <Link href={'/items/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               { formatRelativeTime(new Date(post.created_at)) }
             </Link>
           </div>
@@ -64,12 +64,12 @@ export default function Post(post: PostType) {
         </div>
         <div className='item-info item-bottom-info'>
           <div className='ibi-left'>
-            <Link href={'/items/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               {strVisibility(post.visibility)}
             </Link>
           </div>
           <div className='ibi-right'>
-            <Link href={'/items/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               {post.views_count}回表示
             </Link>
           </div>

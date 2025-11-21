@@ -18,7 +18,7 @@
     "type=volume,target=/app/node_modules"
   ],
   "postCreateCommand": "npm install",
-  "postStartCommand": "npm run dev -- --webpack",
+  // "postStartCommand": "npm run dev -- --webpack",
   "remoteUser": "root",
   "customizations": {
     "vscode": {

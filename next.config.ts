@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/@:name_id',
+        destination: '/accounts/:name_id',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

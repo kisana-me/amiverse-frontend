@@ -15,7 +15,7 @@ aside {
   z-index: 88;
   overflow-x: hidden;
   overflow-y: auto;
-  transition: right 0.2s ease-in-out;
+  transition: right 0.2s cubic-bezier(0.9, 0, 0.1, 1);
 }
 aside.show-aside {
   right: 0;

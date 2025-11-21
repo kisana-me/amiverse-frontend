@@ -15,7 +15,7 @@ header {
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 88;
-  transition: left 0.2s ease-in-out;
+  transition: left 0.2s cubic-bezier(0.9, 0, 0.1, 1);
 }
 header.show-header {
   left: 0;
@@ -94,7 +94,7 @@ nav {
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: top;
-  /* border-radius: 18px; */
+  border-radius: 18px;
   display: block;
 }
 @media (min-width: 700px) and (min-height: 720px) {
