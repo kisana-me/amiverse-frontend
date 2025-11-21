@@ -1,21 +1,21 @@
 "use client";
 
-import Link from 'next/link'
-import Item, { ItemType } from './item'
-import SkeletonItem from './skeleton_item'
+import { PostType } from "@/types/post"
+import Post from "@/app/components/post/post"
+import SkeletonItem from "@/app/components/post/skeleton_item"
 
-type ItemsType = {
-  items: ItemType[];
-  loadItems?: boolean;
+type FeedType = {
+  feed: PostType[];
+  is_loading?: boolean;
 }
 
-export default function Items({ items = [], loadItems = false }: ItemsType) {
+export default function Feed({ feed = [], is_loading = false }: FeedType) {
 
   return (
     <>
-      <div className="items">
+      <div className="feed">
         {(() => {
-          if (loadItems) {
+          if (is_loading) {
             return (
               <>
                 {[...Array(20)].map((_, index) => (
@@ -23,11 +23,11 @@ export default function Items({ items = [], loadItems = false }: ItemsType) {
                 ))}
               </>
             )
-          } else if (items.length > 0) {
+          } else if (feed.length > 0) {
             return (
               <>
-                {items.map(item => (
-                  <Item key={item.aid} item={item} />
+                {feed.map(item => (
+                  <Post key={item.aid} {...item} />
                 ))}
               </>
             )

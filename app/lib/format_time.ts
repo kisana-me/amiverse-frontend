@@ -1,5 +1,6 @@
 export const formatRelativeTime = (date: Date) => {
   date = new Date(date);
+  if (isNaN(date.getTime())) return "?";
   const now = Date.now()
   const diffInSeconds = Math.floor((now - date.getTime()) / 1000)
 

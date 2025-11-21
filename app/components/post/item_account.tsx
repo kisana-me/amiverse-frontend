@@ -2,16 +2,11 @@
 
 import Link from "next/link"
 import "./item_account.css"
+import { PostType } from "@/types/post"
 
-type ItemAccountType = {
-  name: string;
-  name_id: string;
-  icon_url: string;
-  ring_color?: string;
-  status_rb_color?: string;
-}
+export default function ItemAccount(post: PostType) {
+  const account = post.account;
 
-export default function ItemAccount({ account }: { account: ItemAccountType }) {
   return (
     <>
       <div className="item-account-info">
