@@ -29,7 +29,7 @@ export default function Header() {
 
     if (currentAccountState.status === "signed_out") {
       return (
-        <Link href='/login' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link href='/signin' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,7 +37,7 @@ export default function Header() {
               </svg>
             </div>
             <div className="header-list-text">
-              LOGIN / SIGNUP
+              SIGNIN / SIGNUP
             </div>
           </div>
         </Link>
@@ -207,7 +207,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/items/new' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link href='/posts/new' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container header-new-item'>
             <div className="header-list-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">

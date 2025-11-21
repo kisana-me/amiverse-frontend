@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAccount } from '../providers/CurrentAccountProvider';
+import { useCurrentAccount } from '../providers/CurrentAccountProvider';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -9,9 +9,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { account, setAccount } = useAccount();
+  const { currentAccountState, setCurrentAccount } = useCurrentAccount();
 
-  if (account?.is_signed_in) {
+  if (currentAccountState?.status === 'signed_in') {
     // toast
     router.push('/');
     return null;
@@ -32,7 +32,11 @@ export default function SignInPage() {
       console.log(data);
 
       if (res.ok) {
-        setAccount(data.data ?? { is_signed_in: false });
+        // setCurrentAccount({
+        //   status: "signed_in",
+        //   account: data.account,
+        // });
+        // toast
         router.push('/');
         router.refresh();
       } else {
