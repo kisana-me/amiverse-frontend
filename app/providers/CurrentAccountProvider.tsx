@@ -56,6 +56,14 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
         setCurrentAccount(null);
         setCurrentAccountStatus("signed_out");
       }
+      if (res.data?.csrf_token) {
+        api.defaults.headers.common["X-CSRF-Token"] = res.data.csrf_token;
+      } else {
+        addToast({
+          title: "情報取得エラー",
+          message: "CSRFトークンの取得に失敗しました",
+        });
+      }
     } catch (error) {
       addToast({
         title: "アカウント情報取得エラー",
