@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import "./item_console.css"
 import { PostType } from "@/types/post"
+import { Modal } from '../modal/Modal';
 
 export default function ItemConsole(post: PostType) {
-  const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false)
+  const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)
 
   return (
     <>
@@ -71,8 +72,7 @@ export default function ItemConsole(post: PostType) {
         <div className="console-content">
           <button
             className='console-button cb-menu'
-            onClick={() => setIsHeaderMenuOpen(!isHeaderMenuOpen)}
-            disabled={post.is_busy === true}
+            onClick={() => setIsPostMenuOpen(true)}
           >
             <div className="console-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,6 +81,15 @@ export default function ItemConsole(post: PostType) {
             </div>
             <div className="console-number"></div>
           </button>
+          <Modal
+            isOpen={isPostMenuOpen}
+            onClose={() => setIsPostMenuOpen(false)}
+            title="ポストメニュー"
+          >
+            <div>
+              ブロックとかミュートとか報告とか削除とか
+            </div>
+          </Modal>
         </div>
         
       </div>

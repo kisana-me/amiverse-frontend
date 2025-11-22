@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import "./item_reactions.css"
 import { PostType } from '@/types/post';
+import { Modal } from '../modal/Modal';
 
 export default function ItemReactions(post: PostType) {
   const emojiButtonRef = useRef(null)
@@ -19,7 +20,7 @@ export default function ItemReactions(post: PostType) {
           <button
             ref={emojiButtonRef}
             className={'reaction-button rb-emojis' + (post.is_reacted ? ' rb-reacted' : '')}
-            onClick={() => setIsEmojiMenuOpen(!isEmojiMenuOpen)}
+            onClick={() => setIsEmojiMenuOpen(true)}
           >
             <div className="reaction-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +29,19 @@ export default function ItemReactions(post: PostType) {
             </div>
             <div className="reaction-number">{post.reactions_count}</div>
           </button>
+
+          <Modal
+            isOpen={isEmojiMenuOpen}
+            onClose={() => setIsEmojiMenuOpen(false)}
+            title="リアクションを選択"
+            width="max-w-sm"
+          >
+            <>
+              <div className="emoji-menu-grid">
+                🎉
+              </div>
+            </>
+          </Modal>
         </div>
 
         <div className="reactions-content">
