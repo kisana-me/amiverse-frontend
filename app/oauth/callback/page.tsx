@@ -21,7 +21,7 @@ export default function Page() {
     api.post('/oauth/callback', { code, state }).then((response) => {
       const data = response.data as { status: string; message: string; signup_data?: any; };
       if (data.signup_data) {
-        router.push('/signup');
+        router.push(`/signup?name=${encodeURIComponent(data.signup_data.name)}&name_id=${encodeURIComponent(data.signup_data.name_id)}&description=${encodeURIComponent(data.signup_data.description)}`);
         addToast({
           title: 'アカウントを作成してください',
           message: data.message
