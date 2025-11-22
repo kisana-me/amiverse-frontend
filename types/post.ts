@@ -1,4 +1,5 @@
 import { AccountType } from "./account";
+import { EmojiType } from "./emoji";
 
 export type PostType = {
   aid: string;
@@ -15,21 +16,13 @@ export type PostType = {
   reactions_count: number;
   views_count: number;
 
-  reply?: PostType;
-  quote?: PostType;
-
   is_diffused?: boolean;
   is_reacted?: boolean;
 
-  reactions?: {
-    emoji: {
-      aid: string;
-      name: string;
-      name_id: string;
-    };
-    reaction_count: number;
-    reacted: boolean;
-  }[];
+  reply?: PostType;
+  quote?: PostType;
+
+  reactions?: EmojiType[];
 
   images?: {
     aid: string;

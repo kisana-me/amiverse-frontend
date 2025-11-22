@@ -18,7 +18,7 @@ export default function ItemReactions(post: PostType) {
         <div className="reactions-content">
           <button
             ref={emojiButtonRef}
-            className='reaction-button rb-emojis'
+            className={'reaction-button rb-emojis' + (post.is_reacted ? ' rb-reacted' : '')}
             onClick={() => setIsEmojiMenuOpen(!isEmojiMenuOpen)}
           >
             <div className="reaction-icon">
@@ -31,16 +31,16 @@ export default function ItemReactions(post: PostType) {
         </div>
 
         <div className="reactions-content">
-          {post?.reactions && post.reactions.map(reaction => (
-            <button className={"reaction-button rb-emoji" + (reaction.reacted ? " rb-reacted" : "")}
-              key={reaction.emoji.aid}
-              onClick={() => itemReact(reaction.emoji.aid)}
+          {post?.reactions && post.reactions.map(emoji => (
+            <button className={"reaction-button rb-emoji" + (emoji.reacted ? " rb-reacted" : "")}
+              key={emoji.aid}
+              onClick={() => itemReact(emoji.aid)}
             >
               <div className="reaction-emoji">
-                {reaction.emoji.name}
+                {emoji.name}
               </div>
               <div className="reaction-number">
-                {reaction.reaction_count}
+                {emoji.reactions_count}
               </div>
             </button>
           ))}
