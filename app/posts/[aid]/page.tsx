@@ -7,6 +7,7 @@ import { api } from "@/app/lib/axios";
 import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
+import { usePosts } from "@/app/providers/PostsProvider";
 
 type Props = {
   params: Promise<{
@@ -17,25 +18,33 @@ type Props = {
 export default function Page({ params }: Props) {
   const { aid } = use(params);
   const router = useRouter();
+  const { getPost, addPosts } = usePosts();
 
-  const [postLoading, setPostLoading] = useState<boolean>(true);
-  const [post, setPost] = useState<PostType | null>(null);
+  const [postLoading, setPostLoading] = useState<boolean>(() => !getPost(aid));
+  const [post, setPost] = useState<PostType | null>(() => getPost(aid) || null);
 
   const fetchPost = useCallback(() => {
-    setPostLoading(true);
     api.get('/posts/' + aid).then(res => {
       setPost(res.data);
+      addPosts([res.data]);
     }).catch(() => {
       setPost(null);
     }).finally(() => {
       setPostLoading(false);
     });
-  }, [aid]);
+  }, [aid, addPosts]);
 
   useEffect(() => {
     if (!aid) return;
+    const cached = getPost(aid);
+    if (cached) {
+      setPost(cached);
+      setPostLoading(false);
+    } else {
+      setPostLoading(true);
+    }
     fetchPost();
-  }, [fetchPost]);
+  }, [aid, fetchPost, getPost]);
 
   return (
     <>
