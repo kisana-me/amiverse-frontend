@@ -1,17 +1,26 @@
 "use client";
 
+import { useState } from 'react'
 import Link from 'next/link'
 import "./post.css"
 
 import ItemAccount from './item_account'
 import ItemReactions from './item_reactions'
 import ItemConsole from './item_console'
+import MediaViewer from '../media_viewer/MediaViewer'
 
 import { formatRelativeTime } from '@/app/lib/format_time'
 
 import { PostType } from "@/types/post";
 
 export default function Post(post: PostType) {
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+
+  const openViewer = (index: number) => {
+    setViewerIndex(index);
+    setIsViewerOpen(true);
+  };
 
   const strVisibility = (v: string) => ({
     opened: '全体公開',
@@ -39,28 +48,26 @@ export default function Post(post: PostType) {
         </div>
         <div className="item-content">
           {post.content}
-          {(() => {
-            if (post.images && post.images.length > 0) {
-              return post.images.map(image => (
-                <div key={image.aid}>
-                  <img src={image.url} className="item-content-image"></img>
+          {post.media && post.media.length > 0 && (
+            <div className={`item-content-images images-${Math.min(post.media.length, 4)}`}>
+              {post.media.map((media, index) => (
+                <div key={media.aid} className="item-content-image-wrapper" onClick={() => openViewer(index)}>
+                  {media.type === 'image' ? (
+                    <img 
+                      src={media.url} 
+                      className="item-content-image" 
+                      alt={media.name || "media"} 
+                    />
+                  ) : (
+                    <video 
+                      src={media.url} 
+                      className="item-content-image" 
+                    />
+                  )}
                 </div>
-              ))
-            } else {
-              return
-            }
-          })()}
-          {(() => {
-            if (post.videos && post.videos.length > 0) {
-              return post.videos.map(video => (
-                <div key={video.aid}>
-                  <video src={video.url} className="item-content-video" controls={true}></video>
-                </div>
-              ))
-            } else {
-              return
-            }
-          })()}
+              ))}
+            </div>
+          )}
         </div>
         <div className='item-info item-bottom-info'>
           <div className='ibi-left'>
@@ -76,6 +83,15 @@ export default function Post(post: PostType) {
         </div>
         <ItemReactions {...post} />
         <ItemConsole {...post} />
+        
+        {post.media && (
+          <MediaViewer
+            mediaList={post.media}
+            initialIndex={viewerIndex}
+            isOpen={isViewerOpen}
+            onClose={() => setIsViewerOpen(false)}
+          />
+        )}
       </div>
     </>
   )

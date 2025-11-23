@@ -24,13 +24,8 @@ export type PostType = {
 
   reactions?: EmojiType[];
 
-  images?: {
-    aid: string;
-    name: string;
-    description?: string;
-    url: string;
-  }[];
-  videos?: {
+  media?: {
+    type: 'image' | 'video';
     aid: string;
     name: string;
     description?: string;
