@@ -50,7 +50,6 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
       }
       return prev;
     });
-    console.log("Added feed:", feed, feeds); // afsadasda
   }, []);
 
   const getFeed = useCallback((type: string) => {
