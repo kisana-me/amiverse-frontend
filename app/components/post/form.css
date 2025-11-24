@@ -5,6 +5,7 @@
   padding: 1rem;
   background-color: var(--background-color, #fff);
   border-radius: 8px;
+  color: var(--font-color);
 }
 
 .post-form-target {

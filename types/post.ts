@@ -22,6 +22,8 @@ export type PostType = {
   reply?: PostType;
   quote?: PostType;
 
+  replies?: PostType[];
+
   reactions?: EmojiType[];
 
   media?: {

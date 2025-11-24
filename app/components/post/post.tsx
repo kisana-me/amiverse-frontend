@@ -37,7 +37,8 @@ export default function Post(post: PostType) {
         <div className='item-info item-top-info'>
           <div className='iti-left'>
             <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
-              返信/引用
+              {post.reply_presence && '返信'}
+              {post.quote_presence && (post.reply_presence ? '・引用' : '引用')}
             </Link>
           </div>
           <div className='iti-right'>

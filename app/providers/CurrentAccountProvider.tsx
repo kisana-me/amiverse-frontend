@@ -21,6 +21,7 @@ export type CurrentAccount = {
   name_id: string;
   icon_url: string;
   description: string;
+  birthdate?: string;
   followers_count: number;
   following_count: number;
   statuses_count: number;

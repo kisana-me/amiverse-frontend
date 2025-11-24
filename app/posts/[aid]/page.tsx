@@ -1,6 +1,7 @@
 "use client";
 
 import Post from "@/app/components/post/post";
+import Feed from "@/app/components/feed/feed";
 import SkeletonItem from "@/app/components/post/skeleton_item";
 import MainHeader from "@/app/components/main_header/MainHeader";
 import { api } from "@/app/lib/axios";
@@ -27,6 +28,9 @@ export default function Page({ params }: Props) {
     api.get('/posts/' + aid).then(res => {
       setPost(res.data);
       addPosts([res.data]);
+      if (res.data.replies) {
+        addPosts(res.data.replies);
+      }
     }).catch(() => {
       setPost(null);
     }).finally(() => {
@@ -44,13 +48,30 @@ export default function Page({ params }: Props) {
       setPostLoading(true);
     }
     fetchPost();
-  }, [aid, fetchPost, getPost]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aid, fetchPost]);
 
   return (
     <>
       <MainHeader>投稿詳細</MainHeader>
       {postLoading ? <SkeletonItem /> :
-        post ? <Post {...post} /> : <div>投稿が見つかりません</div>
+        post ? (
+          <>
+            {post?.reply && (
+              <>
+                <Post {...post.reply} />
+                <h2>👆返信先</h2>
+              </>
+            )}
+            <Post {...post} />
+            {post.replies && (
+              <>
+                <h2>返信達👇</h2>
+                {post.replies && <Feed posts={post.replies} />}
+              </>
+            )}
+          </>
+        ) : <div>投稿が見つかりません</div>
       }
     </>
   );

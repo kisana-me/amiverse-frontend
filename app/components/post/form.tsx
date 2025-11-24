@@ -78,7 +78,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     <div className="post-form">
       {replyPost && (
         <div className="post-form-target">
-          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>返信先:</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--font-color)', marginBottom: '0.5rem' }}>返信先:</div>
           <div style={{ pointerEvents: 'none', opacity: 0.8, transform: 'scale(0.9)', transformOrigin: 'top left' }}>
              <Post {...replyPost} />
           </div>
@@ -86,7 +86,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
       )}
       {quotePost && (
         <div className="post-form-target">
-          <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>引用元:</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--font-color)', marginBottom: '0.5rem' }}>引用元:</div>
           <div style={{ pointerEvents: 'none', opacity: 0.8, transform: 'scale(0.9)', transformOrigin: 'top left' }}>
             <Post {...quotePost} />
           </div>

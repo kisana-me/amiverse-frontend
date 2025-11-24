@@ -1,3 +1,15 @@
 .dashboard {
 
 }
+
+.settings-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--primary-color, #1d9bf0);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.settings-link:hover {
+  text-decoration: underline;
+}
