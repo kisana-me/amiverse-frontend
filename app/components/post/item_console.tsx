@@ -1,19 +1,38 @@
 "use client";
 
 import { useState } from 'react'
+import Link from 'next/link'
 import "./item_console.css"
 import { PostType } from "@/types/post"
 import { Modal } from '../modal/Modal';
+import PostForm from './form';
+import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
 
 export default function ItemConsole(post: PostType) {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
+  const { currentAccountStatus } = useCurrentAccount();
+
+  const handleAction = (action: () => void) => {
+    if (currentAccountStatus !== 'signed_in') {
+      setIsSignInModalOpen(true);
+      return;
+    }
+    action();
+  }
 
   return (
     <>
       <div className="console">
 
         <div className="console-content">
-          <button className='console-button cb-quote' disabled={post.is_busy === true}>
+          <button 
+            className='console-button cb-quote' 
+            disabled={post.is_busy === true}
+            onClick={() => handleAction(() => setIsQuoteModalOpen(true))}
+          >
             <div className="console-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M44 20H11V56H35V71L29 71V80H44V20ZM89.0002 20H56.0002L56.0002 56H80.0002V71L74.0002 71V80H89.0002V20Z" fill="currentColor"/>
@@ -21,6 +40,13 @@ export default function ItemConsole(post: PostType) {
             </div>
             <div className="console-number">{post.quotes_count}</div>
           </button>
+          <Modal
+            isOpen={isQuoteModalOpen}
+            onClose={() => setIsQuoteModalOpen(false)}
+            title="引用"
+          >
+            <PostForm quotePost={post} onSuccess={() => setIsQuoteModalOpen(false)} />
+          </Modal>
         </div>
         
         <div className="console-content">
@@ -59,7 +85,11 @@ export default function ItemConsole(post: PostType) {
         </div>
         
         <div className="console-content">
-          <button className='console-button cb-reply' disabled={post.is_busy === true}>
+          <button 
+            className='console-button cb-reply' 
+            disabled={post.is_busy === true}
+            onClick={() => handleAction(() => setIsReplyModalOpen(true))}
+          >
             <div className="console-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M11 19C11 16.2386 13.2386 14 16 14H84C86.7614 14 89 16.2386 89 19V59C89 61.7614 86.7614 64 84 64H80.1939C77.706 64 75.6814 62.1077 74.5909 59.8715C72.3182 55.211 67.5341 52 62 52C56.4659 52 51.6818 55.211 49.4091 59.8715C48.3186 62.1077 46.294 64 43.8061 64H16C13.2386 64 11 61.7614 11 59V19ZM52 66C52 60.4772 56.4772 56 62 56C67.5229 56 72 60.4772 72 66C72 71.5229 67.5229 76 62 76C56.4772 76 52 71.5229 52 66ZM42 80C42 76.6863 44.6863 74 48 74C51.3137 74 54 76.6863 54 80C54 83.3137 51.3137 86 48 86C44.6863 86 42 83.3137 42 80Z" fill="currentColor"/>
@@ -67,6 +97,13 @@ export default function ItemConsole(post: PostType) {
             </div>
             <div className="console-number">{post.replies_count}</div>
           </button>
+          <Modal
+            isOpen={isReplyModalOpen}
+            onClose={() => setIsReplyModalOpen(false)}
+            title="返信"
+          >
+            <PostForm replyPost={post} onSuccess={() => setIsReplyModalOpen(false)} />
+          </Modal>
         </div>
 
         <div className="console-content">
@@ -88,6 +125,18 @@ export default function ItemConsole(post: PostType) {
           >
             <div>
               ブロックとかミュートとか報告とか削除とか
+            </div>
+          </Modal>
+          <Modal
+            isOpen={isSignInModalOpen}
+            onClose={() => setIsSignInModalOpen(false)}
+            title="サインインが必要です"
+          >
+            <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p>この操作を行うにはサインインが必要です。</p>
+              <Link href="/signin" style={{ color: '#1d9bf0', textDecoration: 'none' }}>
+                サインインする
+              </Link>
             </div>
           </Modal>
         </div>
