@@ -3,10 +3,17 @@
 import MainHeader from "@/app/components/main_header/MainHeader";
 import { api } from "@/app/lib/axios";
 import { AccountType } from "@/types/account";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useCallback } from "react";
 import SkeletonAccount from "./skeleton_account";
 import { formatFullDate } from "@/app/lib/format_time";
 import "./page.css";
+import { usePosts, CachedPost } from "@/app/providers/PostsProvider";
+import { useFeeds } from "@/app/providers/FeedsProvider";
+import Feed from "@/app/components/feed/feed";
+import { PostType } from "@/types/post";
+import { FeedItemType } from "@/types/feed";
+import { useToast } from "@/app/providers/ToastProvider";
+import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
 type Props = {
   params: Promise<{
@@ -20,18 +27,131 @@ export default function Page({ params }: Props) {
   const [loading, setLoading] = useState<boolean>(true);
   const [account, setAccount] = useState<AccountType | null>(null);
 
+  const { addToast } = useToast();
+  const { addPosts, getPost } = usePosts();
+  const { addFeed, appendFeed, feeds } = useFeeds();
+  const { currentAccountStatus } = useCurrentAccount();
+
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [isFeedLoading, setIsFeedLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
   useEffect(() => {
     if (!name_id) return;
-    
+    if (currentAccountStatus === 'loading') return;
+
     setLoading(true);
-    api.get('/accounts/' + name_id).then(res => {
+    setHasMore(true);
+    setPosts([]);
+
+    api.post('/accounts', { name_id }).then(res => {
       setAccount(res.data);
     }).catch(() => {
       setAccount(null);
     }).finally(() => {
       setLoading(false);
     });
-  }, [name_id]);
+  }, [name_id, currentAccountStatus]);
+
+  const fetchFeed = useCallback(async (aid: string) => {
+    if (feeds[aid]) return;
+    
+    setIsFeedLoading(true);
+    try {
+      const res = await api.post('/feeds/account', { aid });
+      if (!res.data) return;
+
+      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
+
+      if (data.posts) {
+        addPosts(data.posts);
+      }
+
+      if (data.feed) {
+        addFeed({ type: aid, objects: data.feed });
+      } else if (data.posts) {
+        const generatedFeed: FeedItemType[] = data.posts.map(post => ({
+          type: 'post',
+          post_aid: post.aid,
+        }));
+        addFeed({ type: aid, objects: generatedFeed });
+      }
+    } catch (error) {
+      addToast({
+        title: "投稿取得エラー",
+        message: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsFeedLoading(false);
+    }
+  }, [addPosts, addFeed, addToast, feeds]);
+
+  useEffect(() => {
+    if (currentAccountStatus === 'loading') return;
+    if (!account) return;
+    if (!feeds[account.aid]) {
+        fetchFeed(account.aid);
+    }
+  }, [account, feeds, fetchFeed, currentAccountStatus]);
+
+  useEffect(() => {
+    if (!account) return;
+    const cachedFeed = feeds[account.aid];
+    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
+      const cachedPosts = cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
+      setPosts(cachedPosts);
+    }
+  }, [feeds, account, getPost]);
+
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore || posts.length === 0 || !account) return;
+    
+    const lastPost = posts[posts.length - 1];
+    setIsLoadingMore(true);
+
+    try {
+      const cursor = Math.floor(new Date(lastPost.created_at).getTime() / 1000);
+      const res = await api.post('/feeds/account', {
+        aid: account.aid,
+        cursor
+      });
+
+      if (!res.data) return;
+
+      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
+      const newPosts = data.posts || [];
+      const newFeedItems = data.feed || [];
+
+      if (newPosts.length === 0 && newFeedItems.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      if (newPosts.length > 0) {
+        addPosts(newPosts);
+      }
+
+      if (newFeedItems.length > 0) {
+        appendFeed({ type: account.aid, objects: newFeedItems });
+      } else if (newPosts.length > 0) {
+        const generatedFeed: FeedItemType[] = newPosts.map(post => ({
+          type: 'post',
+          post_aid: post.aid,
+        }));
+        appendFeed({ type: account.aid, objects: generatedFeed });
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      addToast({
+        title: "読み込みエラー",
+        message: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   return (
     <>
@@ -163,7 +283,26 @@ export default function Page({ params }: Props) {
             </div>
 
             <div className="account-content">
-              {/* 投稿一覧はまだ実装しない */}
+              <Feed posts={posts} is_loading={isFeedLoading} />
+              
+              {hasMore && posts.length > 0 && !isFeedLoading && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                  <button 
+                    onClick={loadMore} 
+                    disabled={isLoadingMore}
+                    style={{ 
+                      padding: '0.5rem 2rem', 
+                      background: 'var(--bg-secondary)', 
+                      border: 'none', 
+                      borderRadius: '20px', 
+                      cursor: 'pointer',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    {isLoadingMore ? '読み込み中...' : 'さらに読み込む'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : (

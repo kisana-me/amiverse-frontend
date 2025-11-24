@@ -9,14 +9,14 @@ import Feed from "@/app/components/feed/feed";
 import { Modal } from "@/app/components/modal/Modal";
 import { useEffect, useState, useCallback } from "react";
 import { PostType } from "@/types/post"
-import { FeedItemType, FeedType } from "@/types/feed"
+import { FeedItemType } from "@/types/feed"
 import { api } from "@/app/lib/axios";
 import Link from "next/link";
 
 export default function Home() {
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
-  const { addFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
+  const { addFeed, appendFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
   const { currentAccountStatus } = useCurrentAccount();
 
   const [posts, setPosts] = useState<PostType[]>(() => {
@@ -29,11 +29,11 @@ export default function Home() {
   const [isFeedLoading, setIsFeedLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const cachedFeed = feeds[currentFeedType];
   const fetchedAt = cachedFeed?.fetched_at;
-
-    const currentFeed: FeedType | undefined = cachedFeed ? { type: currentFeedType, objects: cachedFeed.objects } : undefined;
 
   // キャッシュまたは投稿データが更新されたら表示を更新
   useEffect(() => {
@@ -44,6 +44,11 @@ export default function Home() {
       setPosts([]);
     }
   }, [cachedFeed, getPost]);
+
+  // Reset hasMore when feed type changes
+  useEffect(() => {
+    setHasMore(true);
+  }, [currentFeedType]);
 
   const fetchPost = useCallback(async () => {
     if (currentAccountStatus === 'loading') return;
@@ -56,7 +61,7 @@ export default function Home() {
     }
 
     try {
-      const res = await api.get(`/feeds/${currentFeedType}`)
+      const res = await api.post(`/feeds/${currentFeedType}`)
       if (!res.data) return
 
       const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
@@ -87,6 +92,54 @@ export default function Home() {
       setIsRefetching(false);
     }
   }, [addPosts, addFeed, addToast, currentFeedType, currentAccountStatus, feeds]);
+
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore || posts.length === 0) return;
+    
+    const lastPost = posts[posts.length - 1];
+    setIsLoadingMore(true);
+
+    try {
+      const cursor = Math.floor(new Date(lastPost.created_at).getTime() / 1000);
+      const res = await api.post(`/feeds/${currentFeedType}`, {
+        cursor
+      });
+
+      if (!res.data) return;
+
+      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
+      const newPosts = data.posts || [];
+      const newFeedItems = data.feed || [];
+
+      if (newPosts.length === 0 && newFeedItems.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      if (newPosts.length > 0) {
+        addPosts(newPosts);
+      }
+
+      if (newFeedItems.length > 0) {
+        appendFeed({ type: currentFeedType, objects: newFeedItems });
+      } else if (newPosts.length > 0) {
+        const generatedFeed: FeedItemType[] = newPosts.map(post => ({
+          type: 'post',
+          post_aid: post.aid,
+        }));
+        appendFeed({ type: currentFeedType, objects: generatedFeed });
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      addToast({
+        title: "読み込みエラー",
+        message: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   useEffect(()=>{
     if (currentAccountStatus === 'loading') return;
@@ -145,6 +198,25 @@ export default function Home() {
       </div>
 
       <Feed posts={posts} is_loading={isFeedLoading} />
+
+      {currentFeedType !== 'index' && hasMore && posts.length > 0 && !isFeedLoading && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+          <button 
+            onClick={loadMore} 
+            disabled={isLoadingMore}
+            style={{ 
+              padding: '0.5rem 2rem', 
+              background: 'var(--bg-secondary)', 
+              border: 'none', 
+              borderRadius: '20px', 
+              cursor: 'pointer',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            {isLoadingMore ? '読み込み中...' : 'さらに読み込む'}
+          </button>
+        </div>
+      )}
 
       <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">
         <div style={{ padding: '1rem' }}>

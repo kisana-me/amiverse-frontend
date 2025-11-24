@@ -21,6 +21,7 @@ export type FeedTypeKey = 'index' | 'follow' | 'current';
 type FeedsContextType = {
   feeds: Record<string, CachedFeed>;
   addFeed: (feed: FeedType) => void;
+  appendFeed: (feed: FeedType) => void;
   getFeed: (type: string) => FeedItemType[] | undefined;
   currentFeedType: FeedTypeKey;
   setCurrentFeedType: (type: FeedTypeKey) => void;
@@ -49,6 +50,28 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  const appendFeed = useCallback((feed: FeedType) => {
+    setFeeds((prev) => {
+      const existing = prev[feed.type];
+      if (existing) {
+        return {
+          ...prev,
+          [feed.type.toString()]: {
+            objects: [...existing.objects, ...feed.objects],
+            fetched_at: existing.fetched_at,
+          },
+        };
+      }
+      return {
+        ...prev,
+        [feed.type.toString()]: {
+          objects: feed.objects,
+          fetched_at: Date.now(),
+        },
+      };
+    });
+  }, []);
+
   const getFeed = useCallback((type: string) => {
     return feeds[type]?.objects;
   }, [feeds]);
@@ -56,10 +79,11 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
   const value: FeedsContextType = useMemo(() => ({
     feeds,
     addFeed,
+    appendFeed,
     getFeed,
     currentFeedType,
     setCurrentFeedType,
-  }), [feeds, addFeed, getFeed, currentFeedType]);
+  }), [feeds, addFeed, appendFeed, getFeed, currentFeedType]);
 
   return (
     <FeedsContext.Provider value={value}>
