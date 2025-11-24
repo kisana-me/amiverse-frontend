@@ -9,33 +9,30 @@ import {
   useMemo,
 } from "react";
 
-type FeedItem = {
-  type: "post";
-  aid: string;
-};
-
-export type FeedData = {
-  type: string;
-  objects: FeedItem[];
-};
+import { FeedType, FeedItemType } from "@/types/feed";
 
 type CachedFeed = {
-  objects: FeedItem[];
+  objects: FeedItemType[];
   fetched_at: number;
 };
 
+export type FeedTypeKey = 'index' | 'follow' | 'current';
+
 type FeedsContextType = {
   feeds: Record<string, CachedFeed>;
-  addFeed: (feed: FeedData) => void;
-  getFeed: (type: string) => FeedItem[] | undefined;
+  addFeed: (feed: FeedType) => void;
+  getFeed: (type: string) => FeedItemType[] | undefined;
+  currentFeedType: FeedTypeKey;
+  setCurrentFeedType: (type: FeedTypeKey) => void;
 };
 
 const FeedsContext = createContext<FeedsContextType | null>(null);
 
 export const FeedsProvider = ({ children }: { children: ReactNode }) => {
   const [feeds, setFeeds] = useState<Record<string, CachedFeed>>({});
+  const [currentFeedType, setCurrentFeedType] = useState<FeedTypeKey>('index');
 
-  const addFeed = useCallback((feed: FeedData) => {
+  const addFeed = useCallback((feed: FeedType) => {
     const now = Date.now();
     setFeeds((prev) => {
       const existing = prev[feed.type];
@@ -60,7 +57,9 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
     feeds,
     addFeed,
     getFeed,
-  }), [feeds, addFeed, getFeed]);
+    currentFeedType,
+    setCurrentFeedType,
+  }), [feeds, addFeed, getFeed, currentFeedType]);
 
   return (
     <FeedsContext.Provider value={value}>

@@ -1,15 +1,31 @@
 "use client";
 
 import { PostType } from "@/types/post"
+import { FeedType } from "@/types/feed"
+
 import Post from "@/app/components/post/post"
 import SkeletonItem from "@/app/components/post/skeleton_item"
 
-type FeedType = {
-  feed: PostType[];
+export default function Feed({
+  posts,
+  feed,
+  is_loading = false
+}: {
+  posts: PostType[];
+  feed?: FeedType;
   is_loading?: boolean;
-}
+}) {
+  // feedとpostsからposts配列を組み立て表示する
+  // feedが与えられなければpostsをそのまま表示する
 
-export default function Feed({ feed = [], is_loading = false }: FeedType) {
+  const displayPosts = (() => {
+    if (feed && Array.isArray(feed.objects)) {
+      return feed.objects.map((item) => {
+        return posts.find((p) => p.aid === item.post_aid);
+      }).filter((item): item is PostType => item !== undefined);
+    }
+    return posts;
+  })();
 
   return (
     <>
@@ -23,11 +39,11 @@ export default function Feed({ feed = [], is_loading = false }: FeedType) {
                 ))}
               </>
             )
-          } else if (feed.length > 0) {
+          } else if (displayPosts.length > 0) {
             return (
               <>
-                {feed.map(item => (
-                  <Post key={item.aid} {...item} />
+                {displayPosts.map((item, index) => (
+                  <Post key={`${item.aid}-${index}`} {...item} />
                 ))}
               </>
             )

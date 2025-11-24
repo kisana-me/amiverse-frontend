@@ -3,50 +3,78 @@
 import MainHeader from "@/app/components/main_header/MainHeader";
 import { useToast } from "@/app/providers/ToastProvider";
 import { usePosts, CachedPost } from "@/app/providers/PostsProvider";
-import { useFeeds } from "@/app/providers/FeedsProvider";
+import { useFeeds, FeedTypeKey } from "@/app/providers/FeedsProvider";
+import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 import Feed from "@/app/components/feed/feed";
+import { Modal } from "@/app/components/modal/Modal";
 import { useEffect, useState, useCallback } from "react";
 import { PostType } from "@/types/post"
+import { FeedItemType, FeedType } from "@/types/feed"
 import { api } from "@/app/lib/axios";
+import Link from "next/link";
 
 export default function Home() {
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
-  const { addFeed, getFeed, feeds } = useFeeds();
+  const { addFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
+  const { currentAccountStatus } = useCurrentAccount();
 
-  const [feed, setFeed] = useState<PostType[]>(() => {
-    const cachedFeed = feeds["home"];
-    if (cachedFeed) {
-      const cachedPosts = cachedFeed.objects.map(item => getPost(item.aid)).filter((p): p is CachedPost => !!p);
-      if (cachedPosts.length === cachedFeed.objects.length) {
-        return cachedPosts;
-      }
+  const [posts, setPosts] = useState<PostType[]>(() => {
+    const cachedFeed = feeds[currentFeedType];
+    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
+      return cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
     }
     return [];
   });
   const [isFeedLoading, setIsFeedLoading] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+
+  const cachedFeed = feeds[currentFeedType];
+  const fetchedAt = cachedFeed?.fetched_at;
+
+    const currentFeed: FeedType | undefined = cachedFeed ? { type: currentFeedType, objects: cachedFeed.objects } : undefined;
+
+  // キャッシュまたは投稿データが更新されたら表示を更新
+  useEffect(() => {
+    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
+      const cachedPosts = cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
+      setPosts(cachedPosts);
+    } else {
+      setPosts([]);
+    }
+  }, [cachedFeed, getPost]);
 
   const fetchPost = useCallback(async () => {
-    setIsFeedLoading(true);
+    if (currentAccountStatus === 'loading') return;
+
+    // キャッシュがない場合のみスケルトンローディングを表示
+    if (!feeds[currentFeedType]) {
+      setIsFeedLoading(true);
+    } else {
+      setIsRefetching(true);
+    }
+
     try {
-      const res = await api.get('/posts')
+      const res = await api.get(`/feeds/${currentFeedType}`)
       if (!res.data) return
 
+      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
+
       // Store posts content
-      if (res.data.posts) {
-        addPosts(res.data.posts);
+      if (data.posts) {
+        addPosts(data.posts);
       }
 
-      if (res.data.feed) {
-        addFeed(res.data.feed);
-        
-        // 現feed -> 旧feed
-        const postsMap = new Map(res.data.posts.map((p: PostType) => [p.aid, p]));
-        const feedAids = res.data.feed.objects.map((p: {aid: string}) => p.aid);
-        const feedPosts = feedAids.map((aid: string) => postsMap.get(aid)).filter((p: PostType | undefined): p is PostType => !!p);
-        setFeed(feedPosts);
-      } else if (res.data.posts) {
-        setFeed(res.data.posts);
+      if (data.feed) {
+        addFeed({ type: currentFeedType, objects: data.feed });
+      } else if (data.posts) {
+        // feedがない場合はpostsの順序でfeedを作成
+        const generatedFeed: FeedItemType[] = data.posts.map(post => ({
+          type: 'post',
+          post_aid: post.aid,
+        }));
+        addFeed({ type: currentFeedType, objects: generatedFeed });
       }
 
     } catch (error) {
@@ -55,34 +83,82 @@ export default function Home() {
         message: error instanceof Error ? error.message : String(error),
       });
     } finally {
-      setIsFeedLoading(false)
+      setIsFeedLoading(false);
+      setIsRefetching(false);
     }
-  }, [addPosts, addFeed, addToast]);
+  }, [addPosts, addFeed, addToast, currentFeedType, currentAccountStatus, feeds]);
 
   useEffect(()=>{
-    async function load() {
-      const cachedFeed = feeds["home"];
-      if (cachedFeed) {
-        const cachedPosts = cachedFeed.objects.map(item => getPost(item.aid)).filter((p): p is CachedPost => !!p);
-        if (cachedPosts.length === cachedFeed.objects.length) {
-          setFeed(cachedPosts);
-          setIsFeedLoading(false);
-        } else {
-          await fetchPost();
-        }
-      } else {
-        await fetchPost();
-      }
+    if (currentAccountStatus === 'loading') return;
+
+    if (!feeds[currentFeedType]) {
+      fetchPost();
     }
-    load();
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFeedType, currentAccountStatus])
+
+  const handleTabChange = (type: FeedTypeKey) => {
+    if (type === 'follow' && currentAccountStatus !== 'signed_in') {
+      setIsSignInModalOpen(true);
+      return;
+    }
+    setCurrentFeedType(type);
+  };
+
+  const tabStyle = (type: string) => ({
+    fontSize: '.8rem',
+    fontWeight: currentFeedType === type ? 'bold' : 'normal',
+    borderBottom: currentFeedType === type ? '2px solid currentColor' : '2px solid transparent',
+    borderTop: 'none',
+    borderLeft: 'none',
+    borderRight: 'none',
+    padding: '0.5rem 1rem',
+    background: 'none',
+    cursor: 'pointer',
+    color: 'inherit',
+    opacity: currentFeedType === type ? 1 : 0.7
+  });
 
   return (
     <>
       <MainHeader>
-        Feed
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button onClick={() => handleTabChange('index')} style={tabStyle('index')}>
+            人気
+          </button>
+          <button onClick={() => handleTabChange('follow')} style={tabStyle('follow')}>
+            フォロー中
+          </button>
+          <button onClick={() => handleTabChange('current')} style={tabStyle('current')}>
+            最新
+          </button>
+        </div>
       </MainHeader>
-      <Feed feed={feed} is_loading={isFeedLoading} />
+      
+      <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#888', borderBottom: '1px solid var(--border-color)' }}>
+        <div>
+          {fetchedAt ? `最終更新: ${new Date(fetchedAt).toLocaleString()}` : '未取得'}
+        </div>
+        <button onClick={fetchPost} disabled={isRefetching || isFeedLoading} style={{ cursor: 'pointer', background: 'none', border: '1px solid currentColor', borderRadius: '4px', padding: '2px 8px', color: 'inherit', opacity: (isRefetching || isFeedLoading) ? 0.5 : 1 }}>
+          {isRefetching ? '更新中...' : '再読み込み'}
+        </button>
+      </div>
+
+      <Feed posts={posts} is_loading={isFeedLoading} />
+
+      <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">
+        <div style={{ padding: '1rem' }}>
+          <p>フォロー中の投稿を見るにはサインインが必要です。</p>
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+            <button onClick={() => setIsSignInModalOpen(false)} style={{ padding: '0.5rem 1rem', border: 'none', background: 'none', cursor: 'pointer' }}>
+              キャンセル
+            </button>
+            <Link href="/signin" style={{ padding: '0.5rem 1rem', background: '#747eee', color: 'white', borderRadius: '4px', textDecoration: 'none' }}>
+              サインイン
+            </Link>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
