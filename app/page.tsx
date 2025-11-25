@@ -197,7 +197,7 @@ export default function Home() {
         </button>
       </div>
 
-      <Feed posts={posts} is_loading={isFeedLoading} />
+      <Feed posts={posts} feed={cachedFeed ? { ...cachedFeed, type: currentFeedType, fetched_at: cachedFeed.fetched_at?.toString() } : undefined} is_loading={isFeedLoading} />
 
       {currentFeedType !== 'index' && hasMore && posts.length > 0 && !isFeedLoading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>

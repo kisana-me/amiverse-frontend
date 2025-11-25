@@ -283,7 +283,11 @@ export default function Page({ params }: Props) {
             </div>
 
             <div className="account-content">
-              <Feed posts={posts} is_loading={isFeedLoading} />
+              <Feed 
+                posts={posts} 
+                feed={account && feeds[account.aid] ? { ...feeds[account.aid], type: account.aid, fetched_at: feeds[account.aid].fetched_at?.toString() } : undefined} 
+                is_loading={isFeedLoading} 
+              />
               
               {hasMore && posts.length > 0 && !isFeedLoading && (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
