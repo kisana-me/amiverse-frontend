@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import "./item_console.css"
 import { PostType } from "@/types/post"
 import { Modal } from '../modal/Modal';
 import PostForm from './form';
 import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
+import { api } from '@/app/lib/axios';
+import { usePosts } from '@/app/providers/PostsProvider';
 
-export default function ItemConsole(post: PostType) {
+export default function ItemConsole(initialPost: PostType) {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
   const { currentAccountStatus } = useCurrentAccount();
+  const { addPosts } = usePosts();
+  const [post, setPost] = useState(initialPost);
+
+  useEffect(() => {
+    setPost(initialPost);
+  }, [initialPost]);
 
   const handleAction = (action: () => void) => {
     if (currentAccountStatus !== 'signed_in') {
@@ -22,6 +30,36 @@ export default function ItemConsole(post: PostType) {
     }
     action();
   }
+
+  const handleDiffuse = async () => {
+    handleAction(async () => {
+      const prevPost = { ...post };
+      const newPost = { ...post };
+      
+      if (post.is_diffused) {
+        newPost.diffuses_count = Math.max(0, post.diffuses_count - 1);
+        newPost.is_diffused = false;
+      } else {
+        newPost.diffuses_count = post.diffuses_count + 1;
+        newPost.is_diffused = true;
+      }
+
+      setPost(newPost);
+      addPosts([newPost]);
+
+      try {
+        if (prevPost.is_diffused) {
+          await api.delete(`/posts/${post.aid}/diffuse`);
+        } else {
+          await api.post(`/posts/${post.aid}/diffuse`);
+        }
+      } catch (error) {
+        console.error("Diffuse failed", error);
+        setPost(prevPost);
+        addPosts([prevPost]);
+      }
+    });
+  };
 
   return (
     <>
@@ -52,7 +90,7 @@ export default function ItemConsole(post: PostType) {
         <div className="console-content">
           <button className={"console-button cb-diffuse" + (post.is_diffused ? " cb-diffused" : "")}
             disabled={post.is_busy === true}
-            onClick={() => {}}
+            onClick={handleDiffuse}
           >
             <div className="console-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
