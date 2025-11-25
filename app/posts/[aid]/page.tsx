@@ -19,20 +19,19 @@ type Props = {
 export default function Page({ params }: Props) {
   const { aid } = use(params);
   const router = useRouter();
-  const { getPost, addPosts } = usePosts();
+  const { posts, getPost, addPosts } = usePosts();
 
-  const [postLoading, setPostLoading] = useState<boolean>(() => !getPost(aid));
-  const [post, setPost] = useState<PostType | null>(() => getPost(aid) || null);
+  const post = posts[aid] || null;
+  const [postLoading, setPostLoading] = useState<boolean>(() => !post);
 
   const fetchPost = useCallback(() => {
     api.get('/posts/' + aid).then(res => {
-      setPost(res.data);
       addPosts([res.data]);
       if (res.data.replies) {
         addPosts(res.data.replies);
       }
     }).catch(() => {
-      setPost(null);
+      // setPost(null); // post is derived from posts now
     }).finally(() => {
       setPostLoading(false);
     });
@@ -40,9 +39,7 @@ export default function Page({ params }: Props) {
 
   useEffect(() => {
     if (!aid) return;
-    const cached = getPost(aid);
-    if (cached) {
-      setPost(cached);
+    if (post) {
       setPostLoading(false);
     } else {
       setPostLoading(true);

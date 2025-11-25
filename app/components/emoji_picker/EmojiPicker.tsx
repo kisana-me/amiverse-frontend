@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useEmoji } from '@/app/providers/EmojiProvider';
 import "./style.css";
 
+import { EmojiType } from '@/types/emoji';
+
 interface EmojiPickerProps {
-  onEmojiSelect: (emoji_aid: string) => void;
+  onEmojiSelect: (emoji: EmojiType) => void;
 }
 
 export default function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
@@ -46,7 +48,7 @@ export default function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
           <button
             key={emoji.aid}
             className="emoji-item"
-            onClick={() => onEmojiSelect(emoji.aid)}
+            onClick={() => onEmojiSelect(emoji)}
             title={emoji.name}
           >
             {emoji.image_url ? (

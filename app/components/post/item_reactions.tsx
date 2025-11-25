@@ -1,17 +1,88 @@
 "use client";
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import "./item_reactions.css"
 import { PostType } from '@/types/post';
+import { EmojiType } from '@/types/emoji';
 import { Modal } from '../modal/Modal';
 import EmojiPicker from '../emoji_picker/EmojiPicker';
+import { api } from '@/app/lib/axios';
+import { usePosts } from '@/app/providers/PostsProvider';
 
-export default function ItemReactions(post: PostType) {
+export default function ItemReactions(initialPost: PostType) {
   const emojiButtonRef = useRef(null)
   const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState(false)
+  const [post, setPost] = useState(initialPost);
+  const { addPosts } = usePosts();
 
-  const itemReact = async (emoji_aid: string) => {
-    console.log(`Reacted: ${emoji_aid}`)
+  useEffect(() => {
+    setPost(initialPost);
+  }, [initialPost]);
+
+  const itemReact = async (emojiInput: EmojiType | string) => {
+    setIsEmojiMenuOpen(false);
+
+    const emojiAid = typeof emojiInput === 'string' ? emojiInput : emojiInput.aid;
+    const emojiName = typeof emojiInput === 'object' ? emojiInput.name : null;
+
+    const currentReaction = post.reactions?.find(r => r.reacted);
+    const isRemoving = currentReaction?.aid === emojiAid;
+
+    const prevPost = { ...post };
+    const newPost = { ...post };
+    newPost.reactions = newPost.reactions ? [...newPost.reactions] : [];
+
+    if (currentReaction) {
+      const idx = newPost.reactions.findIndex(r => r.aid === currentReaction.aid);
+      if (idx !== -1) {
+        newPost.reactions[idx] = {
+          ...newPost.reactions[idx],
+          reactions_count: Math.max(0, (newPost.reactions[idx].reactions_count || 0) - 1),
+          reacted: false
+        };
+        if (newPost.reactions[idx].reactions_count === 0) {
+          newPost.reactions.splice(idx, 1);
+        }
+      }
+      newPost.reactions_count = Math.max(0, (newPost.reactions_count || 0) - 1);
+      newPost.is_reacted = false;
+    }
+
+    if (!isRemoving) {
+      const idx = newPost.reactions.findIndex(r => r.aid === emojiAid);
+      if (idx !== -1) {
+        newPost.reactions[idx] = {
+          ...newPost.reactions[idx],
+          reactions_count: (newPost.reactions[idx].reactions_count || 0) + 1,
+          reacted: true
+        };
+      } else if (emojiName) {
+        newPost.reactions.push({
+          aid: emojiAid,
+          name: emojiName,
+          name_id: typeof emojiInput === 'object' ? emojiInput.name_id : '',
+          reactions_count: 1,
+          reacted: true
+        });
+      }
+      newPost.reactions_count = (newPost.reactions_count || 0) + 1;
+      newPost.is_reacted = true;
+    }
+
+    setPost(newPost);
+    addPosts([newPost]);
+
+    try {
+      if (isRemoving) {
+        await api.delete(`/posts/${post.aid}/reaction`);
+      } else {
+        await api.post(`/posts/${post.aid}/reaction`, { emoji_aid: emojiAid });
+      }
+    } catch (error) {
+      console.error("Reaction failed", error);
+      setPost(prevPost);
+      addPosts([prevPost]);
+    }
   }
 
   return (
