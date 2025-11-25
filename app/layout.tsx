@@ -16,6 +16,7 @@ import { OverlayProvider } from "@/app/providers/OverlayProvider";
 import { ToastProvider } from "@/app/providers/ToastProvider";
 import { CurrentAccountProvider } from "@/app/providers/CurrentAccountProvider";
 import { TrendsProvider } from "@/app/providers/TrendsProvider";
+import { AccountsProvider } from "@/app/providers/AccountsProvider";
 import { PostsProvider } from "@/app/providers/PostsProvider";
 import { FeedsProvider } from "@/app/providers/FeedsProvider";
 import { EmojiProvider } from "@/app/providers/EmojiProvider";
@@ -39,7 +40,7 @@ export default function RootLayout({
         <ToastProvider>
         <CurrentAccountProvider>
         <TrendsProvider>
-        {/* <AccountsProvider> */}
+        <AccountsProvider>
         <PostsProvider>
         <FeedsProvider>
         <EmojiProvider>
@@ -59,7 +60,7 @@ export default function RootLayout({
         </EmojiProvider>
         </FeedsProvider>
         </PostsProvider>
-        {/* </AccountsProvider> */}
+        </AccountsProvider>
         </TrendsProvider>
         </CurrentAccountProvider>
         </ToastProvider>

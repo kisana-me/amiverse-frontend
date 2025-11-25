@@ -14,6 +14,7 @@ import { PostType } from "@/types/post";
 import { FeedItemType } from "@/types/feed";
 import { useToast } from "@/app/providers/ToastProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useAccounts } from "@/app/providers/AccountsProvider";
 
 type Props = {
   params: Promise<{
@@ -23,17 +24,32 @@ type Props = {
 
 export default function Page({ params }: Props) {
   const { name_id } = use(params);
+  return <AccountContent name_id={name_id} key={name_id} />;
+}
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [account, setAccount] = useState<AccountType | null>(null);
+function AccountContent({ name_id }: { name_id: string }) {
+  const { accounts, fetchAccount } = useAccounts();
+
+  const [loading, setLoading] = useState<boolean>(!accounts[name_id]);
+  const account = accounts[name_id] || null;
 
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
   const { addFeed, appendFeed, feeds } = useFeeds();
   const { currentAccountStatus } = useCurrentAccount();
 
-  const [posts, setPosts] = useState<PostType[]>([]);
-  const [isFeedLoading, setIsFeedLoading] = useState(false);
+  const [posts, setPosts] = useState<PostType[]>(() => {
+    if (account && feeds[account.aid]) {
+      const cachedFeed = feeds[account.aid];
+      if (cachedFeed && Array.isArray(cachedFeed.objects)) {
+        return cachedFeed.objects
+          .map((item) => getPost(item.post_aid))
+          .filter((p): p is CachedPost => !!p);
+      }
+    }
+    return [];
+  });
+  const [isFeedLoading, setIsFeedLoading] = useState(!!account && !feeds[account.aid]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
@@ -41,18 +57,15 @@ export default function Page({ params }: Props) {
     if (!name_id) return;
     if (currentAccountStatus === 'loading') return;
 
-    setLoading(true);
-    setHasMore(true);
-    setPosts([]);
-
-    api.post('/accounts', { name_id }).then(res => {
-      setAccount(res.data);
-    }).catch(() => {
-      setAccount(null);
-    }).finally(() => {
+    if (accounts[name_id]) {
       setLoading(false);
-    });
-  }, [name_id, currentAccountStatus]);
+    } else {
+      setLoading(true);
+      fetchAccount(name_id).finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [name_id, currentAccountStatus, fetchAccount, accounts]);
 
   const fetchFeed = useCallback(async (aid: string) => {
     if (feeds[aid]) return;
