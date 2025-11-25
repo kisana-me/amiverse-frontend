@@ -46,6 +46,7 @@ export const Modal = ({
       ref={dialogRef}
       onClick={handleBackdropClick}
       onClose={onClose}
+      style={{background: 'var(--background-color)'}}
       className={`
         backdrop:bg-black/50 backdrop:backdrop-blur-[2px]
         fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 

@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import "./item_reactions.css"
 import { PostType } from '@/types/post';
 import { Modal } from '../modal/Modal';
+import EmojiPicker from '../emoji_picker/EmojiPicker';
 
 export default function ItemReactions(post: PostType) {
   const emojiButtonRef = useRef(null)
@@ -36,11 +37,7 @@ export default function ItemReactions(post: PostType) {
             title="リアクションを選択"
             width="max-w-sm"
           >
-            <>
-              <div className="emoji-menu-grid">
-                🎉
-              </div>
-            </>
+            <EmojiPicker onEmojiSelect={itemReact} />
           </Modal>
         </div>
 

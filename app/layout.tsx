@@ -18,6 +18,7 @@ import { CurrentAccountProvider } from "@/app/providers/CurrentAccountProvider";
 import { TrendsProvider } from "@/app/providers/TrendsProvider";
 import { PostsProvider } from "@/app/providers/PostsProvider";
 import { FeedsProvider } from "@/app/providers/FeedsProvider";
+import { EmojiProvider } from "@/app/providers/EmojiProvider";
 
 export const metadata: Metadata = {
   title: "Amiverse",
@@ -41,6 +42,7 @@ export default function RootLayout({
         {/* <AccountsProvider> */}
         <PostsProvider>
         <FeedsProvider>
+        <EmojiProvider>
           <div className='wrap'>
             <Header />
             <main>
@@ -54,6 +56,7 @@ export default function RootLayout({
             <Overlay />
             <InitialLoading />
           </div>
+        </EmojiProvider>
         </FeedsProvider>
         </PostsProvider>
         {/* </AccountsProvider> */}
