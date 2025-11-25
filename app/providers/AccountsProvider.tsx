@@ -54,7 +54,7 @@ export const AccountsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const res = await api.post('/accounts', { name_id });
+      const res = await api.post('/accounts/' + name_id);
       const account = res.data as AccountType;
       
       const cachedAccount: CachedAccount = {

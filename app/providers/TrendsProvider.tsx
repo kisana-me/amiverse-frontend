@@ -1,24 +1,16 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
   useCallback,
   useState,
 } from "react";
-
-export type TrendType = {
-  category: string
-  image_url: string
-  title: string
-  overview: string
-  last_updated_at: Date
-  ranking: {
-    word: string
-    count: number
-  }[]
-}
+import { api } from "../lib/axios";
+import { TrendType } from "../../types/trend";
+import { useCurrentAccount } from "./CurrentAccountProvider";
+import { useToast } from "./ToastProvider";
 
 type TrendsContextType = {
   trends: TrendType[];
@@ -28,34 +20,46 @@ type TrendsContextType = {
 export const TrendsContext = createContext<TrendsContextType | null>(null);
 
 export function TrendsProvider({ children }: { children: React.ReactNode }) {
+  const { currentAccountStatus } = useCurrentAccount();
+  const { addToast } = useToast();
   const [ trends, setTrends ] = useState<TrendType[]>([]);
   const [ trendsLoading, setTrendsLoading ] = useState<boolean>(true);
 
   const fetchTrend = useCallback(async (category: string = "general") => {
     setTrendsLoading(true);
     try {
-      const res = await fetch(`/api/trends?category=${category}`);
-      const data = await res.json();
+      const res = await api.post('/trends');
+      const data = res.data;
       if (!data) return;
-      const newItems: TrendType[] = Array.isArray(data) ? data : [data];
-      setTrends((prev) => {
+      
+      const newItems: TrendType[] = (Array.isArray(data) ? data : [data]).map((item: any) => ({
+        ...item,
+        last_updated_at: new Date(item.last_updated_at)
+      }));
+
+      setTrends((prev: TrendType[]) => {
         const filtered = prev.filter((item) => item.category !== category);
         return [...filtered, ...newItems];
       });
     } catch (error) {
-      // Toast
+      addToast({
+        title: "トレンド取得エラー",
+        message: "トレンドの取得に失敗しました。",
+      });
       console.error("fetchTrend error:", error);
     } finally {
       setTrendsLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   useEffect(() => {
+    if (currentAccountStatus === 'loading') return;
+
     async function load() {
       await fetchTrend("general");
     }
     load();
-  }, []);
+  }, [currentAccountStatus, fetchTrend]);
 
   const value: TrendsContextType = {
     trends,

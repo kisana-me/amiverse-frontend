@@ -9,6 +9,7 @@ import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
 import { usePosts } from "@/app/providers/PostsProvider";
+import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
 type Props = {
   params: Promise<{
@@ -20,12 +21,14 @@ export default function Page({ params }: Props) {
   const { aid } = use(params);
   const router = useRouter();
   const { posts, getPost, addPosts } = usePosts();
+  const { currentAccountStatus } = useCurrentAccount();
 
   const post = posts[aid] || null;
   const [postLoading, setPostLoading] = useState<boolean>(() => !post);
 
   const fetchPost = useCallback(() => {
-    api.get('/posts/' + aid).then(res => {
+    if (currentAccountStatus === "loading") return;
+    api.post('/posts/' + aid).then(res => {
       addPosts([res.data]);
       if (res.data.replies) {
         addPosts(res.data.replies);
@@ -35,7 +38,7 @@ export default function Page({ params }: Props) {
     }).finally(() => {
       setPostLoading(false);
     });
-  }, [aid, addPosts]);
+  }, [aid, addPosts, currentAccountStatus]);
 
   useEffect(() => {
     if (!aid) return;
@@ -46,7 +49,7 @@ export default function Page({ params }: Props) {
     }
     fetchPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aid, fetchPost]);
+  }, [aid, fetchPost, currentAccountStatus]);
 
   return (
     <>
