@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { formatRelativeTime } from '@/app/lib/format_time'
-import { TrendType } from '@/app/providers/TrendsProvider'
+import { TrendType } from '@/types/trend'
 import './style.css'
 
 export default function TrendList(trend: TrendType) {
