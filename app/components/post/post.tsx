@@ -5,6 +5,7 @@ import Link from 'next/link'
 import "./post.css"
 
 import ItemAccount from './item_account'
+import ItemQuote from './item_quote'
 import ItemReactions from './item_reactions'
 import ItemConsole from './item_console'
 import MediaViewer from '../media_viewer/MediaViewer'
@@ -69,6 +70,7 @@ export default function Post(post: PostType) {
               ))}
             </div>
           )}
+          {post.quote && <ItemQuote quote={post.quote} />}
         </div>
         <div className='item-info item-bottom-info'>
           <div className='ibi-left'>
