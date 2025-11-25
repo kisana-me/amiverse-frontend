@@ -15,7 +15,6 @@ export default function Aside() {
         {/* <TrendsMiniList /> */}
         <Link href='/'>もっと見る</Link>
         <br />
-        ログイン / サインアップ
       </div>
       {<Footer />}
     </aside>

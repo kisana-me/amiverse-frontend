@@ -16,6 +16,9 @@ export type AccountType = {
   following_count?: number;
   posts_count?: number;
 
+  is_following?: boolean;
+  is_followed?: boolean;
+
   ring_color?: string;
   status_rb_color?: string;
 

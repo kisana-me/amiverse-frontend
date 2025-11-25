@@ -28,7 +28,7 @@ export default function Page({ params }: Props) {
 }
 
 function AccountContent({ name_id }: { name_id: string }) {
-  const { accounts, fetchAccount } = useAccounts();
+  const { accounts, fetchAccount, updateAccount } = useAccounts();
 
   const [loading, setLoading] = useState<boolean>(!accounts[name_id]);
   const account = accounts[name_id] || null;
@@ -166,6 +166,37 @@ function AccountContent({ name_id }: { name_id: string }) {
     }
   };
 
+  const handleFollow = async () => {
+    if (!account) return;
+
+    const isFollowing = account.is_following;
+    const originalFollowersCount = account.followers_count || 0;
+
+    // Optimistic update
+    updateAccount(name_id, {
+      is_following: !isFollowing,
+      followers_count: isFollowing ? originalFollowersCount - 1 : originalFollowersCount + 1,
+    });
+
+    try {
+      if (isFollowing) {
+        await api.delete(`/accounts/${account.aid}/follow`);
+      } else {
+        await api.post(`/accounts/${account.aid}/follow`);
+      }
+    } catch {
+      // Revert on error
+      updateAccount(name_id, {
+        is_following: isFollowing,
+        followers_count: originalFollowersCount,
+      });
+      addToast({
+        title: "エラー",
+        message: "フォロー操作に失敗しました",
+      });
+    }
+  };
+
   return (
     <>
       <MainHeader>
@@ -232,7 +263,16 @@ function AccountContent({ name_id }: { name_id: string }) {
                 <button className="ap-button">🍭</button>
                 <button className="ap-button">❤️</button>
                 <button className="ap-button">🤞</button>
-                <button className="ap-button">Follow</button>
+                <button 
+                  className={`ap-button ${account.is_following ? 'active' : ''}`} 
+                  onClick={handleFollow}
+                  style={{
+                    backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--accent-color)',
+                    color: account.is_following ? 'var(--text-primary)' : '#fff',
+                  }}
+                >
+                  {account.is_following ? 'Following' : 'Follow'}
+                </button>
               </div>
 
               {account.badges && account.badges.length > 0 && (

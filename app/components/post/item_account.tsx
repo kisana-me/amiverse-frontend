@@ -40,7 +40,7 @@ export default function ItemAccount(post: PostType) {
           </div>
         </Link>
         <div className="iai-others">
-        <button className="iai-button" onClick={()=>console.log("button clicked!")}>フォロー</button>
+        {/* <button className="iai-button" onClick={()=>console.log("button clicked!")}>フォロー</button> */}
         </div>
       </div>
     </>
