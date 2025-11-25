@@ -4,11 +4,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
 import { useToast } from '@/app/providers/ToastProvider';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { api } from '../lib/axios';
 import MainHeader from '../components/main_header/MainHeader';
 
-export default function SignInPage() {
+function SignupContent() {
   const router = useRouter();
   const { addToast } = useToast();
   const { currentAccountStatus } = useCurrentAccount();
@@ -83,3 +83,11 @@ export default function SignInPage() {
     </>
   );
 };
+
+export default function Page() {
+  return (
+    <Suspense>
+      <SignupContent />
+    </Suspense>
+  );
+}

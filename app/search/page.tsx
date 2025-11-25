@@ -1,7 +1,7 @@
 "use client";
 
 import "./style.css";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import MainHeader from '../components/main_header/MainHeader';
 import { api } from "@/app/lib/axios";
@@ -10,7 +10,7 @@ import Feed from "@/app/components/feed/feed";
 import { useToast } from "@/app/providers/ToastProvider";
 import { FeedItemType } from "@/types/feed";
 
-export default function Page() {
+function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('query');
@@ -180,5 +180,13 @@ export default function Page() {
         </div>
       )}
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <SearchContent />
+    </Suspense>
   );
 }
