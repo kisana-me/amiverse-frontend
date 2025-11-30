@@ -21,7 +21,7 @@ export default function Page() {
   }, [currentAccountStatus, router, addToast]);
 
   const handleSuccess = () => {
-    router.push('/dashboard');
+    router.push('/');
   };
 
   if (currentAccountStatus !== 'signed_in') {

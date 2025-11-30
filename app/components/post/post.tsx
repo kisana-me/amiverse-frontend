@@ -52,7 +52,7 @@ export default function Post(post: PostType) {
         <div className="item-content">
           <ItemContent content={post.content} />
           {post.media && post.media.length > 0 && (
-            <div className={`item-content-images images-${Math.min(post.media.length, 4)}`}>
+            <div className={`item-content-images images-${Math.min(post.media.length, 9)}`}>
               {post.media.map((media, index) => (
                 <div key={media.aid} className="item-content-image-wrapper" onClick={() => openViewer(index)}>
                   {media.type === 'image' ? (
