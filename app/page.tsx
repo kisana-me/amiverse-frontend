@@ -7,17 +7,33 @@ import { useFeeds, FeedTypeKey } from "@/app/providers/FeedsProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 import Feed from "@/app/components/feed/feed";
 import { Modal } from "@/app/components/modal/Modal";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PostType } from "@/types/post"
 import { FeedItemType } from "@/types/feed"
 import { api } from "@/app/lib/axios";
 import Link from "next/link";
 
-export default function Home() {
+function HomeContent() {
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
   const { addFeed, appendFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
   const { currentAccountStatus } = useCurrentAccount();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Valid tab values
+  const validTabs: FeedTypeKey[] = ['index', 'follow', 'current'];
+
+  // Initialize feed type from URL query parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && validTabs.includes(tabParam as FeedTypeKey)) {
+      setCurrentFeedType(tabParam as FeedTypeKey);
+    }
+    // Only run on mount and when searchParams changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const [posts, setPosts] = useState<PostType[]>(() => {
     const cachedFeed = feeds[currentFeedType];
@@ -156,6 +172,9 @@ export default function Home() {
       return;
     }
     setCurrentFeedType(type);
+    // Update URL with new tab parameter (use 'index' as default, so omit it from URL)
+    const newUrl = type === 'index' ? '/' : `/?tab=${type}`;
+    router.replace(newUrl);
   };
 
   const tabStyle = (type: string) => ({
@@ -232,5 +251,13 @@ export default function Home() {
         </div>
       </Modal>
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }
