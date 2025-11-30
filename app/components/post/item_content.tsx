@@ -96,7 +96,7 @@ export default function ItemContent({ content }: ItemContentProps) {
         parts.push(
           <Link
             key={`${lineIndex}-${match.index}`}
-            href={`/search?q=${query}`}
+            href={`/search?query=${query}`}
             onClick={(e) => e.stopPropagation()}
           >
             {tagText}
