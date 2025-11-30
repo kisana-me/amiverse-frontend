@@ -142,7 +142,6 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
             disabled={isSubmitting}
           >
             <option value="opened">全体公開</option>
-            <option value="closed">非公開</option>
           </select>
         </div>
 
