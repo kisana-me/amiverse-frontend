@@ -1,0 +1,26 @@
+.item-content-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.item-content-text a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.item-content-text a:hover {
+  text-decoration: underline;
+}
+
+.item-content-more {
+  color: var(--link-color);
+  cursor: pointer;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.item-content-more:hover {
+  text-decoration: underline;
+}

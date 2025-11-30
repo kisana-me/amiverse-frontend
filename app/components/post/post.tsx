@@ -8,6 +8,7 @@ import ItemAccount from './item_account'
 import ItemQuote from './item_quote'
 import ItemReactions from './item_reactions'
 import ItemConsole from './item_console'
+import ItemContent from './item_content'
 import MediaViewer from '../media_viewer/MediaViewer'
 
 import { formatRelativeTime } from '@/app/lib/format_time'
@@ -49,7 +50,7 @@ export default function Post(post: PostType) {
           </div>
         </div>
         <div className="item-content">
-          {post.content}
+          <ItemContent content={post.content} />
           {post.media && post.media.length > 0 && (
             <div className={`item-content-images images-${Math.min(post.media.length, 4)}`}>
               {post.media.map((media, index) => (
