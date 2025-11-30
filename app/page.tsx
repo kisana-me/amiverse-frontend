@@ -14,6 +14,9 @@ import { FeedItemType } from "@/types/feed"
 import { api } from "@/app/lib/axios";
 import Link from "next/link";
 
+// Valid tab values for URL query parameter
+const VALID_TABS: FeedTypeKey[] = ['index', 'follow', 'current'];
+
 function HomeContent() {
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
@@ -22,18 +25,13 @@ function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Valid tab values
-  const validTabs: FeedTypeKey[] = ['index', 'follow', 'current'];
-
   // Initialize feed type from URL query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && validTabs.includes(tabParam as FeedTypeKey)) {
+    if (tabParam && VALID_TABS.includes(tabParam as FeedTypeKey)) {
       setCurrentFeedType(tabParam as FeedTypeKey);
     }
-    // Only run on mount and when searchParams changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, setCurrentFeedType]);
 
   const [posts, setPosts] = useState<PostType[]>(() => {
     const cachedFeed = feeds[currentFeedType];
@@ -256,7 +254,7 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <HomeContent />
     </Suspense>
   );
