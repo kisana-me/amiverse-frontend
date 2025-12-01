@@ -7,7 +7,7 @@ type MediaType = {
   url: string;
   aid?: string;
   name?: string;
-  type: 'image' | 'video';
+  type: 'image' | 'video' | 'drawing';
 };
 
 interface MediaViewerProps {
@@ -209,7 +209,7 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
         >
           {mediaList.map((media, index) => (
             <div key={media.aid || index} className="w-full h-full flex-shrink-0 flex items-center justify-center">
-              {media.type === 'image' ? (
+              {media.type === 'image' || media.type === 'drawing' ? (
                 <img 
                   src={media.url} 
                   alt={media.name || "Preview"}
@@ -217,8 +217,11 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
                   style={index === currentIndex ? { 
                     transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                     cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                    transition: isDragging ? 'none' : 'transform 0.1s ease-out'
-                  } : {}}
+                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                    imageRendering: media.type === 'drawing' ? 'pixelated' : undefined
+                  } : {
+                    imageRendering: media.type === 'drawing' ? 'pixelated' : undefined
+                  }}
                   draggable={false}
                   onClick={(e) => e.stopPropagation()}
                 />

@@ -8,7 +8,7 @@ import { useFeeds } from '@/app/providers/FeedsProvider';
 import { usePosts } from '@/app/providers/PostsProvider';
 import { PostType } from '@/types/post';
 import Post from './post';
-import CanvasEditor from './CanvasEditor';
+import DrawingEditor from './DrawingEditor';
 import "./form.css";
 
 interface PostFormProps {
@@ -25,21 +25,21 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
   const [visibility, setVisibility] = useState('opened');
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCanvasOpen, setIsCanvasOpen] = useState(false);
-  const [canvasData, setCanvasData] = useState<{ blob: Blob, packed: string, previewUrl: string } | null>(null);
+  const [isDrawingOpen, setIsDrawingOpen] = useState(false);
+  const [drawingData, setDrawingData] = useState<{ blob: Blob, packed: string, previewUrl: string, name: string, description: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addToast } = useToast();
 
-  const handleCanvasSave = (blob: Blob, packed: string) => {
+  const handleDrawingSave = (blob: Blob, packed: string, name: string, description: string) => {
     const previewUrl = URL.createObjectURL(blob);
-    setCanvasData({ blob, packed, previewUrl });
-    setIsCanvasOpen(false);
+    setDrawingData({ blob, packed, previewUrl, name, description });
+    setIsDrawingOpen(false);
   };
 
-  const handleRemoveCanvas = () => {
-    if (canvasData) {
-      URL.revokeObjectURL(canvasData.previewUrl);
-      setCanvasData(null);
+  const handleRemoveDrawing = () => {
+    if (drawingData) {
+      URL.revokeObjectURL(drawingData.previewUrl);
+      setDrawingData(null);
     }
   };
 
@@ -59,7 +59,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
   };
 
   const handleSubmit = async () => {
-    if (!content && mediaFiles.length === 0 && !canvasData) return;
+    if (!content && mediaFiles.length === 0 && !drawingData) return;
     
     setIsSubmitting(true);
     const formData = new FormData();
@@ -73,8 +73,11 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
       formData.append('post[quote_aid]', quotePost.aid);
     }
 
-    if (canvasData) {
-      formData.append('post[canvas_data]', canvasData.packed);
+    if (drawingData) {
+      // Send as array of attributes to match backend expectation
+      formData.append('post[drawing_attributes][data]', drawingData.packed);
+      formData.append('post[drawing_attributes][name]', drawingData.name || '');
+      formData.append('post[drawing_attributes][description]', drawingData.description || '');
     }
 
     mediaFiles.forEach((file) => {
@@ -148,15 +151,15 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         </div>
       )}
 
-      {canvasData && (
+      {drawingData && (
         <div className="post-form-media-preview">
           <div className="media-preview-item" style={{ width: '100%', maxWidth: '320px', height: 'auto', aspectRatio: '320/120' }}>
             <img 
-              src={canvasData.previewUrl} 
-              alt="canvas preview" 
+              src={drawingData.previewUrl} 
+              alt="drawing preview" 
               style={{ width: '100%', height: '100%', objectFit: 'contain', imageRendering: 'pixelated', backgroundColor: '#fff' }} 
             />
-            <button className="media-remove-btn" onClick={handleRemoveCanvas}>×</button>
+            <button className="media-remove-btn" onClick={handleRemoveDrawing}>×</button>
           </div>
         </div>
       )}
@@ -182,8 +185,8 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
 
           <button 
             className="file-input-label" 
-            onClick={() => setIsCanvasOpen(true)} 
-            title="キャンバス"
+            onClick={() => setIsDrawingOpen(true)} 
+            title="お絵描き"
             disabled={isSubmitting}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
           >
@@ -206,17 +209,19 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         <button
           className="post-form-submit"
           onClick={handleSubmit}
-          disabled={isSubmitting || (!content && mediaFiles.length === 0 && !canvasData)}
+          disabled={isSubmitting || (!content && mediaFiles.length === 0 && !drawingData)}
         >
           {isSubmitting ? '送信中...' : '投稿する'}
         </button>
       </div>
       
-      {isCanvasOpen && (
-        <CanvasEditor 
-          onClose={() => setIsCanvasOpen(false)} 
-          onSave={handleCanvasSave} 
-          initialData={canvasData?.packed}
+      {isDrawingOpen && (
+        <DrawingEditor 
+          onClose={() => setIsDrawingOpen(false)} 
+          onSave={handleDrawingSave} 
+          initialData={drawingData?.packed}
+          initialName={drawingData?.name}
+          initialDescription={drawingData?.description}
         />
       )}
     </div>

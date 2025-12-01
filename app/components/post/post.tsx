@@ -18,8 +18,10 @@ import { PostType } from "@/types/post";
 export default function Post(post: PostType) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerMediaList, setViewerMediaList] = useState<any[]>([]);
 
-  const openViewer = (index: number) => {
+  const openViewer = (index: number, list: any[]) => {
+    setViewerMediaList(list);
     setViewerIndex(index);
     setIsViewerOpen(true);
   };
@@ -54,7 +56,7 @@ export default function Post(post: PostType) {
           {post.media && post.media.length > 0 && (
             <div className={`item-content-images images-${Math.min(post.media.length, 9)}`}>
               {post.media.map((media, index) => (
-                <div key={media.aid} className="item-content-image-wrapper" onClick={() => openViewer(index)}>
+                <div key={media.aid} className="item-content-image-wrapper" onClick={() => openViewer(index, post.media!)}>
                   {media.type === 'image' ? (
                     <img 
                       src={media.url} 
@@ -67,6 +69,36 @@ export default function Post(post: PostType) {
                       className="item-content-image" 
                     />
                   )}
+                </div>
+              ))}
+            </div>
+          )}
+          {post.drawings && post.drawings.length > 0 && (
+            <div className="item-content-drawings" style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '4px' }}>
+              {post.drawings.map((drawing, index) => (
+                <div 
+                  key={drawing.aid} 
+                  className="item-content-drawing-wrapper" 
+                  style={{ width: '100%', maxWidth: '320px', cursor: 'pointer' }}
+                  onClick={() => openViewer(index, post.drawings!.map(d => ({
+                    url: d.image_url,
+                    aid: d.aid,
+                    name: d.name,
+                    type: 'drawing'
+                  })))}
+                >
+                  <img 
+                    src={drawing.image_url} 
+                    className="item-content-drawing" 
+                    alt="drawing"
+                    style={{ 
+                      width: '100%', 
+                      height: 'auto', 
+                      imageRendering: 'pixelated',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '4px'
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -88,9 +120,9 @@ export default function Post(post: PostType) {
         <ItemReactions {...post} />
         <ItemConsole {...post} />
         
-        {post.media && (
+        {isViewerOpen && (
           <MediaViewer
-            mediaList={post.media}
+            mediaList={viewerMediaList}
             initialIndex={viewerIndex}
             isOpen={isViewerOpen}
             onClose={() => setIsViewerOpen(false)}

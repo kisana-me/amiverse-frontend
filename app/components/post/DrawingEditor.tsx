@@ -28,13 +28,15 @@ const IconBrush = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M12 19l7-7 3 3-7 7-3-3z"></path></svg>
 );
 
-interface CanvasEditorProps {
+interface DrawingEditorProps {
   onClose: () => void;
-  onSave: (imageBlob: Blob, packedData: string) => void;
+  onSave: (imageBlob: Blob, packedData: string, name: string, description: string) => void;
   initialData?: string;
+  initialName?: string;
+  initialDescription?: string;
 }
 
-export default function CanvasEditor({ onClose, onSave, initialData }: CanvasEditorProps) {
+export default function DrawingEditor({ onClose, onSave, initialData, initialName = '', initialDescription = '' }: DrawingEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   
@@ -43,6 +45,8 @@ export default function CanvasEditor({ onClose, onSave, initialData }: CanvasEdi
   const [brushSize, setBrushSize] = useState(1);
   const [brushShape, setBrushShape] = useState<'square' | 'circle'>('square');
   const [scale, setScale] = useState(1);
+  const [name, setName] = useState(initialName);
+  const [description, setDescription] = useState(initialDescription);
   
   // Refs for mutable state (drawing/panning logic)
   const state = useRef({
@@ -387,7 +391,7 @@ export default function CanvasEditor({ onClose, onSave, initialData }: CanvasEdi
       }
       const base64Data = window.btoa(binary);
 
-      onSave(blob, base64Data);
+      onSave(blob, base64Data, name, description);
     }, 'image/png');
   };
 
@@ -396,18 +400,36 @@ export default function CanvasEditor({ onClose, onSave, initialData }: CanvasEdi
       <div className="bg-gray-900 w-full h-full max-w-6xl max-h-[90vh] rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
         
         {/* Header */}
-        <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700 shrink-0">
-          <h2 className="text-white font-bold flex items-center gap-2">
-            <IconBrush />
-            <span>Canvas Editor</span>
-          </h2>
-          <div className="flex gap-2">
-            <button onClick={onClose} className="px-3 py-1.5 rounded text-gray-300 hover:bg-gray-700 transition">
-              キャンセル
-            </button>
-            <button onClick={handleSave} className="px-4 py-1.5 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg">
-              完了
-            </button>
+        <div className="bg-gray-800 border-b border-gray-700 shrink-0">
+          <div className="px-4 py-3 flex justify-between items-center">
+            <h2 className="text-white font-bold flex items-center gap-2">
+              <IconBrush />
+              <span>Drawing Editor</span>
+            </h2>
+            <div className="flex gap-2">
+              <button onClick={onClose} className="px-3 py-1.5 rounded text-gray-300 hover:bg-gray-700 transition">
+                キャンセル
+              </button>
+              <button onClick={handleSave} className="px-4 py-1.5 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg">
+                完了
+              </button>
+            </div>
+          </div>
+          <div className="px-4 pb-3 flex gap-2">
+            <input 
+              type="text" 
+              placeholder="タイトル (任意)" 
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 text-sm flex-1"
+            />
+            <input 
+              type="text" 
+              placeholder="説明 (任意)" 
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 text-sm flex-[2]"
+            />
           </div>
         </div>
 

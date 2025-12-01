@@ -34,6 +34,14 @@ export type PostType = {
     url: string;
   }[];
 
+  drawings?: {
+    aid: string;
+    name: string;
+    description: string;
+    image_url: string;
+    created_at: string;
+  }[];
+
   account: AccountType;
 
   is_busy?: boolean;
