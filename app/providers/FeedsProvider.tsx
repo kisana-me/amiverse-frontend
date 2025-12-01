@@ -22,6 +22,7 @@ type FeedsContextType = {
   feeds: Record<string, CachedFeed>;
   addFeed: (feed: FeedType) => void;
   appendFeed: (feed: FeedType) => void;
+  prependFeedItem: (type: string, item: FeedItemType) => void;
   getFeed: (type: string) => FeedItemType[] | undefined;
   currentFeedType: FeedTypeKey;
   setCurrentFeedType: (type: FeedTypeKey) => void;
@@ -72,6 +73,22 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  const prependFeedItem = useCallback((type: string, item: FeedItemType) => {
+    setFeeds((prev) => {
+      const existing = prev[type];
+      if (existing) {
+        return {
+          ...prev,
+          [type]: {
+            objects: [item, ...existing.objects],
+            fetched_at: existing.fetched_at,
+          },
+        };
+      }
+      return prev;
+    });
+  }, []);
+
   const getFeed = useCallback((type: string) => {
     return feeds[type]?.objects;
   }, [feeds]);
@@ -80,10 +97,11 @@ export const FeedsProvider = ({ children }: { children: ReactNode }) => {
     feeds,
     addFeed,
     appendFeed,
+    prependFeedItem,
     getFeed,
     currentFeedType,
     setCurrentFeedType,
-  }), [feeds, addFeed, appendFeed, getFeed, currentFeedType]);
+  }), [feeds, addFeed, appendFeed, prependFeedItem, getFeed, currentFeedType]);
 
   return (
     <FeedsContext.Provider value={value}>

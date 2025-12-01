@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/app/lib/axios';
 import { useToast } from '@/app/providers/ToastProvider';
+import { useFeeds } from '@/app/providers/FeedsProvider';
+import { usePosts } from '@/app/providers/PostsProvider';
 import { PostType } from '@/types/post';
 import Post from './post';
 import CanvasEditor from './CanvasEditor';
@@ -15,6 +18,9 @@ interface PostFormProps {
 }
 
 export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormProps) {
+  const router = useRouter();
+  const { prependFeedItem } = useFeeds();
+  const { addPosts } = usePosts();
   const [content, setContent] = useState('');
   const [visibility, setVisibility] = useState('opened');
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
@@ -76,15 +82,21 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     });
 
     try {
-      await api.post('/posts', formData, {
+      const res = await api.post('/posts', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+      
+      const newPost = res.data;
+      addPosts([newPost]);
+      prependFeedItem('current', { type: 'post', post_aid: newPost.aid });
+
       addToast({ title: '成功', message: '投稿しました' });
       setContent('');
       setMediaFiles([]);
       if (onSuccess) onSuccess();
+      router.push('/?tab=current');
     } catch (error: any) {
       console.error(error);
       const errorMessage = error.response?.data?.errors?.join(', ') || '投稿に失敗しました';
