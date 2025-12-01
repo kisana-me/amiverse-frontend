@@ -36,6 +36,7 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
   }, []);
   
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     if (isOpen) {
       setCurrentIndex(initialIndex);
       setScale(1);
@@ -43,13 +44,13 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
       document.body.style.overflow = 'hidden';
       setIsInitialRender(true);
       // アニメーションを有効にするために少し遅延させる
-      const timer = setTimeout(() => setIsInitialRender(false), 50);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setIsInitialRender(false), 50);
     } else {
       document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
+      if (timer) clearTimeout(timer);
     };
   }, [isOpen, initialIndex]);
 
