@@ -27,6 +27,12 @@ const IconTrash = () => (
 const IconBrush = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M12 19l7-7 3 3-7 7-3-3z"></path></svg>
 );
+const IconUndo = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+);
+const IconRedo = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 3.7"></path></svg>
+);
 
 interface DrawingEditorProps {
   onClose: () => void;
@@ -43,11 +49,15 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   // State for UI
   const [tool, setTool] = useState<'pen' | 'eraser' | 'hand'>('pen');
   const [brushSize, setBrushSize] = useState(1);
-  const [brushShape, setBrushShape] = useState<'square' | 'circle'>('square');
+  const [brushShape, setBrushShape] = useState<'square' | 'circle'>('circle');
   const [scale, setScale] = useState(1);
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
   
+  // History
+  const historyRef = useRef<ImageData[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+
   // Refs for mutable state (drawing/panning logic)
   const state = useRef({
     scale: 1,
@@ -112,11 +122,55 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       }
       
       // Delay centering to ensure layout is ready
-      setTimeout(() => centerCanvas(), 100);
+      setTimeout(() => {
+        centerCanvas();
+        saveHistory();
+      }, 100);
     }
   }, []);
 
   // Helper functions
+  const saveHistory = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    const newHistory = historyRef.current.slice(0, historyIndex + 1);
+    newHistory.push(imageData);
+    
+    if (newHistory.length > 50) {
+        newHistory.shift();
+    } else {
+        setHistoryIndex(newHistory.length - 1);
+    }
+    historyRef.current = newHistory;
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        restoreCanvas(historyRef.current[newIndex]);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < historyRef.current.length - 1) {
+        const newIndex = historyIndex + 1;
+        setHistoryIndex(newIndex);
+        restoreCanvas(historyRef.current[newIndex]);
+    }
+  };
+
+  const restoreCanvas = (imageData: ImageData) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    ctx.putImageData(imageData, 0, 0);
+  };
+
   const updateTransform = () => {
     if (canvasRef.current) {
       canvasRef.current.style.transform = `translate(${state.current.panX}px, ${state.current.panY}px) scale(${state.current.scale})`;
@@ -307,6 +361,9 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   const handleEnd = () => {
+    if (state.current.isDrawing) {
+        saveHistory();
+    }
     state.current.isDrawing = false;
     state.current.isPanning = false;
     state.current.isPinching = false;
@@ -346,6 +403,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       if (ctx) {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, 320, 120);
+        saveHistory();
       }
     }
   };
@@ -396,8 +454,8 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-gray-900 w-full h-full max-w-6xl max-h-[90vh] rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-0 md:p-4">
+      <div className="bg-gray-900 w-full h-full md:h-auto md:max-w-6xl md:max-h-[90vh] md:rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
         
         {/* Header */}
         <div className="bg-gray-800 border-b border-gray-700 shrink-0">
@@ -476,8 +534,8 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
           </div>
 
           {/* Toolbar */}
-          <div className="bg-gray-800 border-t md:border-t-0 md:border-l border-gray-700 select-none shrink-0 w-full md:w-24 flex md:flex-col justify-between items-center p-2 md:p-4 gap-2 z-20">
-             <div className="flex md:flex-col gap-2 w-full md:w-auto justify-center">
+          <div className="bg-gray-800 border-t md:border-t-0 md:border-l border-gray-700 select-none shrink-0 w-full md:w-24 flex md:flex-col justify-between items-center p-2 md:p-4 gap-2 z-20 overflow-x-auto md:overflow-x-visible">
+             <div className="flex md:flex-col gap-2 w-full md:w-auto justify-center min-w-max">
                 <div className="flex md:flex-col gap-2">
                     <button 
                         onClick={() => setTool('pen')}
@@ -499,6 +557,27 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
                         title="移動"
                     >
                         <IconHand />
+                    </button>
+                </div>
+
+                <div className="w-px h-10 md:w-full md:h-px bg-gray-600 mx-1 md:mx-0 md:my-2"></div>
+
+                <div className="flex md:flex-col gap-2">
+                    <button 
+                        onClick={undo}
+                        disabled={historyIndex <= 0}
+                        className={`w-10 h-10 md:w-14 md:h-14 rounded-lg border flex justify-center items-center text-lg md:text-2xl transition ${historyIndex <= 0 ? 'bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'}`}
+                        title="元に戻す"
+                    >
+                        <IconUndo />
+                    </button>
+                    <button 
+                        onClick={redo}
+                        disabled={historyIndex >= historyRef.current.length - 1}
+                        className={`w-10 h-10 md:w-14 md:h-14 rounded-lg border flex justify-center items-center text-lg md:text-2xl transition ${historyIndex >= historyRef.current.length - 1 ? 'bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'}`}
+                        title="やり直し"
+                    >
+                        <IconRedo />
                     </button>
                 </div>
 
