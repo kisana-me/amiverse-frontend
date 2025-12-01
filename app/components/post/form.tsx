@@ -5,6 +5,7 @@ import { api } from '@/app/lib/axios';
 import { useToast } from '@/app/providers/ToastProvider';
 import { PostType } from '@/types/post';
 import Post from './post';
+import CanvasEditor from './CanvasEditor';
 import "./form.css";
 
 interface PostFormProps {
@@ -18,8 +19,23 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
   const [visibility, setVisibility] = useState('opened');
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCanvasOpen, setIsCanvasOpen] = useState(false);
+  const [canvasData, setCanvasData] = useState<{ blob: Blob, packed: string, previewUrl: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addToast } = useToast();
+
+  const handleCanvasSave = (blob: Blob, packed: string) => {
+    const previewUrl = URL.createObjectURL(blob);
+    setCanvasData({ blob, packed, previewUrl });
+    setIsCanvasOpen(false);
+  };
+
+  const handleRemoveCanvas = () => {
+    if (canvasData) {
+      URL.revokeObjectURL(canvasData.previewUrl);
+      setCanvasData(null);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -37,7 +53,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
   };
 
   const handleSubmit = async () => {
-    if (!content && mediaFiles.length === 0) return;
+    if (!content && mediaFiles.length === 0 && !canvasData) return;
     
     setIsSubmitting(true);
     const formData = new FormData();
@@ -49,6 +65,10 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     }
     if (quotePost) {
       formData.append('post[quote_aid]', quotePost.aid);
+    }
+
+    if (canvasData) {
+      formData.append('post[canvas_data]', canvasData.packed);
     }
 
     mediaFiles.forEach((file) => {
@@ -116,6 +136,19 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         </div>
       )}
 
+      {canvasData && (
+        <div className="post-form-media-preview">
+          <div className="media-preview-item" style={{ width: '100%', maxWidth: '320px', height: 'auto', aspectRatio: '320/120' }}>
+            <img 
+              src={canvasData.previewUrl} 
+              alt="canvas preview" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain', imageRendering: 'pixelated', backgroundColor: '#fff' }} 
+            />
+            <button className="media-remove-btn" onClick={handleRemoveCanvas}>×</button>
+          </div>
+        </div>
+      )}
+
       <div className="post-form-controls">
         <div className="post-form-options">
           <label className="file-input-label" title="画像/動画を追加">
@@ -135,6 +168,19 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
             />
           </label>
 
+          <button 
+            className="file-input-label" 
+            onClick={() => setIsCanvasOpen(true)} 
+            title="キャンバス"
+            disabled={isSubmitting}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z" />
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+            </svg>
+          </button>
+
           <select
             className="visibility-select"
             value={visibility}
@@ -148,11 +194,19 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         <button
           className="post-form-submit"
           onClick={handleSubmit}
-          disabled={isSubmitting || (!content && mediaFiles.length === 0)}
+          disabled={isSubmitting || (!content && mediaFiles.length === 0 && !canvasData)}
         >
           {isSubmitting ? '送信中...' : '投稿する'}
         </button>
       </div>
+      
+      {isCanvasOpen && (
+        <CanvasEditor 
+          onClose={() => setIsCanvasOpen(false)} 
+          onSave={handleCanvasSave} 
+          initialData={canvasData?.packed}
+        />
+      )}
     </div>
   );
 }
