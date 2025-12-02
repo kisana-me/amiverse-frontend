@@ -35,6 +35,18 @@ const IconRedo = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 3.7"></path></svg>
 );
 
+// Constants for touch gesture detection
+const PINCH_DETECTION_DELAY = 80; // ms to wait before starting touch drawing
+const TOUCH_MOVEMENT_THRESHOLD = 3; // pixels of movement to trigger immediate drawing
+
+interface PendingTouch {
+  x: number;
+  y: number;
+  clientX: number;
+  clientY: number;
+  timerId: ReturnType<typeof setTimeout>;
+}
+
 interface DrawingEditorProps {
   onClose: () => void;
   onSave: (imageBlob: Blob, packedData: string, name: string, description: string) => void;
@@ -79,13 +91,19 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     lastClientX: 0,
     lastClientY: 0,
     // For delayed touch drawing detection
-    pendingTouch: null as { x: number; y: number; clientX: number; clientY: number; timerId: ReturnType<typeof setTimeout> } | null,
+    pendingTouch: null as PendingTouch | null,
   });
 
-  // Mount effect for portal
+  // Mount effect for portal and cleanup
   useEffect(() => {
     setIsMounted(true);
-    return () => setIsMounted(false);
+    const stateRef = state.current;
+    return () => {
+      // Clear any pending touch timeout to prevent memory leaks
+      if (stateRef.pendingTouch) {
+        clearTimeout(stateRef.pendingTouch.timerId);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -332,7 +350,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
           plotLine(coords.x, coords.y, coords.x, coords.y);
           state.current.pendingTouch = null;
         }
-      }, 80);
+      }, PINCH_DETECTION_DELAY);
       
       state.current.pendingTouch = { x: coords.x, y: coords.y, clientX, clientY, timerId };
     } else {
@@ -411,8 +429,8 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       const dy = clientY - state.current.pendingTouch.clientY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       
-      // If moved more than 3 pixels, start drawing
-      if (distance > 3) {
+      // If moved more than threshold, start drawing
+      if (distance > TOUCH_MOVEMENT_THRESHOLD) {
         clearTimeout(state.current.pendingTouch.timerId);
         state.current.isDrawing = true;
         state.current.lastX = state.current.pendingTouch.x;
