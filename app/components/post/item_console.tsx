@@ -9,14 +9,16 @@ import PostForm from './form';
 import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
 import { api } from '@/app/lib/axios';
 import { usePosts } from '@/app/providers/PostsProvider';
+import { useToast } from '@/app/providers/ToastProvider';
 
 export default function ItemConsole(initialPost: PostType) {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
-  const { currentAccountStatus } = useCurrentAccount();
-  const { addPosts } = usePosts();
+  const { currentAccountStatus, currentAccount } = useCurrentAccount();
+  const { addPosts, removePost } = usePosts();
+  const { addToast } = useToast();
   const [post, setPost] = useState(initialPost);
 
   useEffect(() => {
@@ -30,6 +32,20 @@ export default function ItemConsole(initialPost: PostType) {
     }
     action();
   }
+
+  const handleDelete = async () => {
+    if (!confirm("本当に削除しますか？")) return;
+
+    try {
+      await api.delete(`/posts/${post.aid}`);
+      removePost(post.aid);
+      setIsPostMenuOpen(false);
+      addToast({ message: "投稿を削除しました" });
+    } catch (error) {
+      console.error("Delete failed", error);
+      addToast({ message: "削除に失敗しました" });
+    }
+  };
 
   const handleDiffuse = async () => {
     handleAction(async () => {
@@ -159,10 +175,27 @@ export default function ItemConsole(initialPost: PostType) {
           <Modal
             isOpen={isPostMenuOpen}
             onClose={() => setIsPostMenuOpen(false)}
-            title="ポストメニュー"
+            title="投稿メニュー"
           >
-            <div>
-              ブロックとかミュートとか報告とか削除とか
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div>投稿のID: {post.aid}</div>
+              <div>作成日: {new Date(post.created_at).toLocaleString()}</div>
+
+              {currentAccount?.aid === post.account.aid && (
+                <button 
+                  onClick={handleDelete}
+                  style={{ 
+                    color: 'red', 
+                    cursor: 'pointer',
+                    padding: '8px',
+                    border: '1px solid red',
+                    borderRadius: '4px',
+                    background: 'transparent'
+                  }}
+                >
+                  投稿を削除
+                </button>
+              )}
             </div>
           </Modal>
           <Modal

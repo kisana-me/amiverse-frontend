@@ -16,6 +16,7 @@ export type CachedPost = PostType & {
 type PostsContextType = {
   posts: Record<string, CachedPost>;
   addPosts: (newPosts: PostType[]) => void;
+  removePost: (aid: string) => void;
   getPost: (aid: string) => CachedPost | undefined;
 };
 
@@ -43,6 +44,17 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  const removePost = useCallback((aid: string) => {
+    setPosts((prev) => {
+      const next = { ...prev };
+      if (next[aid]) {
+        delete next[aid];
+        return next;
+      }
+      return prev;
+    });
+  }, []);
+
   const getPost = useCallback((aid: string) => {
     return posts[aid];
   }, [posts]);
@@ -50,6 +62,7 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
   const value: PostsContextType = {
     posts,
     addPosts,
+    removePost,
     getPost,
   };
 
