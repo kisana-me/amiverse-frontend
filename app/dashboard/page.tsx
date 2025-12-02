@@ -106,7 +106,7 @@ export default function Page() {
                   <span className="dashboard-stat-label">フォロー中</span>
                 </div>
                 <div className="dashboard-stat">
-                  <span className="dashboard-stat-value">{currentAccount?.statuses_count ?? 0}</span>
+                  <span className="dashboard-stat-value">{currentAccount?.posts_count ?? 0}</span>
                   <span className="dashboard-stat-label">投稿</span>
                 </div>
               </div>

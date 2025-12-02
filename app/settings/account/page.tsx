@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentAccount } from "../../providers/CurrentAccountProvider";
 import { useToast } from "../../providers/ToastProvider";
@@ -9,7 +9,7 @@ import MainHeader from "../../components/main_header/MainHeader";
 import "./style.css";
 
 export default function AccountSettingsPage() {
-  const { currentAccount, currentAccountStatus } = useCurrentAccount();
+  const { currentAccount, setCurrentAccount, currentAccountStatus } = useCurrentAccount();
   const { addToast } = useToast();
   const router = useRouter();
 
@@ -20,9 +20,25 @@ export default function AccountSettingsPage() {
     birthdate: "",
   });
   const [iconFile, setIconFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [previewIcon, setPreviewIcon] = useState<string | null>(null);
+  const [previewBanner, setPreviewBanner] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+
+  const iconInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  // 日付をYYYY-MM-DD形式に変換
+  const formatDateForInput = (dateStr: string | undefined): string => {
+    if (!dateStr) return "";
+    // すでにYYYY-MM-DD形式の場合
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    // ISO形式やその他の形式の場合
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
 
   useEffect(() => {
     if (currentAccountStatus === "signed_out") {
@@ -36,9 +52,10 @@ export default function AccountSettingsPage() {
         name: currentAccount.name || "",
         name_id: currentAccount.name_id || "",
         description: currentAccount.description || "",
-        birthdate: currentAccount.birthdate || "", // Assuming birthdate is in YYYY-MM-DD format or compatible
+        birthdate: formatDateForInput(currentAccount.birthdate),
       });
       setPreviewIcon(currentAccount.icon_url);
+      setPreviewBanner(currentAccount.banner_url || null);
     }
   }, [currentAccountStatus, currentAccount, router, addToast]);
 
@@ -49,11 +66,19 @@ export default function AccountSettingsPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleIconChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setIconFile(file);
       setPreviewIcon(URL.createObjectURL(file));
+    }
+  };
+
+  const handleBannerChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setBannerFile(file);
+      setPreviewBanner(URL.createObjectURL(file));
     }
   };
 
@@ -70,6 +95,9 @@ export default function AccountSettingsPage() {
     if (iconFile) {
       submitData.append("account[icon_file]", iconFile);
     }
+    if (bannerFile) {
+      submitData.append("account[banner_file]", bannerFile);
+    }
 
     try {
       const res = await api.post("/settings/account", submitData, {
@@ -78,19 +106,18 @@ export default function AccountSettingsPage() {
         },
       });
 
-      if (res.status === 200) {
+      if (res.status === 200 && res.data.account) {
+        // レスポンスから返ってきたアカウント情報でコンテキストを更新
+        const updatedAccount = res.data.account;
+        setCurrentAccount(updatedAccount);
+        
         addToast({
           title: "成功",
           message: "アカウント情報を更新しました",
         });
-        // Optionally refresh current account data here if the API returned it,
-        // or trigger a re-fetch in the provider.
-        // For now, we can manually update the local state if needed, but a reload or re-fetch is safer.
-        // Since the provider doesn't expose a re-fetch method directly (it uses useEffect),
-        // we might rely on the user navigating or reloading, or we could try to update the context manually
-        // if we knew the new data.
-        // Given the prompt says it returns { status: 'success' }, we don't get the new account object back.
-        // So we might want to reload the page or just leave it.
+        
+        // 更新後、アカウントページへ遷移
+        router.push("/dashboard");
       }
     } catch (error: unknown) {
       console.error(error);
@@ -145,72 +172,121 @@ export default function AccountSettingsPage() {
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="icon_file">アイコン</label>
-            {previewIcon && (
-              <img src={previewIcon} alt="Icon Preview" className="icon-preview" />
-            )}
-            <input
-              type="file"
-              id="icon_file"
-              name="icon_file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="form-input"
-            />
+          {/* プロフィールプレビューカード */}
+          <div className="settings-profile-preview">
+            {/* バナー */}
+            <div 
+              className="settings-banner-wrapper"
+              onClick={() => bannerInputRef.current?.click()}
+            >
+              {previewBanner ? (
+                <img src={previewBanner} alt="Banner Preview" className="settings-banner-image" />
+              ) : (
+                <div className="settings-banner-placeholder" />
+              )}
+              <div className="settings-banner-overlay">
+                <span className="settings-upload-icon">📷</span>
+                <span>バナーを変更</span>
+              </div>
+              <input
+                ref={bannerInputRef}
+                type="file"
+                id="banner_file"
+                name="banner_file"
+                accept="image/*"
+                onChange={handleBannerChange}
+                className="settings-file-input-hidden"
+              />
+            </div>
+
+            {/* アイコン */}
+            <div 
+              className="settings-icon-wrapper"
+              onClick={() => iconInputRef.current?.click()}
+            >
+              {previewIcon ? (
+                <img src={previewIcon} alt="Icon Preview" className="settings-icon-image" />
+              ) : (
+                <div className="settings-icon-placeholder">
+                  <span>👤</span>
+                </div>
+              )}
+              <div className="settings-icon-overlay">
+                <span className="settings-upload-icon">📷</span>
+              </div>
+              <input
+                ref={iconInputRef}
+                type="file"
+                id="icon_file"
+                name="icon_file"
+                accept="image/*"
+                onChange={handleIconChange}
+                className="settings-file-input-hidden"
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="name">名前</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="form-input"
-              required
-            />
-          </div>
+          {/* フォームフィールド */}
+          <div className="settings-form-card">
+            <div className="form-group">
+              <label htmlFor="name">名前</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="form-input"
+                placeholder="表示名を入力"
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="name_id">ユーザーID</label>
-            <input
-              type="text"
-              id="name_id"
-              name="name_id"
-              value={formData.name_id}
-              onChange={handleChange}
-              className="form-input"
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="name_id">ユーザーID</label>
+              <div className="form-input-with-prefix">
+                <span className="form-input-prefix">@</span>
+                <input
+                  type="text"
+                  id="name_id"
+                  name="name_id"
+                  value={formData.name_id}
+                  onChange={handleChange}
+                  className="form-input form-input-no-border-left"
+                  placeholder="username"
+                  required
+                />
+              </div>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="description">自己紹介</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="form-textarea"
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="description">自己紹介</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="form-textarea"
+                placeholder="自己紹介を入力..."
+                rows={4}
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="birthdate">誕生日</label>
-            <input
-              type="date"
-              id="birthdate"
-              name="birthdate"
-              value={formData.birthdate}
-              onChange={handleChange}
-              className="form-input"
-            />
+            <div className="form-group">
+              <label htmlFor="birthdate">誕生日</label>
+              <input
+                type="date"
+                id="birthdate"
+                name="birthdate"
+                value={formData.birthdate}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
           </div>
 
           <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? "保存中..." : "保存"}
+            {isSubmitting ? "保存中..." : "変更を保存"}
           </button>
         </form>
       </div>

@@ -20,11 +20,12 @@ export type CurrentAccount = {
   name: string;
   name_id: string;
   icon_url: string;
+  banner_url?: string;
   description: string;
   birthdate?: string;
   followers_count: number;
   following_count: number;
-  statuses_count: number;
+  posts_count: number;
 } | null;
 
 type CurrentAccountContextType = {
