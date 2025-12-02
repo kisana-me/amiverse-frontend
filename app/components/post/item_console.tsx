@@ -40,10 +40,10 @@ export default function ItemConsole(initialPost: PostType) {
       await api.delete(`/posts/${post.aid}`);
       removePost(post.aid);
       setIsPostMenuOpen(false);
-      addToast({ message: "投稿を削除しました" });
+      addToast({ title: "", message: "投稿を削除しました" });
     } catch (error) {
       console.error("Delete failed", error);
-      addToast({ message: "削除に失敗しました" });
+      addToast({ title: "", message: "削除に失敗しました" });
     }
   };
 
