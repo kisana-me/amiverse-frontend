@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 // Icons
 const IconPen = () => (
@@ -58,6 +59,9 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   const historyRef = useRef<ImageData[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  // State for portal mounting
+  const [isMounted, setIsMounted] = useState(false);
+
   // Refs for mutable state (drawing/panning logic)
   const state = useRef({
     scale: 1,
@@ -74,7 +78,15 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     lastY: 0,
     lastClientX: 0,
     lastClientY: 0,
+    // For delayed touch drawing detection
+    pendingTouch: null as { x: number; y: number; clientX: number; clientY: number; timerId: ReturnType<typeof setTimeout> } | null,
   });
+
+  // Mount effect for portal
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -272,6 +284,12 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     const clientY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
 
     if (isTouch && (e as React.TouchEvent).touches.length === 2) {
+      // Cancel any pending touch drawing
+      if (state.current.pendingTouch) {
+        clearTimeout(state.current.pendingTouch.timerId);
+        state.current.pendingTouch = null;
+      }
+      
       state.current.isPinching = true;
       state.current.isDrawing = false;
       state.current.isPanning = false;
@@ -299,7 +317,26 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       if (viewportRef.current) viewportRef.current.style.cursor = 'grabbing';
       state.current.lastClientX = clientX;
       state.current.lastClientY = clientY;
+    } else if (isTouch) {
+      // For touch, delay drawing start to detect potential pinch gesture
+      const coords = getLocalCoordinates(clientX, clientY);
+      state.current.lastClientX = clientX;
+      state.current.lastClientY = clientY;
+      
+      const timerId = setTimeout(() => {
+        // If still pending (no second finger detected), start drawing
+        if (state.current.pendingTouch && !state.current.isPinching) {
+          state.current.isDrawing = true;
+          state.current.lastX = coords.x;
+          state.current.lastY = coords.y;
+          plotLine(coords.x, coords.y, coords.x, coords.y);
+          state.current.pendingTouch = null;
+        }
+      }, 80);
+      
+      state.current.pendingTouch = { x: coords.x, y: coords.y, clientX, clientY, timerId };
     } else {
+      // For mouse, draw immediately
       state.current.isDrawing = true;
       const coords = getLocalCoordinates(clientX, clientY);
       state.current.lastX = coords.x;
@@ -312,6 +349,36 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
 
   const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
     const isTouch = 'touches' in e;
+    
+    // If we have 2 touches and pending touch exists, cancel it and start pinching
+    if (isTouch && (e as React.TouchEvent).touches.length === 2) {
+      // Cancel any pending touch drawing
+      if (state.current.pendingTouch) {
+        clearTimeout(state.current.pendingTouch.timerId);
+        state.current.pendingTouch = null;
+      }
+      
+      if (!state.current.isPinching) {
+        // Start pinching
+        state.current.isPinching = true;
+        state.current.isDrawing = false;
+        state.current.isPanning = false;
+        
+        const t1 = (e as React.TouchEvent).touches[0];
+        const t2 = (e as React.TouchEvent).touches[1];
+        state.current.pinchStartDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        state.current.pinchStartScale = state.current.scale;
+        
+        const centerX = (t1.clientX + t2.clientX) / 2;
+        const centerY = (t1.clientY + t2.clientY) / 2;
+        const worldPos = getWorldCoordinates(centerX, centerY);
+        state.current.pinchCenterWorldX = worldPos.x;
+        state.current.pinchCenterWorldY = worldPos.y;
+        
+        state.current.lastClientX = centerX;
+        state.current.lastClientY = centerY;
+      }
+    }
     
     if (state.current.isPinching && isTouch && (e as React.TouchEvent).touches.length === 2) {
       e.preventDefault();
@@ -334,6 +401,25 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       state.current.panY = viewportRelY - state.current.pinchCenterWorldY * newScale;
       updateTransform();
       return;
+    }
+
+    // If we have a pending touch, check if moved enough to start drawing immediately
+    if (state.current.pendingTouch && isTouch && (e as React.TouchEvent).touches.length === 1) {
+      const clientX = (e as React.TouchEvent).touches[0].clientX;
+      const clientY = (e as React.TouchEvent).touches[0].clientY;
+      const dx = clientX - state.current.pendingTouch.clientX;
+      const dy = clientY - state.current.pendingTouch.clientY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      // If moved more than 3 pixels, start drawing
+      if (distance > 3) {
+        clearTimeout(state.current.pendingTouch.timerId);
+        state.current.isDrawing = true;
+        state.current.lastX = state.current.pendingTouch.x;
+        state.current.lastY = state.current.pendingTouch.y;
+        plotLine(state.current.pendingTouch.x, state.current.pendingTouch.y, state.current.pendingTouch.x, state.current.pendingTouch.y);
+        state.current.pendingTouch = null;
+      }
     }
 
     if (!state.current.isDrawing && !state.current.isPanning) return;
@@ -361,6 +447,12 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   const handleEnd = () => {
+    // Cancel any pending touch drawing
+    if (state.current.pendingTouch) {
+      clearTimeout(state.current.pendingTouch.timerId);
+      state.current.pendingTouch = null;
+    }
+    
     if (state.current.isDrawing) {
         saveHistory();
     }
@@ -453,7 +545,10 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     }, 'image/png');
   };
 
-  return (
+  // Don't render until mounted (for portal to work with SSR)
+  if (!isMounted) return null;
+
+  const content = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-0 md:p-4">
       <div className="bg-gray-900 w-full h-full md:h-auto md:max-w-6xl md:max-h-[90vh] md:rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
         
@@ -592,7 +687,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
                 </button>
              </div>
 
-             <div className="flex flex-col items-center gap-1 w-32 md:w-full px-2">
+             <div className="flex flex-col items-center gap-1 w-32 md:w-full px-2 min-w-[120px]">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="text-[10px] text-gray-400">サイズ</span>
                     <div 
@@ -613,7 +708,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
                     max="10" 
                     value={brushSize} 
                     onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                    className="w-full h-6 bg-transparent cursor-pointer appearance-none"
+                    className="w-full h-6 bg-transparent cursor-pointer appearance-none min-w-[100px]"
                 />
                 <span className="text-xs text-blue-300 font-bold mt-1">{brushSize}px</span>
             </div>
@@ -630,4 +725,6 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }
