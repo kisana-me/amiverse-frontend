@@ -46,7 +46,11 @@ export const Modal = ({
       ref={dialogRef}
       onClick={handleBackdropClick}
       onClose={onClose}
-      style={{background: 'var(--background-color)'}}
+      style={{
+        background: 'var(--background-color)',
+        color: 'var(--font-color)',
+        boxShadow: '0 0px 14px 2px var(--inconspicuous-font-color)',
+      }}
       className={`
         backdrop:bg-black/50 backdrop:backdrop-blur-[2px]
         fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
@@ -56,9 +60,9 @@ export const Modal = ({
         open:flex open:flex-col
       `}
     >
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-        <h3 className="font-bold text-lg text-slate-900">{title}</h3>
-        <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-200 transition-colors text-slate-400 hover:text-slate-600">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300 rounded-t-xl">
+        <h3 className="font-bold text-lg">{title}</h3>
+        <button onClick={onClose} className="w-8 p-1 rounded-full cursor-pointer transition-colors hover:bg-gray-300">
           ×
         </button>
       </div>
