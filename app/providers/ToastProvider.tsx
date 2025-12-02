@@ -9,7 +9,7 @@ import {
   SetStateAction,
 } from "react";
 
-type toastType = {
+type ToastType = {
   title: string;
   message: string;
   status: "show" | "hide";
@@ -17,17 +17,17 @@ type toastType = {
 };
 
 type ToastContextType = {
-  toasts: toastType[];
-  setToasts: Dispatch<SetStateAction<toastType[]>>;
-  addToast: (toast: Pick<toastType, "title" | "message">) => void;
-  showToasts: toastType[];
+  toasts: ToastType[];
+  setToasts: Dispatch<SetStateAction<ToastType[]>>;
+  addToast: (toast: Pick<ToastType, "title" | "message">) => void;
+  showToasts: ToastType[];
   hideToast: (date: number) => void;
 };
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toasts, setToasts] = useState<toastType[]>([]);
+  const [toasts, setToasts] = useState<ToastType[]>([]);
 
   const hideToast = useCallback((date: number) => {
     setToasts((prev) =>
@@ -38,7 +38,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addToast = useCallback((toast: {title: string; message: string;}) => {
-    const newToast = {
+    const newToast: ToastType = {
       ...toast,
       status: "show" as const,
       date: Date.now(),
