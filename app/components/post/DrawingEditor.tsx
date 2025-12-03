@@ -64,6 +64,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     panX: 0,
     panY: 0,
     isDrawing: false,
+    hasDrawn: false,
     isPanning: false,
     isPinching: false,
     pinchStartDist: 0,
@@ -272,6 +273,9 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     const clientY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
 
     if (isTouch && (e as React.TouchEvent).touches.length === 2) {
+      if (state.current.isDrawing && state.current.hasDrawn) {
+        saveHistory();
+      }
       state.current.isPinching = true;
       state.current.isDrawing = false;
       state.current.isPanning = false;
@@ -301,10 +305,10 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       state.current.lastClientY = clientY;
     } else {
       state.current.isDrawing = true;
+      state.current.hasDrawn = false;
       const coords = getLocalCoordinates(clientX, clientY);
       state.current.lastX = coords.x;
       state.current.lastY = coords.y;
-      plotLine(coords.x, coords.y, coords.x, coords.y);
       state.current.lastClientX = clientX;
       state.current.lastClientY = clientY;
     }
@@ -357,11 +361,15 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       state.current.lastY = coords.y;
       state.current.lastClientX = clientX;
       state.current.lastClientY = clientY;
+      state.current.hasDrawn = true;
     }
   };
 
   const handleEnd = () => {
     if (state.current.isDrawing) {
+        if (!state.current.hasDrawn) {
+            plotLine(state.current.lastX, state.current.lastY, state.current.lastX, state.current.lastY);
+        }
         saveHistory();
     }
     state.current.isDrawing = false;
