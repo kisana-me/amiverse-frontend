@@ -13,6 +13,7 @@ import { PostType } from "@/types/post"
 import { FeedItemType } from "@/types/feed"
 import { api } from "@/app/lib/axios";
 import Link from "next/link";
+import ActionPrompt from "@/app/components/action_prompt/ActionPrompt";
 
 // Valid tab values for URL query parameter
 const VALID_TABS: FeedTypeKey[] = ['index', 'follow', 'current'];
@@ -248,6 +249,8 @@ function HomeContent() {
           </div>
         </div>
       </Modal>
+
+      <ActionPrompt />
     </>
   );
 }

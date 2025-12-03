@@ -33,7 +33,7 @@ export default function Feed({
 
   return (
     <>
-      <div className="feed">
+      <div className="feed" style={{ minHeight: '80svh'}}>
         {(() => {
           if (is_loading) {
             return (
