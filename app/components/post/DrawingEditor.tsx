@@ -217,8 +217,8 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   const drawPoint = (ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, shape: 'square' | 'circle') => {
-    const startX = Math.floor(cx - size / 2);
-    const startY = Math.floor(cy - size / 2);
+    const startX = Math.ceil(cx - size / 2);
+    const startY = Math.ceil(cy - size / 2);
 
     if (shape === 'square' || size <= 2) {
       ctx.fillRect(startX, startY, size, size);
@@ -240,10 +240,10 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
 
-    x0 = Math.round(x0);
-    y0 = Math.round(y0);
-    x1 = Math.round(x1);
-    y1 = Math.round(y1);
+    x0 = Math.floor(x0);
+    y0 = Math.floor(y0);
+    x1 = Math.floor(x1);
+    y1 = Math.floor(y1);
 
     const dx = Math.abs(x1 - x0);
     const dy = Math.abs(y1 - y0);
@@ -341,7 +341,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
     }
 
     if (!state.current.isDrawing && !state.current.isPanning) return;
-    e.preventDefault();
+    // e.preventDefault();
 
     const clientX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
     const clientY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
@@ -379,7 +379,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     const delta = -Math.sign(e.deltaY) * 0.2;
     applyZoom(delta, e.clientX, e.clientY);
   };
@@ -466,7 +466,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
       <div className="bg-gray-900 w-full h-full md:h-auto md:max-w-6xl md:max-h-[90vh] md:rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
         
         {/* Header */}
-        <div className="bg-gray-800 border-b border-gray-700 shrink-0">
+        <div className="bg-gray-800 border-b border-gray-700 shrink-0 overflow-x-auto">
           <div className="px-4 py-3 flex justify-between items-center">
             <h2 className="text-white font-bold flex items-center gap-2">
               <IconBrush />
@@ -600,7 +600,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
                 </button>
              </div>
 
-             <div className="flex flex-col items-center gap-1 w-32 md:w-full px-2">
+             <div className="flex flex-col items-center gap-1 w-32 min-w-[100px] md:w-full px-2">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="text-[10px] text-gray-400">サイズ</span>
                     <div 
@@ -628,7 +628,7 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
 
             <button 
                 onClick={handleClear}
-                className="w-12 h-10 md:w-full md:h-auto md:py-3 rounded-lg border border-red-800 bg-red-900/40 text-red-400 hover:bg-red-900/60 transition text-xs flex flex-col items-center justify-center whitespace-nowrap"
+                className="w-12 min-w-[40px] h-10 md:w-full md:h-auto md:py-3 rounded-lg border border-red-800 bg-red-900/40 text-red-400 hover:bg-red-900/60 transition text-xs flex flex-col items-center justify-center whitespace-nowrap"
             >
                 <div className="md:mb-1"><IconTrash /></div>
                 <span className="hidden md:inline">全消去</span>
