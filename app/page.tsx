@@ -19,8 +19,9 @@ export async function generateMetadata(
   }
 
   const description = 'Amiverseは、あなたの興味を広げる新しいソーシャルプラットフォームです。';
-  const imageUrl = '/static-assets/images/amiverse-1.webp';
-  const iconUrl = '/static-assets/images/amiverse-logo-400.webp';
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_FRONT_URL || 'https://amiverse.net');
+  const imageUrl = new URL('/static-assets/images/amiverse-1.webp', baseUrl).toString();
+  const iconUrl = new URL('/static-assets/images/amiverse-logo-400.webp', baseUrl).toString();
 
   return {
     title,
