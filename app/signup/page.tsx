@@ -4,9 +4,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
 import { useToast } from '@/app/providers/ToastProvider';
 import Link from 'next/link';
-import { useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import { api } from '../lib/axios';
 import MainHeader from '../components/main_header/MainHeader';
+import './style.css';
 
 function SignupContent() {
   const router = useRouter();
@@ -16,6 +17,11 @@ function SignupContent() {
   const name = searchParams.get('name');
   const name_id = searchParams.get('name_id');
   const description = searchParams.get('description');
+
+  const [formName, setFormName] = useState(name ?? '');
+  const [formNameId, setFormNameId] = useState(name_id ?? '');
+  const [formDescription, setFormDescription] = useState(description ?? '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (currentAccountStatus === 'signed_in') {
@@ -31,14 +37,17 @@ function SignupContent() {
     return null;
   }
 
+  const isNameValid = formName.length >= 1 && formName.length <= 50;
+  const isNameIdValid = /^[a-zA-Z0-9_]{5,50}$/.test(formNameId);
+  const isDescriptionValid = formDescription.length <= 500;
+  const isFormValid = isNameValid && isNameIdValid && isDescriptionValid;
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const submitName = formData.get('name');
-    const submitNameId = formData.get('name_id');
-    const submitDescription = formData.get('description');
+    if (!isFormValid || isSubmitting) return;
 
-    api.post('/signup', {account: { name: submitName, name_id: submitNameId, description: submitDescription }})
+    setIsSubmitting(true);
+    api.post('/signup', {account: { name: formName, name_id: formNameId, description: formDescription }})
       .then((response) => {
         const data = response.data;
         if (data.status === 'success') {
@@ -52,6 +61,7 @@ function SignupContent() {
         }
       })
       .catch((error) => {
+        setIsSubmitting(false);
         const data = error.response?.data;
         const errorMessage = data?.errors ? data.errors.join('\n') : 'サインアップに失敗しました';
         addToast({
@@ -61,24 +71,107 @@ function SignupContent() {
       });
   };
 
+  const getDescriptionCounterClass = () => {
+    if (formDescription.length > 500) return 'form-counter error';
+    if (formDescription.length > 450) return 'form-counter warning';
+    return 'form-counter';
+  };
+
   return (
     <>
       <MainHeader>
-        Sign Up
+        アカウント作成
       </MainHeader>
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <h1 className="text-3xl font-bold mb-6">Sign Up</h1>
-        <form onSubmit={handleSubmit}>
-          <label className="block mb-4">名前</label>
-          <input type="text" name="name" placeholder="Name" defaultValue={name ?? ''} className="border p-2 mb-4 w-64" /><br />
-          
-          <label className="block mb-4">ID</label>
-          <input type="text" name="name_id" placeholder="Name ID" defaultValue={name_id ?? ''} className="border p-2 mb-4 w-64" /><br />
-          
-          <label className="block mb-4">説明</label>
-          <textarea name="description" placeholder="Description" defaultValue={description ?? ''} className="border p-2 mb-4 w-64 h-24"></textarea><br />
-          <button type="submit" className="cursor-pointer">Sign Up</button>
-        </form>
+      <div className="signup-page">
+        
+        <div className="signup-content">
+          <div className="signup-container">
+            <div className="signup-header">
+              <h1>プロフィールを設定</h1>
+              <p>Amiverseであなたを表す情報を入力してください</p>
+            </div>
+
+            <form className="signup-form" onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">
+                  表示名
+                  <span className="form-label-required">必須</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  className="form-input"
+                  placeholder="例: たろう"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  maxLength={50}
+                />
+                <span className="form-hint">1〜50文字で入力してください</span>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  ユーザーID
+                  <span className="form-label-required">必須</span>
+                </label>
+                <input
+                  type="text"
+                  name="name_id"
+                  className="form-input"
+                  placeholder="例: taro_123"
+                  value={formNameId}
+                  onChange={(e) => setFormNameId(e.target.value)}
+                  maxLength={50}
+                />
+                <span className="form-hint">5〜50文字の半角英数字とアンダーバー(_)が使えます</span>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  自己紹介
+                  <span className="form-label-optional">任意</span>
+                </label>
+                <textarea
+                  name="description"
+                  className="form-input form-textarea"
+                  placeholder="あなたについて教えてください..."
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  maxLength={500}
+                />
+                <div className={getDescriptionCounterClass()}>
+                  {formDescription.length} / 500
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                className="signup-button"
+                disabled={!isFormValid || isSubmitting}
+              >
+                {isSubmitting ? '作成中...' : 'アカウントを作成'}
+              </button>
+            </form>
+
+            <div className="signup-tips">
+              <div className="signup-tips-title">
+                💡 ヒント
+              </div>
+              <ul>
+                <li>表示名はいつでも変更できます</li>
+                <li>ユーザーIDはあなた専用のURLになります</li>
+                <li>自己紹介は後からでも設定できます</li>
+              </ul>
+            </div>
+
+            <div className="signup-footer">
+              <p>
+                作成することで<Link href="/terms-of-service">利用規約</Link>と
+                <Link href="/privacy-policy">プライバシーポリシー</Link>に同意したことになります
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
