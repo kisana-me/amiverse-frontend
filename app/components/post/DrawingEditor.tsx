@@ -43,6 +43,15 @@ interface DrawingEditorProps {
 }
 
 export default function DrawingEditor({ onClose, onSave, initialData, initialName = '', initialDescription = '' }: DrawingEditorProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+  }, []);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   
@@ -462,7 +471,15 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-0 md:p-4">
+    <dialog 
+      ref={dialogRef}
+      className="fixed inset-0 z-9999 w-full h-full max-w-none max-h-none bg-transparent p-0 m-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm flex items-center justify-center"
+      onClose={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (e.target === dialogRef.current) onClose();
+      }}
+    >
       <div className="bg-gray-900 w-full h-full md:h-auto md:max-w-6xl md:max-h-[90vh] md:rounded-xl flex flex-col overflow-hidden shadow-2xl border border-gray-700">
         
         {/* Header */}
@@ -494,19 +511,19 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
               placeholder="説明 (任意)" 
               value={description}
               onChange={e => setDescription(e.target.value)}
-              className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 text-sm flex-[2]"
+              className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 text-sm flex-2"
             />
           </div>
         </div>
 
         {/* Main Area */}
-        <div className="flex-grow flex flex-col md:flex-row overflow-hidden relative">
+        <div className="grow flex flex-col md:flex-row overflow-hidden relative">
           
           {/* Viewport */}
           <div 
             ref={viewportRef}
             id="viewport"
-            className="flex-grow relative overflow-hidden bg-[#1a1a1a] cursor-crosshair touch-none"
+            className="grow relative overflow-hidden bg-[#1a1a1a] cursor-crosshair touch-none"
             onMouseDown={handleStart}
             onMouseMove={handleMove}
             onMouseUp={handleEnd}
@@ -626,9 +643,9 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
                 <span className="text-xs text-blue-300 font-bold mt-1">{brushSize}px</span>
             </div>
 
-            <button 
+              <button 
                 onClick={handleClear}
-                className="w-12 min-w-[40px] h-10 md:w-full md:h-auto md:py-3 rounded-lg border border-red-800 bg-red-900/40 text-red-400 hover:bg-red-900/60 transition text-xs flex flex-col items-center justify-center whitespace-nowrap"
+                className="w-12 min-w-10 h-10 md:w-full md:h-auto md:py-3 rounded-lg border border-red-800 bg-red-900/40 text-red-400 hover:bg-red-900/60 transition text-xs flex flex-col items-center justify-center whitespace-nowrap"
             >
                 <div className="md:mb-1"><IconTrash /></div>
                 <span className="hidden md:inline">全消去</span>
@@ -636,6 +653,6 @@ export default function DrawingEditor({ onClose, onSave, initialData, initialNam
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
