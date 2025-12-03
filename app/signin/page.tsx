@@ -47,7 +47,7 @@ export default function SignInPage() {
   return (
     <>
       <MainHeader>
-        アカウント作成
+        Amiverseへようこそ
       </MainHeader>
       <div className="signin-page">
         <div className="signin-container">
@@ -62,7 +62,7 @@ export default function SignInPage() {
           
           <div className="signin-header">
             <h1>Amiverseへようこそ</h1>
-            <p>320×120のドット絵を描いて共有できる、無料のソーシャルメディア</p>
+            <p>320×120の白黒ドット絵を描いて共有できる、無料のソーシャルメディア</p>
           </div>
 
           <div className="signin-features">
@@ -86,7 +86,7 @@ export default function SignInPage() {
             disabled={isLoading}
           >
             <span className="anyur-button-icon">🔐</span>
-            {isLoading ? '接続中...' : 'ANYURで始める'}
+            {isLoading ? '接続中...' : 'ANYURで続ける'}
           </button>
 
           <div className="signin-divider">

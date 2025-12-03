@@ -87,7 +87,7 @@ function SignupContent() {
         <div className="signup-content">
           <div className="signup-container">
             <div className="signup-header">
-              <h1>プロフィールを設定</h1>
+              <h1>アカウント作成</h1>
               <p>Amiverseであなたを表す情報を入力してください</p>
             </div>
 
@@ -111,7 +111,7 @@ function SignupContent() {
 
               <div className="form-group">
                 <label className="form-label">
-                  ユーザーID
+                  ID
                   <span className="form-label-required">必須</span>
                 </label>
                 <input
@@ -158,9 +158,9 @@ function SignupContent() {
                 💡 ヒント
               </div>
               <ul>
-                <li>表示名はいつでも変更できます</li>
-                <li>ユーザーIDはあなた専用のURLになります</li>
-                <li>自己紹介は後からでも設定できます</li>
+                <li>入力内容はすべていつでも変更できます</li>
+                <li>IDはあなた専用のURLになります</li>
+                <li>自己紹介は入力しなくてもよいです</li>
               </ul>
             </div>
 
