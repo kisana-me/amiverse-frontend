@@ -12,6 +12,13 @@ import { usePosts } from '@/app/providers/PostsProvider';
 export default function ItemReactions(initialPost: PostType) {
   const emojiButtonRef = useRef(null)
   const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState(false)
+  const [isReactionConfirmOpen, setIsReactionConfirmOpen] = useState(false)
+  const [pendingReactionInput, setPendingReactionInput] = useState<EmojiType | string | null>(null)
+  const [confirmModalState, setConfirmModalState] = useState({
+    title: "リアクションを解除",
+    message: "リアクションを解除しますか？",
+    actionText: "解除する"
+  });
   const [post, setPost] = useState(initialPost);
   const { addPosts } = usePosts();
 
@@ -19,9 +26,7 @@ export default function ItemReactions(initialPost: PostType) {
     setPost(initialPost);
   }, [initialPost]);
 
-  const itemReact = async (emojiInput: EmojiType | string) => {
-    setIsEmojiMenuOpen(false);
-
+  const processReaction = async (emojiInput: EmojiType | string) => {
     const emojiAid = typeof emojiInput === 'string' ? emojiInput : emojiInput.aid;
     const emojiName = typeof emojiInput === 'object' ? emojiInput.name : null;
 
@@ -85,6 +90,33 @@ export default function ItemReactions(initialPost: PostType) {
     }
   }
 
+  const itemReact = (emojiInput: EmojiType | string) => {
+    setIsEmojiMenuOpen(false);
+
+    const emojiAid = typeof emojiInput === 'string' ? emojiInput : emojiInput.aid;
+    const currentReaction = post.reactions?.find(r => r.reacted);
+    
+    if (currentReaction) {
+      setPendingReactionInput(emojiInput);
+      if (currentReaction.aid === emojiAid) {
+        setConfirmModalState({
+          title: "リアクションを解除",
+          message: "リアクションを解除しますか？",
+          actionText: "解除する"
+        });
+      } else {
+        setConfirmModalState({
+          title: "リアクションを変更",
+          message: "リアクションを変更しますか？",
+          actionText: "変更する"
+        });
+      }
+      setIsReactionConfirmOpen(true);
+    } else {
+      processReaction(emojiInput);
+    }
+  }
+
   return (
     <>
       <div className="reactions">
@@ -109,6 +141,37 @@ export default function ItemReactions(initialPost: PostType) {
             width="max-w-sm"
           >
             <EmojiPicker onEmojiSelect={itemReact} />
+          </Modal>
+
+          <Modal
+            isOpen={isReactionConfirmOpen}
+            onClose={() => setIsReactionConfirmOpen(false)}
+            title={confirmModalState.title}
+            width="max-w-sm"
+          >
+            <div className="flex flex-col gap-4">
+              <p>{confirmModalState.message}</p>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => setIsReactionConfirmOpen(false)}
+                  className="px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  キャンセル
+                </button>
+                <button 
+                  onClick={() => {
+                    if (pendingReactionInput) {
+                      processReaction(pendingReactionInput);
+                    }
+                    setIsReactionConfirmOpen(false);
+                    setPendingReactionInput(null);
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                >
+                  {confirmModalState.actionText}
+                </button>
+              </div>
+            </div>
           </Modal>
         </div>
 

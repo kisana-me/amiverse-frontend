@@ -16,6 +16,7 @@ export default function ItemConsole(initialPost: PostType) {
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
+  const [isDiffuseConfirmOpen, setIsDiffuseConfirmOpen] = useState(false)
   const { currentAccountStatus, currentAccount } = useCurrentAccount();
   const { addPosts, removePost } = usePosts();
   const { addToast } = useToast();
@@ -47,32 +48,40 @@ export default function ItemConsole(initialPost: PostType) {
     }
   };
 
-  const handleDiffuse = async () => {
-    handleAction(async () => {
-      const prevPost = { ...post };
-      const newPost = { ...post };
-      
-      if (post.is_diffused) {
-        newPost.diffuses_count = Math.max(0, post.diffuses_count - 1);
-        newPost.is_diffused = false;
+  const executeDiffuse = async () => {
+    const prevPost = { ...post };
+    const newPost = { ...post };
+    
+    if (post.is_diffused) {
+      newPost.diffuses_count = Math.max(0, post.diffuses_count - 1);
+      newPost.is_diffused = false;
+    } else {
+      newPost.diffuses_count = post.diffuses_count + 1;
+      newPost.is_diffused = true;
+    }
+
+    setPost(newPost);
+    addPosts([newPost]);
+
+    try {
+      if (prevPost.is_diffused) {
+        await api.delete(`/posts/${post.aid}/diffuse`);
       } else {
-        newPost.diffuses_count = post.diffuses_count + 1;
-        newPost.is_diffused = true;
+        await api.post(`/posts/${post.aid}/diffuse`);
       }
+    } catch (error) {
+      console.error("Diffuse failed", error);
+      setPost(prevPost);
+      addPosts([prevPost]);
+    }
+  };
 
-      setPost(newPost);
-      addPosts([newPost]);
-
-      try {
-        if (prevPost.is_diffused) {
-          await api.delete(`/posts/${post.aid}/diffuse`);
-        } else {
-          await api.post(`/posts/${post.aid}/diffuse`);
-        }
-      } catch (error) {
-        console.error("Diffuse failed", error);
-        setPost(prevPost);
-        addPosts([prevPost]);
+  const handleDiffuse = () => {
+    handleAction(() => {
+      if (post.is_diffused) {
+        setIsDiffuseConfirmOpen(true);
+      } else {
+        executeDiffuse();
       }
     });
   };
@@ -208,6 +217,34 @@ export default function ItemConsole(initialPost: PostType) {
               <Link href="/signin" style={{ color: '#1d9bf0', textDecoration: 'none' }}>
                 サインインする
               </Link>
+            </div>
+          </Modal>
+
+          <Modal
+            isOpen={isDiffuseConfirmOpen}
+            onClose={() => setIsDiffuseConfirmOpen(false)}
+            title="拡散を取り消す"
+            width="max-w-sm"
+          >
+            <div className="flex flex-col gap-4">
+              <p>拡散を取り消しますか？</p>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => setIsDiffuseConfirmOpen(false)}
+                  className="px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  キャンセル
+                </button>
+                <button 
+                  onClick={() => {
+                    executeDiffuse();
+                    setIsDiffuseConfirmOpen(false);
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                >
+                  取り消す
+                </button>
+              </div>
             </div>
           </Modal>
         </div>
