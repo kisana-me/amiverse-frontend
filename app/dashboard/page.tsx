@@ -22,11 +22,11 @@ export default function Page() {
         const data = res.data as { status: string; message: string; };
         addToast({
           title: 'サインアウトしました',
-          message: '2秒後に再読み込みします'
+          message: '1秒後に再読み込みします'
         });
         setTimeout(() => {
           window.location.href = '/';
-        }, 2000);
+        }, 1000);
       }).catch((error) => {
           addToast({
             title: 'エラー',
@@ -181,7 +181,7 @@ export default function Page() {
           <div className="dashboard-apps-grid">
             <button onClick={()=> toggleTheme()} className="dashboard-app-item">
               <div className="dashboard-app-icon">{userTheme === "light" ? "☀️" : userTheme === "dark" ? "🌙" : "💻"}</div>
-              <span className="dashboard-app-name">モード変更</span>
+              <span className="dashboard-app-name">色モード変更</span>
             </button>
             <button onClick={()=> setIsSignoutModalOpen(true)} className="dashboard-app-item">
               <div className="dashboard-app-icon">👋</div>
