@@ -128,6 +128,9 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --hover-color: #b5b5b588;
       --inconspicuous-font-color: #6b6b6b;
       --inconspicuous-background-color: #d8d8d8;
+      --accent-color: #f4212e;
+      --active-background-color: #ffffff;
+      --inactive-background-color: #eaeaea;
     }
   `
 
@@ -147,6 +150,9 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --hover-color: #ffffff88;
       --inconspicuous-font-color: #bcbcbc;
       --inconspicuous-background-color: #444444;
+      --accent-color: #f4212e;
+      --active-background-color: #373737;
+      --inactive-background-color: #000000;
     }
   `
 

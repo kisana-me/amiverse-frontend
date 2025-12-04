@@ -8,6 +8,7 @@
 }
 .reactions-content {
   display: flex;
+  height: 22px;
 }
 .reactions-content:first-child {
 }

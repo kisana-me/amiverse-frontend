@@ -3,9 +3,11 @@
 import "./style.css"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useNotifications } from "@/app/providers/NotificationsProvider";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { unreadCount } = useNotifications();
 
   return (
     <nav className='bottom-nav'>
@@ -73,7 +75,27 @@ export default function BottomNav() {
       </Link>
       <Link href='/notifications'>
         <div className='header-list-container'>
-          <div className="header-list-icon">
+          <div className="header-list-icon" style={{ position: 'relative' }}>
+            {unreadCount > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '-2px',
+                backgroundColor: 'var(--accent-color)',
+                color: 'white',
+                borderRadius: '50%',
+                width: '16px',
+                height: '16px',
+                fontSize: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                border: '2px solid var(--background-color)'
+              }}>
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </div>
+            )}
             {pathname == '/notifications' ?
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M44 17C44 15.8954 44.8954 15 46 15H54C55.1046 15 56 15.8954 56 17V20.0233C56 20.9518 56.6422 21.7493 57.5293 22.0234C64.1612 24.0728 69.6515 29.0656 72.2208 35.7778L86.9607 74.285C87.462 75.5946 86.4951 77 85.0929 77H64.8157C63.77 77 62.9174 77.8115 62.6906 78.8323C61.3979 84.65 56.207 89 50 89C43.793 89 38.6021 84.65 37.3094 78.8323C37.0826 77.8115 36.23 77 35.1843 77H14.9071C13.5049 77 12.538 75.5946 13.0393 74.285L27.7792 35.7777C30.3485 29.0656 35.8388 24.0728 42.4707 22.0234C43.3578 21.7493 44 20.9518 44 20.0233V17Z" fill="currentColor"/>
