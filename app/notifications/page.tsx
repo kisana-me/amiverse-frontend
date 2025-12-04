@@ -76,6 +76,7 @@ export default function Page() {
 const NotificationItem = ({ notification }: { notification: NotificationType }) => {
   const { action, actor, post, created_at, checked } = notification;
 
+  let title = "";
   let message = "";
   let icon = "";
 
@@ -105,11 +106,13 @@ const NotificationItem = ({ notification }: { notification: NotificationType }) 
       icon = "📢";
       break;
     case "signin":
+      title = "サインイン通知";
       message = "新しい端末からサインインがありました";
       icon = "🔑";
       break;
     case "system":
-      message = notification.content || "システムからの通知";
+      title = "システム通知";
+      message = notification.content || "";
       icon = "🔔";
       break;
     default:
@@ -139,9 +142,9 @@ const NotificationItem = ({ notification }: { notification: NotificationType }) 
         </div>
         
         <div className="notification-body">
+            {title && <div style={{ fontWeight: 'bold' }} className="notification-title">{title}</div>}
             {actor && <span className="actor-name">{actor.name}</span>}
-            <span className="notification-message">{!actor && action === 'signin' ? '' : message}</span>
-            {action === 'signin' && !actor && <span>{message}</span>}
+            <span className="notification-message">{message}</span>
         </div>
 
         {post && (
