@@ -83,6 +83,7 @@
 
 .notification-message {
   color: var(--font-color);
+  white-space: pre-line;
 }
 
 .notification-post-preview {
