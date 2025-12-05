@@ -7,6 +7,11 @@
   "theme_color": "#000000",
   "icons": [
     {
+      "src": "/static-assets/images/amiverse-logo-400.webp",
+      "sizes": "400x400",
+      "type": "image/webp"
+    },
+    {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"

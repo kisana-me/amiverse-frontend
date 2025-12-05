@@ -19,7 +19,7 @@ type NotificationsContextType = {
   isSupported: boolean;
 };
 
-const VAPID_PUBLIC_KEY = 'BJxDjmXijZoQMGfNhUVO14-VqE-UcOVCWFYydHbG3v4ogG7Q9IM0j9gckT30B3hD_XLJGsII7-gbhSkeC7VhXG8=';
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 
 const urlBase64ToUint8Array = (base64String: string) => {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -78,7 +78,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
         });
       }
 
-      await api.post('/push_subscriptions', subscription);
+      await api.post('/webpush_subscriptions', subscription);
       setPermission(Notification.permission);
     } catch (error) {
       console.error('Failed to subscribe to push notifications:', error);

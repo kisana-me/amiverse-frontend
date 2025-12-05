@@ -138,7 +138,7 @@ const NotificationItem = ({ notification }: { notification: NotificationType }) 
       break;
     default:
       message = "新しい通知があります";
-      icon = "🔔";
+      icon = "❔";
   }
 
   return (
