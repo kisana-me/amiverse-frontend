@@ -60,7 +60,9 @@ export default function Page({ params }: Props) {
       window.scrollTo(0, window.scrollY + replyHeight);
       setScrollAdjusted(true);
     }
-  }, [post?.reply, scrollAdjusted]);
+    // scrollAdjusted is intentionally checked but not in deps to avoid unnecessary re-runs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post?.reply]);
 
   return (
     <>
