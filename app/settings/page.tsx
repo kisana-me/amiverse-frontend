@@ -52,6 +52,8 @@ export default function Page() {
       <div className="settings">
         <Link href="/settings/account" className="settings-link">Account Settings</Link>
         <br />
+        <Link href="/settings/notifications" className="settings-link">Notification Settings</Link>
+        <br />
         <div>current theme mode: {userTheme}</div>
         <button onClick={()=> handleClick()}>Change theme mode</button>
         <br />

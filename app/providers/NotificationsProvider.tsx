@@ -17,6 +17,7 @@ type NotificationsContextType = {
   subscribeToPush: () => Promise<void>;
   permission: NotificationPermission;
   isSupported: boolean;
+  pushError: string | null;
 };
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
@@ -48,6 +49,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   const [unreadCount, setUnreadCount] = useState(0);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSupported, setIsSupported] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
 
   React.useEffect(() => {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -59,6 +61,8 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   const subscribeToPush = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
     if (currentAccountStatus !== "signed_in") return;
+
+    setPushError(null);
 
     try {
       // Service Workerを登録
@@ -86,6 +90,9 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
       if (error instanceof Error) {
         console.error('Error name:', error.name);
         console.error('Error message:', error.message);
+        setPushError(error.message);
+      } else {
+        setPushError('不明なエラーが発生しました');
       }
       setPermission(Notification.permission);
     }
@@ -173,6 +180,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
         subscribeToPush,
         permission,
         isSupported,
+        pushError,
       }}
     >
       {children}

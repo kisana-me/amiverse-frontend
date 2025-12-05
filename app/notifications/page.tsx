@@ -11,7 +11,7 @@ import Image from "next/image";
 import { NotificationType } from "@/types/notification";
 
 export default function Page() {
-  const { notifications, isLoading, hasMore, fetchedAt, fetchNotifications, markAsRead, permission, isSupported, subscribeToPush } = useNotifications();
+  const { notifications, isLoading, hasMore, fetchedAt, fetchNotifications, markAsRead, permission, isSupported, subscribeToPush, pushError } = useNotifications();
   const { currentAccountStatus } = useCurrentAccount();
 
   useEffect(() => {
@@ -34,26 +34,93 @@ export default function Page() {
   return (
     <>
       <MainHeader>
-        通知
+        <div className="flex items-center justify-center w-full relative">
+          <span>通知</span>
+          <div className="absolute right-0">
+            <Link href="/settings/notifications" className="p-2 rounded-full settings-link-button" title="通知設定">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </Link>
+          </div>
+        </div>
       </MainHeader>
-      
-      {isSupported && permission === 'default' && (
-        <div style={{ padding: '1rem', backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', textAlign: 'center' }}>
-          <p style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>プッシュ通知を有効にして、最新情報を受け取りましょう</p>
-          <button 
-            onClick={() => subscribeToPush()}
+
+      {isSupported && permission === 'denied' && (
+        <div style={{
+          margin: '1rem',
+          padding: '1rem',
+          backgroundColor: 'var(--inconspicuous-background-color)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '0.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.25rem', color: 'var(--font-color)' }}>
+              通知がブロックされています
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--inconspicuous-font-color)' }}>
+              ブラウザの設定から通知を許可に変更後、再読み込みしてください
+            </p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
             style={{
-              backgroundColor: 'var(--accent-color)',
-              color: 'white',
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '9999px',
+              marginLeft: '1rem',
+              padding: '0.375rem 0.75rem',
+              backgroundColor: 'var(--content-color)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--font-color)',
+              borderRadius: '0.25rem',
+              fontSize: '0.75rem',
+              fontWeight: 500,
               cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '0.9rem'
+              whiteSpace: 'nowrap'
             }}
           >
-            通知を有効にする
+            再読み込み
+          </button>
+        </div>
+      )}
+
+      {isSupported && permission === 'default' && (
+        <div style={{
+          margin: '1rem',
+          padding: '1rem',
+          backgroundColor: 'var(--inconspicuous-background-color)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '0.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.25rem', color: 'var(--font-color)' }}>
+              プッシュ通知を有効にする
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--inconspicuous-font-color)' }}>
+              最新情報を受け取るには許可が必要です
+            </p>
+          </div>
+          <button
+            onClick={() => subscribeToPush()}
+            style={{
+              marginLeft: '1rem',
+              padding: '0.375rem 0.75rem',
+              backgroundColor: 'var(--content-color)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--font-color)',
+              borderRadius: '0.25rem',
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            通知を許可
           </button>
         </div>
       )}
