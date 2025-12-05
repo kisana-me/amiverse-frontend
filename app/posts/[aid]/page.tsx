@@ -7,7 +7,7 @@ import MainHeader from "@/app/components/main_header/MainHeader";
 import { api } from "@/app/lib/axios";
 import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePosts } from "@/app/providers/PostsProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
@@ -25,6 +25,8 @@ export default function Page({ params }: Props) {
 
   const post = posts[aid] || null;
   const [postLoading, setPostLoading] = useState<boolean>(() => !post);
+  const [adjustedAid, setAdjustedAid] = useState<string | null>(null);
+  const replyWrapperRef = useRef<HTMLDivElement>(null);
 
   const fetchPost = useCallback(() => {
     if (currentAccountStatus === "loading") return;
@@ -51,6 +53,14 @@ export default function Page({ params }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aid, fetchPost, currentAccountStatus]);
 
+  useLayoutEffect(() => {
+    if (post?.reply && replyWrapperRef.current && adjustedAid !== aid) {
+      const height = replyWrapperRef.current.offsetHeight;
+      window.scrollBy(0, height);
+      setAdjustedAid(aid);
+    }
+  }, [post, aid, adjustedAid]);
+
   return (
     <>
       <MainHeader>投稿詳細</MainHeader>
@@ -58,10 +68,10 @@ export default function Page({ params }: Props) {
         post ? (
           <>
             {post?.reply && (
-              <>
+              <div ref={replyWrapperRef}>
                 <Post {...post.reply} />
                 <h2>👆返信先</h2>
-              </>
+              </div>
             )}
             <Post {...post} />
             {post.replies && (
