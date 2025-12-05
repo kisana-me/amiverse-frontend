@@ -20,6 +20,125 @@ aside {
 aside.show-aside {
   right: 0;
 }
+
+/* Content wrapper */
+.aside-content {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Section styling */
+.aside-section {
+  background: var(--content-color);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  margin: 0 15px;
+}
+
+.aside-section-title {
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--font-color);
+  margin: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Trends section */
+.aside-trend-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.aside-trend-item {
+  padding: 10px 15px;
+  color: var(--font-color);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background 0.2s ease;
+}
+
+.aside-trend-item:hover {
+  background: var(--hover-color);
+}
+
+.aside-trend-rank {
+  color: var(--inconspicuous-font-color);
+  font-size: 12px;
+}
+
+.aside-trend-word {
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--font-color);
+}
+
+.aside-trend-count {
+  color: var(--inconspicuous-font-color);
+  font-size: 12px;
+}
+
+.aside-more-link {
+  display: block;
+  padding: 12px 15px;
+  color: var(--link-color);
+  text-decoration: none;
+  text-align: center;
+  font-size: 14px;
+  border-top: 1px solid var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.aside-more-link:hover {
+  background: var(--hover-color);
+}
+
+/* Links section */
+.aside-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.aside-link-item {
+  padding: 12px 15px;
+  color: var(--font-color);
+  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.aside-link-item:hover {
+  background: var(--hover-color);
+}
+
+.aside-link-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aside-link-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.aside-link-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--font-color);
+}
+
 @media (min-width: 1000px) and (min-height: 720px) {
   aside {
     width: 260px;
