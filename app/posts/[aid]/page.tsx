@@ -7,7 +7,7 @@ import MainHeader from "@/app/components/main_header/MainHeader";
 import { api } from "@/app/lib/axios";
 import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePosts } from "@/app/providers/PostsProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
@@ -25,6 +25,8 @@ export default function Page({ params }: Props) {
 
   const post = posts[aid] || null;
   const [postLoading, setPostLoading] = useState<boolean>(() => !post);
+  const [scrollAdjusted, setScrollAdjusted] = useState<boolean>(false);
+  const replyRef = useRef<HTMLDivElement>(null);
 
   const fetchPost = useCallback(() => {
     if (currentAccountStatus === "loading") return;
@@ -47,9 +49,20 @@ export default function Page({ params }: Props) {
     } else {
       setPostLoading(true);
     }
+    setScrollAdjusted(false);
     fetchPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aid, fetchPost, currentAccountStatus]);
+
+  useLayoutEffect(() => {
+    if (!scrollAdjusted && post?.reply && replyRef.current) {
+      const replyHeight = replyRef.current.offsetHeight;
+      window.scrollTo(0, window.scrollY + replyHeight);
+      setScrollAdjusted(true);
+    }
+    // scrollAdjusted is intentionally checked but not in deps to avoid unnecessary re-runs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post?.reply]);
 
   return (
     <>
@@ -58,10 +71,10 @@ export default function Page({ params }: Props) {
         post ? (
           <>
             {post?.reply && (
-              <>
+              <div ref={replyRef}>
                 <Post {...post.reply} />
                 <h2>👆返信先</h2>
-              </>
+              </div>
             )}
             <Post {...post} />
             {post.replies && (
