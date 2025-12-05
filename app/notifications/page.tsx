@@ -11,7 +11,7 @@ import Image from "next/image";
 import { NotificationType } from "@/types/notification";
 
 export default function Page() {
-  const { notifications, isLoading, hasMore, fetchedAt, fetchNotifications, markAsRead } = useNotifications();
+  const { notifications, isLoading, hasMore, fetchedAt, fetchNotifications, markAsRead, permission, isSupported, subscribeToPush } = useNotifications();
   const { currentAccountStatus } = useCurrentAccount();
 
   useEffect(() => {
@@ -37,6 +37,27 @@ export default function Page() {
         通知
       </MainHeader>
       
+      {isSupported && permission === 'default' && (
+        <div style={{ padding: '1rem', backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', textAlign: 'center' }}>
+          <p style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>プッシュ通知を有効にして、最新情報を受け取りましょう</p>
+          <button 
+            onClick={() => subscribeToPush()}
+            style={{
+              backgroundColor: 'var(--accent-color)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '9999px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '0.9rem'
+            }}
+          >
+            通知を有効にする
+          </button>
+        </div>
+      )}
+
       <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#888', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           {fetchedAt ? `最終更新: ${new Date(fetchedAt).toLocaleString()}` : '未取得'}

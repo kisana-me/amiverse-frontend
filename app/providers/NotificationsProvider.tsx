@@ -14,7 +14,27 @@ type NotificationsContextType = {
   fetchNotifications: (refresh?: boolean) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markAsRead: () => void;
+  subscribeToPush: () => Promise<void>;
+  permission: NotificationPermission;
+  isSupported: boolean;
 };
+
+const VAPID_PUBLIC_KEY = 'BJxDjmXijZoQMGfNhUVO14-VqE-UcOVCWFYydHbG3v4ogG7Q9IM0j9gckT30B3hD_XLJGsII7-gbhSkeC7VhXG8=';
+
+const urlBase64ToUint8Array = (base64String: string) => {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 const NotificationsContext = createContext<NotificationsContextType | null>(null);
 
@@ -26,6 +46,50 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   const [cursor, setCursor] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<Date | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [isSupported, setIsSupported] = useState(false);
+
+  React.useEffect(() => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      setIsSupported(true);
+      setPermission(Notification.permission);
+    }
+  }, []);
+
+  const subscribeToPush = useCallback(async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    if (currentAccountStatus !== "signed_in") return;
+
+    try {
+      // Service Workerを登録
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      
+      // Service Workerがアクティブになるのを待つ
+      await navigator.serviceWorker.ready;
+
+      let subscription = await registration.pushManager.getSubscription();
+
+      // 既存のサブスクリプションがない場合は新規登録
+      if (!subscription) {
+        const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedVapidKey
+        });
+      }
+
+      await api.post('/push_subscriptions', subscription);
+      setPermission(Notification.permission);
+    } catch (error) {
+      console.error('Failed to subscribe to push notifications:', error);
+      // エラー詳細をログに出力
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+      }
+      setPermission(Notification.permission);
+    }
+  }, [currentAccountStatus]);
 
   const fetchUnreadCount = useCallback(async () => {
     if (currentAccountStatus !== "signed_in") return;
@@ -87,10 +151,13 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   React.useEffect(() => {
     if (currentAccountStatus === "signed_in") {
       fetchUnreadCount();
+      if (Notification.permission === 'granted') {
+        subscribeToPush();
+      }
       const interval = setInterval(fetchUnreadCount, 60000);
       return () => clearInterval(interval);
     }
-  }, [currentAccountStatus, fetchUnreadCount]);
+  }, [currentAccountStatus, fetchUnreadCount, subscribeToPush]);
 
   return (
     <NotificationsContext.Provider
@@ -103,6 +170,9 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
         fetchNotifications,
         fetchUnreadCount,
         markAsRead,
+        subscribeToPush,
+        permission,
+        isSupported,
       }}
     >
       {children}
