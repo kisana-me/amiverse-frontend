@@ -73,7 +73,9 @@ export default function Feed({
           } else {
             return (
               <>
-                <p>アイテムはありません。</p>
+                <div className="text-center p-4 text-[var(--inconspicuous-font-color)]">
+                  投稿はありません
+                </div>
               </>
             )
           }

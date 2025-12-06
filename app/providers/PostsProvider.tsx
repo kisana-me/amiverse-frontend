@@ -35,7 +35,7 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
         const existing = next[post.aid];
         // Update if not exists or if the new fetch is newer
         if (!existing || now >= existing.fetched_at) {
-          next[post.aid] = { ...post, fetched_at: now };
+          next[post.aid] = { ...(existing || {}), ...post, fetched_at: now };
           hasChanges = true;
         }
       });
