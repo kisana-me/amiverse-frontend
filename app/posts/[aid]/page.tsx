@@ -8,6 +8,7 @@ import { api } from "@/app/lib/axios";
 import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePosts } from "@/app/providers/PostsProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
@@ -77,6 +78,17 @@ export default function Page({ params }: Props) {
               </div>
             )}
             <Post {...post} />
+            <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
+              <Link href={'/posts/' + post.aid + '/quotes'} className="cursor-pointer">
+                引用数: {post.quote_count || 0}
+              </Link>
+              <div>
+                拡散数: {post.diffuses_count || 0}
+              </div>
+              <div>
+                返信数: {post.reply_count || 0}
+              </div>
+            </div>
             {post.replies && (
               <>
                 <h2>返信達👇</h2>
