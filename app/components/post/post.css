@@ -1,7 +1,55 @@
 .item {
-  padding: 10px 5px;
+  position: relative;
+  padding: 10px 7px;
   border-bottom: 1px var(--border-color) solid;
 }
+
+.reply-connector {
+  position: absolute;
+  top: 0;
+  left: 5px;
+  width: 2px;
+  height: 35px;
+  background-color: var(--border-color);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.reply-connector::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+}
+
+.thread-connector {
+  position: absolute;
+  top: 35px;
+  left: 5px;
+  width: 2px;
+  bottom: 0;
+  background-color: var(--border-color);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.thread-connector::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+}
+
 /* INFO */
 .item-info {
   display: flex;

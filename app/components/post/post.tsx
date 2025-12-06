@@ -15,7 +15,11 @@ import { formatRelativeTime } from '@/app/lib/format_time'
 
 import { PostType } from "@/types/post";
 
-export default function Post(post: PostType) {
+type PostProps = PostType & {
+  has_thread_line?: boolean;
+};
+
+export default function Post(post: PostProps) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [viewerMediaList, setViewerMediaList] = useState<any[]>([]);
@@ -37,6 +41,8 @@ export default function Post(post: PostType) {
   return (
     <>
       <div className="item">
+        {post.reply_presence && <div className="reply-connector" />}
+        {post.has_thread_line && <div className="thread-connector" />}
         <ItemAccount {...post} />
         <div className='item-info item-top-info'>
           <div className='iti-left'>

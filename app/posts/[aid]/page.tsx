@@ -73,25 +73,31 @@ export default function Page({ params }: Props) {
           <>
             {post?.reply && (
               <div ref={replyRef}>
-                <Post {...post.reply} />
-                <h2>👆返信先</h2>
+                <Post {...post.reply} has_thread_line={true} />
               </div>
             )}
-            <Post {...post} />
+            <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
+              <div>
+                👇🏻注目の投稿👇🏻
+              </div>
+            </div>
+            <Post {...post} has_thread_line={post.replies_count > 0} />
             <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
               <Link href={'/posts/' + post.aid + '/quotes'} className="cursor-pointer">
-                引用数: {post.quote_count || 0}
+                引用数: {post.quotes_count || 0}
               </Link>
               <div>
                 拡散数: {post.diffuses_count || 0}
               </div>
               <div>
-                返信数: {post.reply_count || 0}
+                返信数: {post.replies_count || 0}
+              </div>
+              <div>
+                リアクション数: {post.reactions_count || 0}
               </div>
             </div>
             {post.replies && (
               <>
-                <h2>返信達👇</h2>
                 {post.replies && <Feed posts={post.replies} />}
               </>
             )}
