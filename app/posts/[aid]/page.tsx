@@ -37,11 +37,15 @@ export default function Page({ params }: Props) {
         addPosts(res.data.replies);
       }
     }).catch(() => {
-      // setPost(null); // post is derived from posts now
+      // addToasts([{ type: 'error', message: '投稿の取得に失敗しました' }]);
     }).finally(() => {
       setPostLoading(false);
     });
   }, [aid, addPosts, currentAccountStatus]);
+
+  useEffect(() => {
+    setScrollAdjusted(false);
+  }, [aid]);
 
   useEffect(() => {
     if (!aid) return;
@@ -50,13 +54,16 @@ export default function Page({ params }: Props) {
     } else {
       setPostLoading(true);
     }
-    setScrollAdjusted(false);
     fetchPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aid, fetchPost, currentAccountStatus]);
 
   useLayoutEffect(() => {
-    if (!scrollAdjusted && post?.reply && replyRef.current) {
+    if (!scrollAdjusted && replyRef.current) {
+      if (window.scrollY > 0) {
+        setScrollAdjusted(true);
+        return;
+      }
       const replyHeight = replyRef.current.offsetHeight;
       window.scrollTo(0, window.scrollY + replyHeight);
       setScrollAdjusted(true);
@@ -71,9 +78,15 @@ export default function Page({ params }: Props) {
       {postLoading ? <SkeletonItem /> :
         post ? (
           <>
-            {post?.reply && (
+            {post?.reply ? (
               <div ref={replyRef}>
                 <Post {...post.reply} has_thread_line={true} />
+              </div>
+            ) : (post.reply_presence && 'reply' in post) && (
+              <div ref={replyRef}>
+                <div className="text-center p-4 text-[var(--inconspicuous-font-color)]">
+                  返信先が見つかりません
+                </div>
               </div>
             )}
             <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
@@ -102,7 +115,11 @@ export default function Page({ params }: Props) {
               </>
             )}
           </>
-        ) : <div>投稿が見つかりません</div>
+        )
+        :
+        <div className="text-center p-4 text-[var(--inconspicuous-font-color)]">
+          投稿が見つかりません
+        </div>
       }
     </>
   );
