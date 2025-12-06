@@ -82,19 +82,19 @@ export default function Page({ params }: Props) {
               </div>
             </div>
             <Post {...post} has_thread_line={post.replies_count > 0} />
-            <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
-              <Link href={'/posts/' + post.aid + '/quotes'} className="cursor-pointer">
+            <div className="flex flex-row gap-2 p-1 items-center overflow-x-auto" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
+              <Link href={'/posts/' + post.aid + '/quotes'} className="cursor-pointer hover:bg-[var(--hover-color)] p-1 rounded transition-colors whitespace-nowrap">
                 引用数: {post.quotes_count || 0}
               </Link>
-              <div>
+              <Link href={'/posts/' + post.aid + '/diffusions'} className="cursor-pointer hover:bg-[var(--hover-color)] p-1 rounded transition-colors whitespace-nowrap">
                 拡散数: {post.diffuses_count || 0}
-              </div>
-              <div>
+              </Link>
+              <div className="p-1 whitespace-nowrap">
                 返信数: {post.replies_count || 0}
               </div>
-              <div>
+              <Link href={'/posts/' + post.aid + '/reactions'} className="cursor-pointer hover:bg-[var(--hover-color)] p-1 rounded transition-colors whitespace-nowrap">
                 リアクション数: {post.reactions_count || 0}
-              </div>
+              </Link>
             </div>
             {post.replies && (
               <>
