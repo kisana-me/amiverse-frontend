@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { api } from "@/app/lib/axios";
 import { NotificationType } from "@/types/notification";
 import { useCurrentAccount } from "./CurrentAccountProvider";
+import { useToast } from "./ToastProvider";
 
 type NotificationsContextType = {
   notifications: NotificationType[];
@@ -41,6 +42,7 @@ const NotificationsContext = createContext<NotificationsContextType | null>(null
 
 export const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentAccountStatus } = useCurrentAccount();
+  const { addToast } = useToast();
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -62,8 +64,12 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
     } catch (error) {
       console.error('[NotificationsProvider] Error checking push notification support:', error);
       setIsSupported(false);
+      addToast({
+        title: "通知設定エラー",
+        message: "プッシュ通知の確認に失敗しました",
+      });
     }
-  }, []);
+  }, [addToast]);
 
   const subscribeToPush = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
@@ -108,8 +114,12 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
       if (typeof Notification !== 'undefined') {
         setPermission(Notification.permission);
       }
+      addToast({
+        title: "プッシュ通知登録エラー",
+        message: "プッシュ通知の登録に失敗しました",
+      });
     }
-  }, [currentAccountStatus]);
+  }, [currentAccountStatus, addToast]);
 
   const fetchUnreadCount = useCallback(async () => {
     if (currentAccountStatus !== "signed_in") return;
