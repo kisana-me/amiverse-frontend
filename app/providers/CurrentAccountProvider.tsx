@@ -83,12 +83,9 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
       try {
         await fetchCurrentAccount();
       } catch (error) {
-        // fetchCurrentAccount already handles errors internally, but catch any unexpected errors
+        // fetchCurrentAccount already handles errors internally with toast notifications
+        // This catch is only for truly unexpected errors
         console.error('[CurrentAccountProvider] Unexpected error during initial account fetch:', error);
-        addToast({
-          title: "初期化エラー",
-          message: "アカウント情報の読み込みに失敗しました",
-        });
       }
     }
     load();

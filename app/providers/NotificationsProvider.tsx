@@ -62,14 +62,11 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
         }
       }
     } catch (error) {
+      // Feature detection errors should not show toast - it's normal on unsupported browsers
       console.error('[NotificationsProvider] Error checking push notification support:', error);
       setIsSupported(false);
-      addToast({
-        title: "通知設定エラー",
-        message: "プッシュ通知の確認に失敗しました",
-      });
     }
-  }, [addToast]);
+  }, []);
 
   const subscribeToPush = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
