@@ -56,7 +56,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       const storedHue = localStorage.getItem("themeHue");
       if (storedHue) {
         const hueNum = Number(storedHue);
-        if (!isNaN(hueNum) && hueNum >= 0 && hueNum <= 360) {
+        if (!isNaN(hueNum) && hueNum >= 0 && hueNum < 360) {
           setHue(hueNum);
         } else {
           console.error("[UIProvider] Invalid themeHue in localStorage:", storedHue, "- clearing");
