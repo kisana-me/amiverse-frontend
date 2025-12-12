@@ -42,19 +42,46 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
 
   // クライアントサイドでの初期化
   useEffect(() => {
-    const storedTheme = localStorage.getItem("userTheme") as UserTheme;
-    if (storedTheme) {
-      setUserTheme(storedTheme);
-    }
+    try {
+      // Defensive parsing for theme
+      const storedTheme = localStorage.getItem("userTheme");
+      if (storedTheme && ["light", "dark", "system"].includes(storedTheme)) {
+        setUserTheme(storedTheme as UserTheme);
+      } else if (storedTheme) {
+        console.error("[UIProvider] Invalid userTheme in localStorage:", storedTheme, "- clearing");
+        localStorage.removeItem("userTheme");
+      }
 
-    const storedHue = localStorage.getItem("themeHue");
-    if (storedHue) {
-      setHue(Number(storedHue));
-    }
+      // Defensive parsing for hue
+      const storedHue = localStorage.getItem("themeHue");
+      if (storedHue) {
+        const hueNum = Number(storedHue);
+        if (!isNaN(hueNum) && hueNum >= 0 && hueNum < 360) {
+          setHue(hueNum);
+        } else {
+          console.error("[UIProvider] Invalid themeHue in localStorage:", storedHue, "- clearing");
+          localStorage.removeItem("themeHue");
+        }
+      }
 
-    const storedFontSize = localStorage.getItem("fontSize") as FontSize;
-    if (storedFontSize) {
-      setFontSize(storedFontSize);
+      // Defensive parsing for fontSize
+      const storedFontSize = localStorage.getItem("fontSize");
+      if (storedFontSize && ["small", "medium", "large"].includes(storedFontSize)) {
+        setFontSize(storedFontSize as FontSize);
+      } else if (storedFontSize) {
+        console.error("[UIProvider] Invalid fontSize in localStorage:", storedFontSize, "- clearing");
+        localStorage.removeItem("fontSize");
+      }
+    } catch (error) {
+      console.error("[UIProvider] Error reading from localStorage:", error);
+      // Safe fallback: clear all UI settings
+      try {
+        localStorage.removeItem("userTheme");
+        localStorage.removeItem("themeHue");
+        localStorage.removeItem("fontSize");
+      } catch (clearError) {
+        console.error("[UIProvider] Error clearing localStorage:", clearError);
+      }
     }
   }, []);
 
@@ -86,17 +113,29 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
   // -------------------------
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem("userTheme", userTheme);
+    try {
+      localStorage.setItem("userTheme", userTheme);
+    } catch (error) {
+      console.error("[UIProvider] Error saving userTheme to localStorage:", error);
+    }
   }, [userTheme]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem("themeHue", String(hue));
+    try {
+      localStorage.setItem("themeHue", String(hue));
+    } catch (error) {
+      console.error("[UIProvider] Error saving themeHue to localStorage:", error);
+    }
   }, [hue]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem("fontSize", fontSize);
+    try {
+      localStorage.setItem("fontSize", fontSize);
+    } catch (error) {
+      console.error("[UIProvider] Error saving fontSize to localStorage:", error);
+    }
   }, [fontSize]);
 
   const toggleTheme = () => {
