@@ -80,9 +80,16 @@ export function CurrentAccountProvider({ children }: { children: React.ReactNode
 
   useEffect(() => {
     async function load() {
-      await fetchCurrentAccount();
+      try {
+        await fetchCurrentAccount();
+      } catch (error) {
+        // fetchCurrentAccount already handles errors internally, but catch any unexpected errors
+        console.error('[CurrentAccountProvider] Unexpected error during initial account fetch:', error);
+      }
     }
     load();
+    // Note: fetchCurrentAccount is intentionally not in deps as we want this to run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value: CurrentAccountContextType = {

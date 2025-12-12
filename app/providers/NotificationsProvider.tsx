@@ -52,15 +52,26 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   const [pushError, setPushError] = useState<string | null>(null);
 
   React.useEffect(() => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setIsSupported(true);
-      setPermission(Notification.permission);
+    try {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        setIsSupported(true);
+        if (typeof Notification !== 'undefined') {
+          setPermission(Notification.permission);
+        }
+      }
+    } catch (error) {
+      console.error('[NotificationsProvider] Error checking push notification support:', error);
+      setIsSupported(false);
     }
   }, []);
 
   const subscribeToPush = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
     if (currentAccountStatus !== "signed_in") return;
+    if (typeof Notification === 'undefined') {
+      console.error('[NotificationsProvider] Notification API not available');
+      return;
+    }
 
     setPushError(null);
 
@@ -85,16 +96,18 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
       await api.post('/webpush_subscriptions', subscription);
       setPermission(Notification.permission);
     } catch (error) {
-      console.error('Failed to subscribe to push notifications:', error);
+      console.error('[NotificationsProvider] Failed to subscribe to push notifications:', error);
       // エラー詳細をログに出力
       if (error instanceof Error) {
-        console.error('Error name:', error.name);
-        console.error('Error message:', error.message);
+        console.error('[NotificationsProvider] Error name:', error.name);
+        console.error('[NotificationsProvider] Error message:', error.message);
         setPushError(error.message);
       } else {
         setPushError('不明なエラーが発生しました');
       }
-      setPermission(Notification.permission);
+      if (typeof Notification !== 'undefined') {
+        setPermission(Notification.permission);
+      }
     }
   }, [currentAccountStatus]);
 
@@ -158,8 +171,12 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   React.useEffect(() => {
     if (currentAccountStatus === "signed_in") {
       fetchUnreadCount();
-      if (Notification.permission === 'granted') {
-        subscribeToPush();
+      try {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          subscribeToPush();
+        }
+      } catch (error) {
+        console.error('[NotificationsProvider] Error checking Notification permission:', error);
       }
       const interval = setInterval(fetchUnreadCount, 60000);
       return () => clearInterval(interval);
