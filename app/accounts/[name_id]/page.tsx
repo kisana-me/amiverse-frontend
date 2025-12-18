@@ -15,6 +15,7 @@ import { FeedItemType } from "@/types/feed";
 import { useToast } from "@/app/providers/ToastProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 import { useAccounts } from "@/app/providers/AccountsProvider";
+import ItemContent from "@/app/components/post/item_content";
 
 type Props = {
   params: Promise<{
@@ -260,9 +261,6 @@ function AccountContent({ name_id }: { name_id: string }) {
               </div>
 
               <div className="ap-buttons">
-                <button className="ap-button">🍭</button>
-                <button className="ap-button">❤️</button>
-                <button className="ap-button">🤞</button>
                 <button 
                   className={`ap-button ${account.is_following ? 'active' : ''}`} 
                   onClick={handleFollow}
@@ -296,7 +294,9 @@ function AccountContent({ name_id }: { name_id: string }) {
             </div>
 
             <div className="account-profile">
-              <div className="account-profile-summary">{account.description}</div>
+              <div className="account-profile-summary">
+                <ItemContent content={account.description} />
+              </div>
               <div className="account-profile-keyvalues">
                 {/* 場所の情報は型定義にないため省略 */}
                 {account.birthdate && (
