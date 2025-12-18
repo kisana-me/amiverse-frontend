@@ -295,7 +295,7 @@ function AccountContent({ name_id }: { name_id: string }) {
 
             <div className="account-profile">
               <div className="account-profile-summary">
-                <ItemContent content={account.description} />
+                <ItemContent content={account.description || ''} />
               </div>
               <div className="account-profile-keyvalues">
                 {/* 場所の情報は型定義にないため省略 */}
