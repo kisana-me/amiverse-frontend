@@ -13,7 +13,7 @@ export default function ItemContent({ content }: ItemContentProps) {
 
   if (!content) return null;
 
-  const lines = content.split('\n');
+  const lines = content.split(/\r?\n/);
   const isLongContent = content.length > 600;
   const isManyLines = lines.length > 16;
   const shouldTruncate = isLongContent || isManyLines;
@@ -27,10 +27,14 @@ export default function ItemContent({ content }: ItemContentProps) {
     if (textToShow.length > 600) {
       textToShow = textToShow.substring(0, 600) + '...';
     }
-    displayLines = textToShow.split('\n');
+    displayLines = textToShow.split(/\r?\n/);
   }
 
   const parseLine = (line: string, lineIndex: number) => {
+    if (line === '') {
+      return <br />;
+    }
+
     const regex = /(https?:\/\/[^\s]+)|((?:^|\s)(?:@)?[a-zA-Z0-9_]+@[a-zA-Z0-9.-]+)|((?:^|\s)@[a-zA-Z0-9_]{1,100})|((?:^|\s)#[^\s]{1,250})/g;
     const parts = [];
     let lastIndex = 0;
