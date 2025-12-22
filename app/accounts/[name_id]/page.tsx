@@ -222,7 +222,16 @@ function AccountContent({ name_id }: { name_id: string }) {
               </div>
             </div>
             <div className="amh-right">
-              <button className="iai-button" onClick={() => console.log("action")}>action</button>
+              <button
+                className={`iai-button ${account.is_following ? 'active' : ''}`} 
+                onClick={handleFollow}
+                style={{
+                  backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--accent-color)',
+                  color: account.is_following ? 'var(--text-primary)' : '#fff',
+                }}
+              >
+                {account.is_following ? 'Following' : 'Follow'}
+              </button>
             </div>
           </div>
         ) : (
