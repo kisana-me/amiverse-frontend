@@ -63,7 +63,7 @@
   transition: opacity 0.2s ease;
 }
 
-.settings-banner-wrapper:hover .settings-banner-overlay {
+.settings-banner-wrapper .settings-banner-overlay {
   opacity: 1;
 }
 
@@ -108,13 +108,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   color: white;
-  font-size: 1.5rem;
+  font-size: 0.6rem;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.settings-icon-wrapper:hover .settings-icon-overlay {
+.settings-icon-wrapper .settings-icon-overlay {
   opacity: 1;
 }
 

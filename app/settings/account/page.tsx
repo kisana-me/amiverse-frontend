@@ -213,6 +213,7 @@ export default function AccountSettingsPage() {
               )}
               <div className="settings-icon-overlay">
                 <span className="settings-upload-icon">📷</span>
+                <span>アイコンを変更</span>
               </div>
               <input
                 ref={iconInputRef}
