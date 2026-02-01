@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import "./post.css"
 
-import ItemAccount from './item_account'
+import Account from '@/app/components/Account/OneLine'
 import ItemQuote from './item_quote'
 import ItemReactions from './item_reactions'
 import ItemConsole from './item_console'
@@ -43,7 +43,7 @@ export default function Post(post: PostProps) {
       <div className="item">
         {post.reply_presence && <div className="reply-connector" />}
         {post.has_thread_line && <div className="thread-connector" />}
-        <ItemAccount {...post} />
+        <Account account={post.account} />
         <div className='item-info item-top-info'>
           <div className='iti-left'>
             <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
