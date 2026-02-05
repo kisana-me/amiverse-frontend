@@ -1,17 +1,17 @@
-.ol-account {
+.aol {
   display: flex;
   height: 50px;
   overflow-x: auto;
   overflow-y: hidden;
 }
-.ol-plate {
+.aol-plate {
   color: inherit;
   text-decoration: none;
   min-width: 0px;
   display: flex;
   flex-grow: 1;
 }
-.ol-ring {
+.aol-ring {
   border: 2px solid;
   border-radius: 100%;
   position: relative;
@@ -22,50 +22,54 @@
   height: 50px;
   box-sizing: border-box;
 }
-.ol-status {
+.aol-status {
   width: 8px;
   height: 8px;
   border-radius: 100%;
   position: absolute;
 }
-.ol-icon {
+.aol-icon {
   border-radius: 100%;
   height: 42px;
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: top center;
 }
-.ol-nameplate {
+.aol-nameplate {
   margin-left: 6px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.ol-name {
+.aol-name {
   font-size: 15px;
+  font-weight: bold;
   line-height: 22px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.ol-nameplate-under {
+.aol-plate:hover .aol-name {
+  text-decoration: underline;
+}
+.aol-nameplate-under {
   display: flex;
   height: 20px;
 }
-.ol-name_id {
+.aol-name_id {
   font-size: 14px;
   line-height: 20px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.ol-others {
+.aol-others {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
-.ol-button {
+.aol-button {
   padding: 7px 10px;
   border: 0;
   border-radius: 10px;

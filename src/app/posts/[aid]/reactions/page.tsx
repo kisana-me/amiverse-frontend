@@ -1,9 +1,10 @@
 "use client";
 
 import MainHeader from "@/components/main_header/MainHeader";
-import AccountItem from "@/components/Account/account_item";
+import Account from "@/components/Account/OneLine";
 import { api } from "@/lib/axios";
 import { AccountType } from "@/types/account";
+import { EmojiType } from "@/types/emoji";
 import { use, useCallback, useEffect, useState } from "react";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
 
@@ -15,17 +16,7 @@ type Props = {
 
 type ReactionType = {
   account: AccountType;
-  emoji: {
-    aid: string;
-    name: string;
-    image_url?: string | null;
-  };
-};
-
-type EmojiType = {
-  aid: string;
-  name: string;
-  image_url?: string | null;
+  emoji: EmojiType;
 };
 
 export default function Page({ params }: Props) {
@@ -39,13 +30,13 @@ export default function Page({ params }: Props) {
   const fetchReactions = useCallback(() => {
     if (currentAccountStatus === "loading") return;
     setLoading(true);
-    
-    const payload: any = {};
+
+    const payload: { emoji_aid?: string | null } = {};
     if (selectedEmojiAid) {
       payload.emoji_aid = selectedEmojiAid;
     }
 
-    api.post('/posts/' + aid + '/reactions', payload).then((res: any) => {
+    api.post('/posts/' + aid + '/reactions', payload).then((res: { data: { reactions: ReactionType[], emojis: EmojiType[] } }) => {
       setReactions(res.data.reactions);
       // Only set emojis on first load or if we want to update the tabs dynamically
       // But usually tabs should show all available reaction types for the post
@@ -67,12 +58,12 @@ export default function Page({ params }: Props) {
   return (
     <>
       <MainHeader>リアクションしたユーザー</MainHeader>
-      
+
       {/* Tabs */}
       <div className="flex overflow-x-auto border-b border-[var(--border-color)] no-scrollbar">
         <button
           onClick={() => setSelectedEmojiAid(null)}
-          className={`px-4 py-3 whitespace-nowrap font-bold transition-colors ${
+          className={`px-4 py-3 whitespace-nowrap font-bold transition-colors cursor-pointer ${
             selectedEmojiAid === null
               ? "text-[var(--main-font-color)] border-b-2 border-[var(--main-color)]"
               : "text-[var(--inconspicuous-font-color)] hover:bg-[var(--hover-color)]"
@@ -84,7 +75,7 @@ export default function Page({ params }: Props) {
           <button
             key={emoji.aid}
             onClick={() => setSelectedEmojiAid(emoji.aid)}
-            className={`px-4 py-3 whitespace-nowrap font-bold transition-colors flex items-center ${
+            className={`px-4 py-3 whitespace-nowrap font-bold transition-colors cursor-pointer flex items-center ${
               selectedEmojiAid === emoji.aid
                 ? "text-[var(--main-font-color)] border-b-2 border-[var(--main-color)]"
                 : "text-[var(--inconspicuous-font-color)] hover:bg-[var(--hover-color)]"
@@ -105,11 +96,17 @@ export default function Page({ params }: Props) {
         <div>
           {reactions.length > 0 ? (
             reactions.map((reaction, index) => (
-              <AccountItem 
-                key={`${reaction.account.aid}-${index}`} 
-                account={reaction.account} 
-                reactionEmoji={reaction.emoji}
-              />
+              <Account key={`${reaction.account.aid}-${index}`} account={reaction.account} classes="p-1 box-content">
+                <div className="ml-2 mr-2 flex-shrink-0">
+                  {reaction.emoji ? (
+                    <>{reaction.emoji.image_url ? (
+                      <img src={reaction.emoji.image_url} className="w-6 h-6 object-contain" alt={reaction.emoji.name} />
+                    ) : (
+                      <span className="text-xl leading-none">{reaction.emoji.name}</span>
+                    )}</>
+                  ) : '?'}
+                </div>
+              </Account>
             ))
           ) : (
             <div className="p-4 text-center text-[var(--inconspicuous-font-color)]">リアクションはありません</div>
