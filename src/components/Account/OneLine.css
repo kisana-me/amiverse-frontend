@@ -1,0 +1,80 @@
+.aol {
+  display: flex;
+  height: 50px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.aol-plate {
+  color: inherit;
+  text-decoration: none;
+  min-width: 0px;
+  display: flex;
+  flex-grow: 1;
+}
+.aol-ring {
+  border: 2px solid;
+  border-radius: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  justify-content: center;
+  height: 50px;
+  box-sizing: border-box;
+}
+.aol-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  position: absolute;
+}
+.aol-icon {
+  border-radius: 100%;
+  height: 42px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  object-position: top center;
+}
+.aol-nameplate {
+  margin-left: 6px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.aol-name {
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.aol-plate:hover .aol-name {
+  text-decoration: underline;
+}
+.aol-nameplate-under {
+  display: flex;
+  height: 20px;
+}
+.aol-name_id {
+  font-size: 14px;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.aol-others {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.aol-button {
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 10px;
+  white-space: nowrap;
+  color: var(--button-font-color);
+  background: var(--button-color);
+  cursor: pointer;
+}
