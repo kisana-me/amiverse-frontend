@@ -1,63 +1,62 @@
 .item-quote {
-    border: 1px solid var(--border-color, #ccc);
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 8px;
-    background-color: var(--background-color-secondary, rgba(0,0,0,0.02));
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  padding: 12px;
+  background-color: var(--background-color-secondary, rgba(0, 0, 0, 0.02));
 }
 
 .item-quote-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .item-quote-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9em;
 }
 
 .item-quote-account {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
 }
 
 .item-quote-icon {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .item-quote-name {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .item-quote-id {
-    color: var(--text-color-secondary, #666);
-    font-size: 0.9em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  color: var(--text-color-secondary, #666);
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .item-quote-date {
-    color: var(--text-color-secondary, #666);
-    font-size: 0.85em;
-    white-space: nowrap;
-    margin-left: 8px;
+  color: var(--text-color-secondary, #666);
+  font-size: 0.85em;
+  white-space: nowrap;
+  margin-left: 8px;
 }
 
 .item-quote-content {
-    font-size: 0.95em;
-    line-height: 1.4;
-    word-break: break-word;
+  font-size: 0.95em;
+  line-height: 1.4;
+  word-break: break-word;
 }

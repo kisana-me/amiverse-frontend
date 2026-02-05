@@ -15,6 +15,13 @@ import { formatRelativeTime } from '@/lib/format_time'
 
 import { PostType } from "@/types/post";
 
+type ViewerMedia = {
+  url: string;
+  aid?: string;
+  name?: string;
+  type: 'image' | 'video' | 'drawing';
+};
+
 type PostProps = PostType & {
   has_thread_line?: boolean;
 };
@@ -22,9 +29,55 @@ type PostProps = PostType & {
 export default function Post(post: PostProps) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
-  const [viewerMediaList, setViewerMediaList] = useState<any[]>([]);
+  const [viewerMediaList, setViewerMediaList] = useState<ViewerMedia[]>([]);
 
-  const openViewer = (index: number, list: any[]) => {
+  const extractFirstYouTubeVideoId = (text: string): string | null => {
+    if (!text) return null;
+
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    let match: RegExpExecArray | null;
+    while ((match = urlRegex.exec(text)) !== null) {
+      const rawUrl = match[1];
+      const sanitizedUrl = rawUrl.replace(/[\]\)\}\"'.,!?;:]+$/g, '');
+      let parsed: URL;
+      try {
+        parsed = new URL(sanitizedUrl);
+      } catch {
+        continue;
+      }
+
+      const host = parsed.hostname.toLowerCase();
+      const isYouTube =
+        host === 'youtu.be' ||
+        host.endsWith('.youtu.be') ||
+        host === 'youtube.com' ||
+        host.endsWith('.youtube.com');
+      if (!isYouTube) continue;
+
+      let videoId: string | null = null;
+      if (host === 'youtu.be' || host.endsWith('.youtu.be')) {
+        videoId = decodeURIComponent(parsed.pathname.replace(/^\//, '')).split('/')[0] || null;
+      } else {
+        const path = parsed.pathname;
+        if (path === '/watch') {
+          videoId = parsed.searchParams.get('v');
+        } else if (path.startsWith('/shorts/')) {
+          videoId = path.split('/')[2] || null;
+        } else if (path.startsWith('/live/')) {
+          videoId = path.split('/')[2] || null;
+        } else if (path.startsWith('/embed/')) {
+          videoId = path.split('/')[2] || null;
+        }
+      }
+
+      if (!videoId) continue;
+      if (!/^[a-zA-Z0-9_-]{6,20}$/.test(videoId)) continue;
+      return videoId;
+    }
+    return null;
+  };
+
+  const openViewer = (index: number, list: ViewerMedia[]) => {
     setViewerMediaList(list);
     setViewerIndex(index);
     setIsViewerOpen(true);
@@ -37,6 +90,9 @@ export default function Post(post: PostProps) {
     followers_only: 'フォロワー公開',
     direct_only: '直接公開',
   }[v] ?? '公開状態不明');
+
+  const hasMedia = !!(post.media && post.media.length > 0);
+  const youtubeVideoId = !hasMedia ? extractFirstYouTubeVideoId(post.content) : null;
 
   return (
     <>
@@ -64,15 +120,15 @@ export default function Post(post: PostProps) {
               {post.media.map((media, index) => (
                 <div key={media.aid} className="item-content-image-wrapper" onClick={() => openViewer(index, post.media!)}>
                   {media.type === 'image' ? (
-                    <img 
-                      src={media.url} 
-                      className="item-content-image" 
-                      alt={media.name || "media"} 
+                    <img
+                      src={media.url}
+                      className="item-content-image"
+                      alt={media.name || "media"}
                     />
                   ) : (
                     <video 
-                      src={media.url} 
-                      className="item-content-image" 
+                      src={media.url}
+                      className="item-content-image"
                     />
                   )}
                 </div>
@@ -80,12 +136,12 @@ export default function Post(post: PostProps) {
             </div>
           )}
           {post.drawings && post.drawings.length > 0 && (
-            <div className="item-content-drawings" style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '4px' }}>
+            <div className="item-content-drawings" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '4px' }}>
               {post.drawings.map((drawing, index) => (
-                <div 
-                  key={drawing.aid} 
-                  className="item-content-drawing-wrapper" 
-                  style={{ width: '100%', maxWidth: '320px', cursor: 'pointer' }}
+                <div
+                  key={drawing.aid}
+                  className="item-content-drawing-wrapper"
+                  style={{ width: '100%', cursor: 'pointer' }}
                   onClick={() => openViewer(index, post.drawings!.map(d => ({
                     url: d.image_url,
                     aid: d.aid,
@@ -93,20 +149,37 @@ export default function Post(post: PostProps) {
                     type: 'drawing'
                   })))}
                 >
-                  <img 
-                    src={drawing.image_url} 
-                    className="item-content-drawing" 
+                  <img
+                    src={drawing.image_url}
+                    className="item-content-drawing"
                     alt="drawing"
-                    style={{ 
-                      width: '100%', 
-                      height: 'auto', 
+                    style={{
+                      width: '100%',
+                      height: 'auto',
                       imageRendering: 'pixelated',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '4px'
+                      border: '1px solid',
+                      borderImageSource: 'linear-gradient(45deg, hsl(0, 75%, 70%), hsl(60, 75%, 70%), hsl(120, 75%, 70%), hsl(180, 75%, 70%), hsl(240, 75%, 70%), hsl(300, 75%, 70%), hsl(360, 75%, 70%))',
+                      borderImageSlice: 1
                     }}
                   />
                 </div>
               ))}
+            </div>
+          )}
+          {!hasMedia && youtubeVideoId && (
+            <div
+              className="item-content-youtube"
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}`}
+                title="YouTube"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </div>
           )}
           {post.quote && <ItemQuote quote={post.quote} />}

@@ -16,7 +16,7 @@
 }
 
 .reply-connector::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -39,7 +39,7 @@
 }
 
 .thread-connector::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;
@@ -61,26 +61,32 @@
 .item-top-info {
   margin-top: 4px;
 }
-.iti-left {}
-.iti-right {}
-.item-bottom-info{
+.iti-left {
+}
+.iti-right {
+}
+.item-bottom-info {
   margin-bottom: 4px;
 }
-.ibi-left {}
-.ibi-right {}
+.ibi-left {
+}
+.ibi-right {
+}
 
 /* CONTENT */
 .item-content {
   min-height: 40px;
   padding: 5px;
   overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 .item-content-images {
   display: grid;
   gap: 2px;
   border-radius: 12px;
   overflow: hidden;
-  margin-top: 8px;
   width: 100%;
 }
 
@@ -112,13 +118,16 @@
   aspect-ratio: 2 / 1;
 }
 
-.images-5, .images-6 {
+.images-5,
+.images-6 {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
   aspect-ratio: 2 / 1;
 }
 
-.images-7, .images-8, .images-9 {
+.images-7,
+.images-8,
+.images-9 {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   aspect-ratio: 1 / 1;
@@ -141,4 +150,18 @@
 }
 .item-content-video {
   width: 100%;
+}
+
+.item-content-youtube {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.item-content-youtube iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
