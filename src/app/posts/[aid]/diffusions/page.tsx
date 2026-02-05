@@ -1,7 +1,7 @@
 "use client";
 
 import MainHeader from "@/components/main_header/MainHeader";
-import AccountItem from "@/components/Account/account_item";
+import Account from "@/components/Account/OneLine";
 import { api } from "@/lib/axios";
 import { AccountType } from "@/types/account";
 import { use, useCallback, useEffect, useState } from "react";
@@ -44,7 +44,7 @@ export default function Page({ params }: Props) {
         <div>
           {accounts.length > 0 ? (
             accounts.map((account) => (
-              <AccountItem key={account.aid} account={account} />
+              <Account key={account.aid} account={account} classes="p-1 box-content" />
             ))
           ) : (
             <div className="p-4 text-center text-[var(--inconspicuous-font-color)]">まだ拡散されていません</div>
