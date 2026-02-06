@@ -27,18 +27,17 @@ export default function ItemReactions(initialPost: PostType) {
   }, [initialPost]);
 
   const processReaction = async (emojiInput: EmojiType | string) => {
-    const emojiAid = typeof emojiInput === 'string' ? emojiInput : emojiInput.aid;
-    const emojiName = typeof emojiInput === 'object' ? emojiInput.name : null;
+    const emojiNameId = typeof emojiInput === 'string' ? emojiInput : emojiInput.name_id;
 
     const currentReaction = post.reactions?.find(r => r.reacted);
-    const isRemoving = currentReaction?.aid === emojiAid;
+    const isRemoving = currentReaction?.name_id === emojiNameId;
 
     const prevPost = { ...post };
     const newPost = { ...post };
     newPost.reactions = newPost.reactions ? [...newPost.reactions] : [];
 
     if (currentReaction) {
-      const idx = newPost.reactions.findIndex(r => r.aid === currentReaction.aid);
+      const idx = newPost.reactions.findIndex(r => r.name_id === currentReaction.name_id);
       if (idx !== -1) {
         newPost.reactions[idx] = {
           ...newPost.reactions[idx],
@@ -54,18 +53,18 @@ export default function ItemReactions(initialPost: PostType) {
     }
 
     if (!isRemoving) {
-      const idx = newPost.reactions.findIndex(r => r.aid === emojiAid);
+      const idx = newPost.reactions.findIndex(r => r.name_id === emojiNameId);
       if (idx !== -1) {
         newPost.reactions[idx] = {
           ...newPost.reactions[idx],
           reactions_count: (newPost.reactions[idx].reactions_count || 0) + 1,
           reacted: true
         };
-      } else if (emojiName) {
+      } else if (typeof emojiInput === 'object') {
         newPost.reactions.push({
-          aid: emojiAid,
-          name: emojiName,
-          name_id: typeof emojiInput === 'object' ? emojiInput.name_id : '',
+          aid: emojiInput.aid,
+          name: emojiInput.name,
+          name_id: emojiInput.name_id,
           reactions_count: 1,
           reacted: true
         });
@@ -81,7 +80,7 @@ export default function ItemReactions(initialPost: PostType) {
       if (isRemoving) {
         await api.delete(`/posts/${post.aid}/reaction`);
       } else {
-        await api.post(`/posts/${post.aid}/reaction`, { emoji_aid: emojiAid });
+        await api.post(`/posts/${post.aid}/reaction`, { emoji_name_id: emojiNameId });
       }
     } catch (error) {
       console.error("Reaction failed", error);
@@ -93,12 +92,12 @@ export default function ItemReactions(initialPost: PostType) {
   const itemReact = (emojiInput: EmojiType | string) => {
     setIsEmojiMenuOpen(false);
 
-    const emojiAid = typeof emojiInput === 'string' ? emojiInput : emojiInput.aid;
+    const emojiNameId = typeof emojiInput === 'string' ? emojiInput : emojiInput.name_id;
     const currentReaction = post.reactions?.find(r => r.reacted);
     
     if (currentReaction) {
       setPendingReactionInput(emojiInput);
-      if (currentReaction.aid === emojiAid) {
+      if (currentReaction.name_id === emojiNameId) {
         setConfirmModalState({
           title: "リアクションを解除",
           message: "リアクションを解除しますか？",
@@ -178,8 +177,8 @@ export default function ItemReactions(initialPost: PostType) {
         <div className="reactions-content">
           {post?.reactions && post.reactions.map(emoji => (
             <button className={"reaction-button rb-emoji" + (emoji.reacted ? " rb-reacted" : "")}
-              key={emoji.aid}
-              onClick={() => itemReact(emoji.aid)}
+              key={emoji.name_id}
+              onClick={() => itemReact(emoji.name_id)}
             >
               <div className="reaction-emoji">
                 {emoji.name}

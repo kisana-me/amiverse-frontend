@@ -9,7 +9,7 @@ interface EmojiContextType {
   emojisByGroup: Record<string, EmojiType[]>;
   fetchGroups: () => Promise<void>;
   fetchEmojisByGroup: (group: string) => Promise<void>;
-  getEmoji: (aid: string) => Promise<EmojiType | null>;
+  getEmoji: (name_id: string) => Promise<EmojiType | null>;
 }
 
 const EmojiContext = createContext<EmojiContextType | undefined>(undefined);
@@ -56,7 +56,7 @@ export const EmojiProvider = ({ children }: { children: React.ReactNode }) => {
         
         const newCache: Record<string, EmojiType> = {};
         data.forEach((emoji: EmojiType) => {
-            newCache[emoji.aid] = emoji;
+            newCache[emoji.name_id] = emoji;
         });
         setEmojiCache(prev => ({...prev, ...newCache}));
       } else {
@@ -69,16 +69,16 @@ export const EmojiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const getEmoji = useCallback(async (aid: string) => {
-      if (emojiCacheRef.current[aid]) return emojiCacheRef.current[aid];
+  const getEmoji = useCallback(async (name_id: string) => {
+      if (emojiCacheRef.current[name_id]) return emojiCacheRef.current[name_id];
       try {
-        const res = await api.post(`/emojis/${aid}`);
+        const res = await api.post(`/emojis/${encodeURIComponent(name_id)}`);
         if (res.data) {
-            setEmojiCache(prev => ({...prev, [aid]: res.data}));
+            setEmojiCache(prev => ({...prev, [name_id]: res.data}));
             return res.data;
         }
       } catch (error) {
-        console.error(`Failed to fetch emoji ${aid}`, error);
+        console.error(`Failed to fetch emoji ${name_id}`, error);
       }
       return null;
   }, []);
