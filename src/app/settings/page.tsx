@@ -19,8 +19,8 @@ export default function Page() {
     if (currentAccountStatus) {
       api.delete('/signout').then((res) => {
         addToast({
-          title: 'サインアウトしました',
-          message: '2秒後に再読み込みします'
+          message: 'サインアウトしました',
+          detail: '2秒後に再読み込みします'
         });
         setCurrentAccountStatus('signed_out');
         setTimeout(() => {
@@ -28,14 +28,14 @@ export default function Page() {
         }, 2000);
       }).catch((error) => {
           addToast({
-            title: 'エラー',
-            message: error.message
+            message: 'エラー',
+            detail: error instanceof Error ? error.message : String(error)
           });
       });
     } else {
       addToast({
-        title: 'エラー',
-        message: 'サインインしていません'
+        message: 'エラー',
+        detail: 'サインインしていません'
       });
     }
   }
@@ -86,22 +86,22 @@ export default function Page() {
           </section>
 
           <section className="bg-[var(--inactive-background-color)] rounded-lg p-4 shadow-sm">
-             <h2 className="text-xl font-bold mb-4 text-[var(--font-color)]">セッション</h2>
-             {currentAccountStatus === 'signed_in' ? (
-                <button 
-                  onClick={handleSignout}
-                  className="w-full px-4 py-2 rounded bg-[var(--button-color)] text-[var(--button-font-color)] hover:opacity-80 transition-opacity"
-                >
-                  サインアウト
-                </button>
-              ) : (
-                <Link 
-                  href='/signin'
-                  className="block w-full text-center px-4 py-2 rounded bg-[var(--primary-color)] text-white hover:opacity-80 transition-opacity"
-                >
-                  サインイン
-                </Link>
-              )}
+            <h2 className="text-xl font-bold mb-4 text-[var(--font-color)]">セッション</h2>
+            {currentAccountStatus === 'signed_in' ? (
+              <button 
+                onClick={handleSignout}
+                className="w-full px-4 py-2 rounded bg-[var(--button-color)] text-[var(--button-font-color)] hover:opacity-80 transition-opacity"
+              >
+                サインアウト
+              </button>
+            ) : (
+              <Link 
+                href='/signin'
+                className="block w-full text-center px-4 py-2 rounded bg-[var(--primary-color)] text-white hover:opacity-80 transition-opacity"
+              >
+                サインイン
+              </Link>
+            )}
           </section>
         </div>
       </div>

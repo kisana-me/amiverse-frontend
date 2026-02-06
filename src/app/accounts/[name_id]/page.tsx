@@ -93,8 +93,8 @@ function AccountContent({ name_id }: { name_id: string }) {
       }
     } catch (error) {
       addToast({
-        title: "投稿取得エラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "投稿取得エラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsFeedLoading(false);
@@ -159,8 +159,8 @@ function AccountContent({ name_id }: { name_id: string }) {
       }
     } catch (error) {
       addToast({
-        title: "読み込みエラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "読み込みエラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoadingMore(false);
@@ -192,8 +192,8 @@ function AccountContent({ name_id }: { name_id: string }) {
         followers_count: originalFollowersCount,
       });
       addToast({
-        title: "エラー",
-        message: "フォロー操作に失敗しました",
+        message: "エラー",
+        detail: "フォロー操作に失敗しました",
       });
     }
   };

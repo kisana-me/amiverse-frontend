@@ -23,13 +23,13 @@ export default function Page() {
       if (data.signup_data) {
         router.push(`/signup?name=${encodeURIComponent(data.signup_data.name)}&name_id=${encodeURIComponent(data.signup_data.name_id)}&description=${encodeURIComponent(data.signup_data.description)}`);
         addToast({
-          title: 'アカウントを作成してください',
-          message: data.message
+          message: 'アカウントを作成してください',
+          detail: data.message
         });
       } else {
         addToast({
-          title: '反応あり',
-          message: data.message
+          message: '反応あり',
+          detail: data.message
         });
         setTimeout(() => {
           window.location.href = '/';
@@ -38,8 +38,8 @@ export default function Page() {
     }).catch((error) => {
       router.push('/');
       addToast({
-        title: 'エラー',
-        message: error.message
+        message: 'エラー',
+        detail: error.message
       });
     });
   }, [currentAccountStatus]);

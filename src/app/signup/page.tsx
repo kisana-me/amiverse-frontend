@@ -26,8 +26,8 @@ function SignupContent() {
   useEffect(() => {
     if (currentAccountStatus === 'signed_in') {
       addToast({
-        title: 'サインイン済み',
-        message: 'あなたはすでにサインイン済みです',
+        message: 'サインイン済み',
+        detail: 'あなたはすでにサインイン済みです',
       });
       router.push('/');
     }
@@ -52,8 +52,8 @@ function SignupContent() {
         const data = response.data;
         if (data.status === 'success') {
           addToast({
-            title: 'アカウント作成完了',
-            message: data.message,
+            message: 'アカウント作成完了',
+            detail: data.message,
           });
           setTimeout(() => {
             window.location.href = '/';
@@ -65,8 +65,8 @@ function SignupContent() {
         const data = error.response?.data;
         const errorMessage = data?.errors ? data.errors.join('\n') : 'サインアップに失敗しました';
         addToast({
-          title: data?.message || 'エラー',
-          message: errorMessage,
+          message: data?.message || 'エラー',
+          detail: errorMessage,
         });
       });
   };

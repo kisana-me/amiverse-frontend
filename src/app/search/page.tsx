@@ -44,9 +44,9 @@ function SearchContent() {
         
         let sortedPosts: PostType[] = [];
         if (data.feed && Array.isArray(data.feed)) {
-             sortedPosts = data.feed.map(item => data.posts.find(p => p.aid === item.post_aid)).filter((p): p is PostType => !!p);
+            sortedPosts = data.feed.map(item => data.posts.find(p => p.aid === item.post_aid)).filter((p): p is PostType => !!p);
         } else {
-             sortedPosts = data.posts || [];
+            sortedPosts = data.posts || [];
         }
         
         setPosts(sortedPosts);
@@ -56,8 +56,8 @@ function SearchContent() {
       }
     } catch (error) {
       addToast({
-        title: "検索エラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "検索エラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoading(false);
@@ -106,8 +106,8 @@ function SearchContent() {
       }
     } catch (error) {
       addToast({
-        title: "読み込みエラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "読み込みエラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoadingMore(false);
@@ -151,7 +151,7 @@ function SearchContent() {
             {(isLoading || posts.length > 0) ? (
                 <Feed posts={posts} is_loading={isLoading} />
             ) : (
-                 <div className="seartch">
+                <div className="search">
                     検索結果はございません
                 </div>
             )}
@@ -175,7 +175,7 @@ function SearchContent() {
             )}
           </>
       ) : (
-        <div className="seartch">
+        <div className="search">
             検索ワードを入力してください
         </div>
       )}

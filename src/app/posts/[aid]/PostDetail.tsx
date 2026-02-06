@@ -11,6 +11,7 @@ import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from "
 import Link from "next/link";
 import { usePosts } from "@/app/providers/PostsProvider";
 import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useToast } from "@/app/providers/ToastProvider";
 
 type Props = {
   params: Promise<{
@@ -28,6 +29,7 @@ export default function PostDetail({ params }: Props) {
   const [postLoading, setPostLoading] = useState<boolean>(() => !post);
   const [scrollAdjusted, setScrollAdjusted] = useState<boolean>(false);
   const replyRef = useRef<HTMLDivElement>(null);
+  const { addToast } = useToast();
 
   const fetchPost = useCallback(() => {
     if (currentAccountStatus === "loading") return;
@@ -37,7 +39,7 @@ export default function PostDetail({ params }: Props) {
         addPosts(res.data.replies);
       }
     }).catch(() => {
-      // addToasts([{ type: 'error', message: '投稿の取得に失敗しました' }]);
+      addToast({ message: '投稿の取得に失敗しました' });
     }).finally(() => {
       setPostLoading(false);
     });

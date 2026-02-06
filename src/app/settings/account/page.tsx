@@ -43,8 +43,8 @@ export default function AccountSettingsPage() {
   useEffect(() => {
     if (currentAccountStatus === "signed_out") {
       addToast({
-        title: "エラー",
-        message: "サインインしてください",
+        message: "エラー",
+        detail: "サインインしてください",
       });
       router.push("/");
     } else if (currentAccountStatus === "signed_in" && currentAccount) {
@@ -112,8 +112,8 @@ export default function AccountSettingsPage() {
         setCurrentAccount(updatedAccount);
         
         addToast({
-          title: "成功",
-          message: "アカウント情報を更新しました",
+          message: "成功",
+          detail: "アカウント情報を更新しました",
         });
         
         // 更新後、アカウントページへ遷移
@@ -133,13 +133,13 @@ export default function AccountSettingsPage() {
           setErrors(["更新に失敗しました"]);
         }
         addToast({
-          title: "エラー",
-          message: data.message || "更新に失敗しました",
+          message: "エラー",
+          detail: data.message || "更新に失敗しました",
         });
       } else {
         addToast({
-          title: "エラー",
-          message: "予期せぬエラーが発生しました",
+          message: "エラー",
+          detail: "予期せぬエラーが発生しました",
         });
       }
     } finally {

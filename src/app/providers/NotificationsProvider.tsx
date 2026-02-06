@@ -112,8 +112,8 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
         setPermission(Notification.permission);
       }
       addToast({
-        title: "プッシュ通知登録エラー",
-        message: "プッシュ通知の登録に失敗しました",
+        message: "プッシュ通知登録エラー",
+        detail: "プッシュ通知の登録に失敗しました",
       });
     }
   }, [currentAccountStatus, addToast]);

@@ -19,16 +19,16 @@ export default function LeavePage() {
       const res = await api.delete('/settings/leave');
       if (res.data.status === 'success') {
         addToast({
-          title: '退会しました',
-          message: 'ご利用ありがとうございました。',
+          message: '退会しました',
+          detail: 'ご利用ありがとうございました。',
         });
         setCurrentAccountStatus('signed_out');
         router.push('/');
       }
     } catch (error: any) {
       addToast({
-        title: 'エラー',
-        message: error.response?.data?.message || '退会に失敗しました',
+        message: 'エラー',
+        detail: error.response?.data?.message || '退会に失敗しました',
       });
     } finally {
       setIsModalOpen(false);

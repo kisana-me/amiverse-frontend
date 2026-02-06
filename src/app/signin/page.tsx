@@ -19,8 +19,8 @@ export default function SignInPage() {
   useEffect(() => {
     if (currentAccountStatus === 'signed_in') {
       addToast({
-        title: 'サインイン済み',
-        message: 'あなたはすでにサインイン済みです',
+        message: 'サインイン済み',
+        detail: 'あなたはすでにサインイン済みです',
       });
       router.push('/');
     }
@@ -38,8 +38,8 @@ export default function SignInPage() {
     }).catch(() => {
       setIsLoading(false);
       addToast({
-        title: 'エラー',
-        message: 'サインイン/サインアップの開始に失敗しました',
+        message: 'エラー',
+        detail: 'サインイン/サインアップの開始に失敗しました',
       });
     });
   }

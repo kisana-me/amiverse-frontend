@@ -43,8 +43,8 @@ export function TrendsProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       addToast({
-        title: "トレンド取得エラー",
-        message: "トレンドの取得に失敗しました。",
+        message: "トレンド取得エラー",
+        detail: "トレンドの取得に失敗しました。",
       });
       console.error("fetchTrend error:", error);
     } finally {

@@ -99,8 +99,8 @@ function HomeContent() {
 
     } catch (error) {
       addToast({
-        title: "タイムライン取得エラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "タイムライン取得エラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsFeedLoading(false);
@@ -148,8 +148,8 @@ function HomeContent() {
       }
     } catch (error) {
       addToast({
-        title: "読み込みエラー",
-        message: error instanceof Error ? error.message : String(error),
+        message: "読み込みエラー",
+        detail: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoadingMore(false);
