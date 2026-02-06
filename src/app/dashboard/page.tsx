@@ -21,22 +21,22 @@ export default function Page() {
       api.delete('/signout').then((res) => {
         const data = res.data as { status: string; message: string; };
         addToast({
-          title: 'サインアウトしました',
-          message: '1秒後に再読み込みします'
+          message: 'サインアウトしました',
+          detail: '1秒後に再読み込みします'
         });
         setTimeout(() => {
           window.location.href = '/';
         }, 1000);
       }).catch((error) => {
           addToast({
-            title: 'エラー',
-            message: error.message
+            message: 'サインアウトできませんでした',
+            detail: error.message
           });
       });
     }else{
       addToast({
-        title: 'エラー',
-        message: 'サインインしていません'
+        message: 'サインアウトできませんでした',
+        detail: 'サインインしていません'
       });
     }
   }

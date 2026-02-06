@@ -46,7 +46,7 @@ export default function EmojiPicker({ onEmojiSelect }: EmojiPickerProps) {
       <div className="emoji-menu-grid">
         {selectedGroup && emojisByGroup[selectedGroup]?.map(emoji => (
           <button
-            key={emoji.aid}
+            key={emoji.name_id}
             className="emoji-item"
             onClick={() => onEmojiSelect(emoji)}
             title={emoji.name}

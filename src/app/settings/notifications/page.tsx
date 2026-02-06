@@ -55,8 +55,8 @@ export default function NotificationSettingsPage() {
     } catch (error) {
       console.error("Failed to fetch notification settings:", error);
       addToast({
-        title: "エラー",
-        message: "設定の取得に失敗しました",
+        message: "エラー",
+        detail: "設定の取得に失敗しました",
       });
     } finally {
       setIsLoading(false);
@@ -77,8 +77,8 @@ export default function NotificationSettingsPage() {
       console.error("Failed to update notification setting:", error);
       setSettings(settings); // Revert on error
       addToast({
-        title: "エラー",
-        message: "設定の更新に失敗しました",
+        message: "エラー",
+        detail: "設定の更新に失敗しました",
       });
     }
   };

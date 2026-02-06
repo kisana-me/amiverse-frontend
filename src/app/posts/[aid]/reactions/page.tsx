@@ -25,15 +25,15 @@ export default function Page({ params }: Props) {
   const [reactions, setReactions] = useState<ReactionType[]>([]);
   const [emojis, setEmojis] = useState<EmojiType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedEmojiAid, setSelectedEmojiAid] = useState<string | null>(null);
+  const [selectedEmojiNameId, setSelectedEmojiNameId] = useState<string | null>(null);
 
   const fetchReactions = useCallback(() => {
     if (currentAccountStatus === "loading") return;
     setLoading(true);
 
-    const payload: { emoji_aid?: string | null } = {};
-    if (selectedEmojiAid) {
-      payload.emoji_aid = selectedEmojiAid;
+    const payload: { emoji_name_id?: string | null } = {};
+    if (selectedEmojiNameId) {
+      payload.emoji_name_id = selectedEmojiNameId;
     }
 
     api.post('/posts/' + aid + '/reactions', payload).then((res: { data: { reactions: ReactionType[], emojis: EmojiType[] } }) => {
@@ -49,7 +49,7 @@ export default function Page({ params }: Props) {
     }).finally(() => {
       setLoading(false);
     });
-  }, [aid, currentAccountStatus, selectedEmojiAid, emojis.length]);
+  }, [aid, currentAccountStatus, selectedEmojiNameId, emojis.length]);
 
   useEffect(() => {
     fetchReactions();
@@ -62,9 +62,9 @@ export default function Page({ params }: Props) {
       {/* Tabs */}
       <div className="flex overflow-x-auto border-b border-[var(--border-color)] no-scrollbar">
         <button
-          onClick={() => setSelectedEmojiAid(null)}
+          onClick={() => setSelectedEmojiNameId(null)}
           className={`px-4 py-3 whitespace-nowrap font-bold transition-colors cursor-pointer ${
-            selectedEmojiAid === null
+            selectedEmojiNameId === null
               ? "text-[var(--main-font-color)] border-b-2 border-[var(--main-color)]"
               : "text-[var(--inconspicuous-font-color)] hover:bg-[var(--hover-color)]"
           }`}
@@ -73,10 +73,10 @@ export default function Page({ params }: Props) {
         </button>
         {emojis.map((emoji) => (
           <button
-            key={emoji.aid}
-            onClick={() => setSelectedEmojiAid(emoji.aid)}
+            key={emoji.name_id}
+            onClick={() => setSelectedEmojiNameId(emoji.name_id)}
             className={`px-4 py-3 whitespace-nowrap font-bold transition-colors cursor-pointer flex items-center ${
-              selectedEmojiAid === emoji.aid
+              selectedEmojiNameId === emoji.name_id
                 ? "text-[var(--main-font-color)] border-b-2 border-[var(--main-color)]"
                 : "text-[var(--inconspicuous-font-color)] hover:bg-[var(--hover-color)]"
             }`}

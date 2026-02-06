@@ -47,7 +47,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     if (e.target.files) {
       const files = Array.from(e.target.files);
       if (mediaFiles.length + files.length > 8) {
-        addToast({ title: 'エラー', message: '画像・動画は最大8個までです' });
+        addToast({ message: 'エラー', detail: '画像・動画は最大8個までです' });
         return;
       }
       setMediaFiles([...mediaFiles, ...files]);
@@ -95,7 +95,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
       addPosts([newPost]);
       prependFeedItem('current', { type: 'post', post_aid: newPost.aid });
 
-      addToast({ title: '成功', message: '投稿しました' });
+      addToast({ message: '投稿しました' });
       setContent('');
       setMediaFiles([]);
       if (onSuccess) onSuccess();
@@ -103,7 +103,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     } catch (error: any) {
       console.error(error);
       const errorMessage = error.response?.data?.errors?.join(', ') || '投稿に失敗しました';
-      addToast({ title: 'エラー', message: errorMessage });
+      addToast({ message: 'エラー', detail: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
@@ -115,7 +115,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         <div className="post-form-target">
           <div style={{ fontSize: '0.8rem', color: 'var(--font-color)', marginBottom: '0.5rem' }}>返信先:</div>
           <div style={{ pointerEvents: 'none', opacity: 0.8, transform: 'scale(0.9)', transformOrigin: 'top left' }}>
-             <Post {...replyPost} />
+            <Post {...replyPost} />
           </div>
         </div>
       )}

@@ -15,7 +15,7 @@ export default function Page() {
 
   useEffect(() => {
     if (currentAccountStatus === 'signed_out') {
-      addToast({ title: 'エラー', message: 'サインインが必要です' });
+      addToast({ message: 'エラー', detail: 'サインインが必要です' });
       router.push('/');
     }
   }, [currentAccountStatus, router, addToast]);
