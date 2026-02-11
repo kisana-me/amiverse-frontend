@@ -25,6 +25,7 @@ import { NotificationsProvider } from "@/app/providers/NotificationsProvider";
 export const metadata: Metadata = {
   title: "Amiverse",
   description: "Amiverse - Social media platform.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

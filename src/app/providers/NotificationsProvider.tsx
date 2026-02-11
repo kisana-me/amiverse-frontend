@@ -79,11 +79,15 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
     setPushError(null);
 
     try {
-      // Service Workerを登録
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      
+      // 既に登録済みのService Workerがあればそれを使い、無ければ /sw.js を登録
+      let registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        registration = await navigator.serviceWorker.register('/sw.js');
+      }
+
       // Service Workerがアクティブになるのを待つ
       await navigator.serviceWorker.ready;
+      registration = registration ?? (await navigator.serviceWorker.ready);
 
       let subscription = await registration.pushManager.getSubscription();
 
