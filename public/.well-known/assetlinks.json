@@ -1,0 +1,12 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target" : {
+      "namespace": "android_app",
+      "package_name": "net.amiverse.twa",
+      "sha256_cert_fingerprints": ["3C:25:62:02:38:37:80:7C:56:F8:D3:49:CA:74:DF:39:81:F0:B1:1F:6D:09:95:BD:0B:66:E2:8E:5B:AA:35:D6"]
+    }
+  }
+]
