@@ -74,6 +74,6 @@ export function TrendsProvider({ children }: { children: React.ReactNode }) {
 
 export function useTrends() {
   const context = useContext(TrendsContext);
-  if (!context) throw new Error("useTrends must be used within a TrendProvider");
+  if (!context) throw new Error("useTrends must be used within a TrendsProvider");
   return context;
 };

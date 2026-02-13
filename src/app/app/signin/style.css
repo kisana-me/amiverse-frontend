@@ -1,0 +1,125 @@
+.native-signin-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.native-signin-container {
+  width: 100%;
+  max-width: 480px;
+  background: var(--content-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.native-signin-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.native-signin-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--font-color);
+}
+
+.native-signin-text {
+  color: var(--inconspicuous-font-color);
+  line-height: 1.6;
+}
+
+.native-signin-uri {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--inconspicuous-background-color);
+  border: 1px solid var(--border-color);
+  color: var(--font-color);
+  word-break: break-all;
+}
+
+.native-signin-account {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--inconspicuous-background-color);
+  border: 1px solid var(--border-color);
+}
+
+.native-signin-account-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.native-signin-account-icon img {
+  width: 44px;
+  height: 44px;
+}
+
+.native-signin-account-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.native-signin-account-name {
+  color: var(--font-color);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.native-signin-account-id {
+  color: var(--inconspicuous-font-color);
+  line-height: 1.2;
+}
+
+.native-signin-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.native-signin-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.native-signin-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.native-signin-button-primary {
+  background: var(--link-color);
+  color: var(--background-color);
+  border-color: transparent;
+}
+
+.native-signin-button-secondary {
+  background: var(--content-color);
+  color: var(--font-color);
+}
+
+.native-signin-link {
+  display: inline-block;
+  color: var(--link-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.native-signin-link:hover {
+  text-decoration: underline;
+}
