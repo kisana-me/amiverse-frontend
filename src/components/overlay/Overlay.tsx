@@ -1,7 +1,7 @@
 "use client";
 
 import "./style.css"
-import { useOverlay } from '@/app/providers/OverlayProvider'
+import { useOverlay } from '@/providers/OverlayProvider'
 
 export default function MainHeader() {
   const { menuOverlay, closeMenu } = useOverlay()

@@ -5,8 +5,8 @@ import MainHeader from "@/components/main_header/MainHeader";
 import { api } from "@/lib/axios";
 import { PostType } from "@/types/post";
 import { use, useCallback, useEffect, useState } from "react";
-import { usePosts } from "@/app/providers/PostsProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { usePosts } from "@/providers/PostsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 type Props = {
   params: Promise<{

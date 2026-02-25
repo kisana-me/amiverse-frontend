@@ -3,9 +3,9 @@
 import "./style.css"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
-import { useOverlay } from '@/app/providers/OverlayProvider'
-import { useNotifications } from "@/app/providers/NotificationsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import { useOverlay } from '@/providers/OverlayProvider'
+import { useNotifications } from "@/providers/NotificationsProvider";
 
 export default function Header() {
   const pathname = usePathname();

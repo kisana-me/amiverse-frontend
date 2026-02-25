@@ -6,7 +6,7 @@ import { api } from "@/lib/axios";
 import { AccountType } from "@/types/account";
 import { EmojiType } from "@/types/emoji";
 import { use, useCallback, useEffect, useState } from "react";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 type Props = {
   params: Promise<{

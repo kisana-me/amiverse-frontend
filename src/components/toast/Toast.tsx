@@ -1,7 +1,7 @@
 "use client";
 
 import "./style.css";
-import { useToast } from "@/app/providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { useLayoutEffect, useMemo, useRef } from "react";
 
 export default function Toast() {

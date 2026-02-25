@@ -5,8 +5,8 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MainHeader from '@/components/main_header/MainHeader';
 import PostForm from '@/components/post/form';
-import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
+import { useToast } from '@/providers/ToastProvider';
 
 export default function Page() {
   const router = useRouter();

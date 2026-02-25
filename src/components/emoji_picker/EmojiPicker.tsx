@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useEmoji } from '@/app/providers/EmojiProvider';
+import { useEmoji } from '@/providers/EmojiProvider';
 import "./style.css";
 
 import { EmojiType } from '@/types/emoji';

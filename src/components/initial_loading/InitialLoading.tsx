@@ -2,7 +2,7 @@
 
 import "./style.css";
 import React, { useState, useEffect } from 'react'
-import { useOverlay } from '@/app/providers/OverlayProvider'
+import { useOverlay } from '@/providers/OverlayProvider'
 
 export default function InitialLoading() {
   const { initOverlay, doneInitLoading } = useOverlay()

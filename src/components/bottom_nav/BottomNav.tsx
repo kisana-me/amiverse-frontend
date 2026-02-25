@@ -3,7 +3,7 @@
 import "./style.css"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useNotifications } from "@/app/providers/NotificationsProvider";
+import { useNotifications } from "@/providers/NotificationsProvider";
 
 export default function BottomNav() {
   const pathname = usePathname();

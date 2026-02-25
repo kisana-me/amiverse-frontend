@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import "./style.css";
 
 export default function ActionPrompt() {

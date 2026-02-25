@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import MainHeader from '@/components/main_header/MainHeader';
 import SkeletonTrendList from "@/components/trend/skeleton_trend";
 import TrendList from "@/components/trend/trend_list";
-import { useTrends } from "../providers/TrendsProvider";
+import { useTrends } from "@/providers/TrendsProvider";
 
 export default function Page() {
   const { trends, trendsLoading } = useTrends();

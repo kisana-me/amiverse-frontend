@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
+import { useToast } from '@/providers/ToastProvider';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';

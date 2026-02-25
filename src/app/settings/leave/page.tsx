@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import MainHeader from '@/components/main_header/MainHeader';
 import { api } from '@/lib/axios';
-import { useToast } from '../../providers/ToastProvider';
+import { useToast } from '@/providers/ToastProvider';
 import { useRouter } from 'next/navigation';
 import { Modal } from '@/components/modal/Modal';
-import { useCurrentAccount } from '../../providers/CurrentAccountProvider';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
 
 export default function LeavePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);

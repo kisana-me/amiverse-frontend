@@ -7,7 +7,7 @@ import { EmojiType } from '@/types/emoji';
 import { Modal } from '../modal/Modal';
 import EmojiPicker from '../emoji_picker/EmojiPicker';
 import { api } from '@/lib/axios';
-import { usePosts } from '@/app/providers/PostsProvider';
+import { usePosts } from '@/providers/PostsProvider';
 
 export default function ItemReactions(initialPost: PostType) {
   const emojiButtonRef = useRef(null)

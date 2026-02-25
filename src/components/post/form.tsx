@@ -3,9 +3,9 @@
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
-import { useToast } from '@/app/providers/ToastProvider';
-import { useFeeds } from '@/app/providers/FeedsProvider';
-import { usePosts } from '@/app/providers/PostsProvider';
+import { useToast } from '@/providers/ToastProvider';
+import { useFeeds } from '@/providers/FeedsProvider';
+import { usePosts } from '@/providers/PostsProvider';
 import { PostType } from '@/types/post';
 import Post from './post';
 import DrawingEditor from './DrawingEditor';

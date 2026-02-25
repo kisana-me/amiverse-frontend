@@ -2,8 +2,8 @@
 
 import "./style.css"
 import Link from "next/link";
-import { useOverlay } from "@/app/providers/OverlayProvider";
-import { useTrends } from "@/app/providers/TrendsProvider";
+import { useOverlay } from "@/providers/OverlayProvider";
+import { useTrends } from "@/providers/TrendsProvider";
 import SkeletonBox from "../skeletons/skeleton_box";
 import Footer from "../footer/Footer";
 

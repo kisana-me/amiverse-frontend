@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
+import { useToast } from '@/providers/ToastProvider';
 import Link from 'next/link';
 import { useEffect, Suspense, useState } from 'react';
 import { api } from '@/lib/axios';

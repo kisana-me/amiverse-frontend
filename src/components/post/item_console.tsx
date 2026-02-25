@@ -6,10 +6,10 @@ import "./item_console.css"
 import { PostType } from "@/types/post"
 import { Modal } from '../modal/Modal';
 import PostForm from './form';
-import { useCurrentAccount } from '@/app/providers/CurrentAccountProvider';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
 import { api } from '@/lib/axios';
-import { usePosts } from '@/app/providers/PostsProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { usePosts } from '@/providers/PostsProvider';
+import { useToast } from '@/providers/ToastProvider';
 
 export default function ItemConsole(initialPost: PostType) {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)

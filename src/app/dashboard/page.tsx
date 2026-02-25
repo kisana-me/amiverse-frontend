@@ -4,11 +4,11 @@ import "./style.css";
 import Link from "next/link";
 import { useState } from "react";
 import { api } from "@/lib/axios";
-import { useToast } from "../providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 import MainHeader from '@/components/main_header/MainHeader';
 import { Modal } from "@/components/modal/Modal";
-import { useUI } from "../providers/UIProvider";
-import { useCurrentAccount } from "../providers/CurrentAccountProvider";
+import { useUI } from "@/providers/UIProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 export default function Page() {
   const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);

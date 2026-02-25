@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import MainHeader from "@/components/main_header/MainHeader";
 import { api } from "@/lib/axios";
-import { useToast } from "@/app/providers/ToastProvider";
-import { useNotifications } from "@/app/providers/NotificationsProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useToast } from "@/providers/ToastProvider";
+import { useNotifications } from "@/providers/NotificationsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 type NotificationSetting = {
   reaction: boolean;

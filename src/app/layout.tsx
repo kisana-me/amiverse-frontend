@@ -11,16 +11,16 @@ import Overlay from "@/components/overlay/Overlay";
 import InitialLoading from "@/components/initial_loading/InitialLoading";
 
 // Providers import
-import { UIProvider } from "@/app/providers/UIProvider";
-import { OverlayProvider } from "@/app/providers/OverlayProvider";
-import { ToastProvider } from "@/app/providers/ToastProvider";
-import { CurrentAccountProvider } from "@/app/providers/CurrentAccountProvider";
-import { TrendsProvider } from "@/app/providers/TrendsProvider";
-import { AccountsProvider } from "@/app/providers/AccountsProvider";
-import { PostsProvider } from "@/app/providers/PostsProvider";
-import { FeedsProvider } from "@/app/providers/FeedsProvider";
-import { EmojiProvider } from "@/app/providers/EmojiProvider";
-import { NotificationsProvider } from "@/app/providers/NotificationsProvider";
+import { UIProvider } from "@/providers/UIProvider";
+import { OverlayProvider } from "@/providers/OverlayProvider";
+import { ToastProvider } from "@/providers/ToastProvider";
+import { CurrentAccountProvider } from "@/providers/CurrentAccountProvider";
+import { TrendsProvider } from "@/providers/TrendsProvider";
+import { AccountsProvider } from "@/providers/AccountsProvider";
+import { PostsProvider } from "@/providers/PostsProvider";
+import { FeedsProvider } from "@/providers/FeedsProvider";
+import { EmojiProvider } from "@/providers/EmojiProvider";
+import { NotificationsProvider } from "@/providers/NotificationsProvider";
 
 export const metadata: Metadata = {
   title: "Amiverse",

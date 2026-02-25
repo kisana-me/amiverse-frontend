@@ -5,7 +5,7 @@ import Account from "@/components/Account/OneLine";
 import { api } from "@/lib/axios";
 import { AccountType } from "@/types/account";
 import { use, useCallback, useEffect, useState } from "react";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 type Props = {
   params: Promise<{

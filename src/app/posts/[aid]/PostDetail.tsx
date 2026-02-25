@@ -9,9 +9,9 @@ import { PostType } from "@/types/post";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePosts } from "@/app/providers/PostsProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
-import { useToast } from "@/app/providers/ToastProvider";
+import { usePosts } from "@/providers/PostsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import { useToast } from "@/providers/ToastProvider";
 
 type Props = {
   params: Promise<{

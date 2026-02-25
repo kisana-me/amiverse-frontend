@@ -1,10 +1,10 @@
 "use client";
 
 import MainHeader from "@/components/main_header/MainHeader";
-import { useToast } from "@/app/providers/ToastProvider";
-import { usePosts, CachedPost } from "@/app/providers/PostsProvider";
-import { useFeeds, FeedTypeKey } from "@/app/providers/FeedsProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useToast } from "@/providers/ToastProvider";
+import { usePosts, CachedPost } from "@/providers/PostsProvider";
+import { useFeeds, FeedTypeKey } from "@/providers/FeedsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import Feed from "@/components/feed/feed";
 import { Modal } from "@/components/modal/Modal";
 import { useEffect, useState, useCallback, Suspense } from "react";

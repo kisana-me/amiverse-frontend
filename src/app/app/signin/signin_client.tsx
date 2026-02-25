@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
-import { useToast } from "@/app/providers/ToastProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { api } from "@/lib/axios";
 
 function safeDecodeURIComponent(value: string) {

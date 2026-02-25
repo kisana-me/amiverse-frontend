@@ -3,8 +3,8 @@
 import "./style.css";
 import { useEffect } from "react";
 import MainHeader from '@/components/main_header/MainHeader';
-import { useNotifications } from "@/app/providers/NotificationsProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useNotifications } from "@/providers/NotificationsProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import { formatRelativeTime } from "@/lib/format_time";
 import Link from "next/link";
 import Image from "next/image";

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import "./style.css"
 import Image from 'next/image'
-import { useOverlay } from '@/app/providers/OverlayProvider'
+import { useOverlay } from '@/providers/OverlayProvider'
 
 export default function MainHeader({
   children,

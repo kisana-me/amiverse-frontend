@@ -2,8 +2,8 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useCurrentAccount } from "../../providers/CurrentAccountProvider";
-import { useToast } from "../../providers/ToastProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { api } from "@/lib/axios";
 import MainHeader from "@/components/main_header/MainHeader";
 import "./style.css";

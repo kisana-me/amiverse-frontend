@@ -2,10 +2,10 @@
 
 import "./style.css";
 import MainHeader from '@/components/main_header/MainHeader';
-import { useUI } from "../providers/UIProvider";
-import { useCurrentAccount } from "../providers/CurrentAccountProvider";
+import { useUI } from "@/providers/UIProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import { api } from "@/lib/axios";
-import { useToast } from "../providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

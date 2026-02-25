@@ -7,7 +7,7 @@ import MainHeader from '@/components/main_header/MainHeader';
 import { api } from "@/lib/axios";
 import { PostType } from "@/types/post";
 import Feed from "@/components/feed/feed";
-import { useToast } from "@/app/providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { FeedItemType } from "@/types/feed";
 
 function SearchContent() {

@@ -3,10 +3,10 @@
 import "./style.css";
 import MainHeader from '@/components/main_header/MainHeader';
 import { api } from "@/lib/axios";
-import { useToast } from "@/app/providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 
 export default function Page() {
   const { currentAccountStatus } = useCurrentAccount();

@@ -7,14 +7,14 @@ import { use, useEffect, useState, useCallback } from "react";
 import SkeletonAccount from "./skeleton_account";
 import { formatFullDate } from "@/lib/format_time";
 import "./page.css";
-import { usePosts, CachedPost } from "@/app/providers/PostsProvider";
-import { useFeeds } from "@/app/providers/FeedsProvider";
+import { usePosts, CachedPost } from "@/providers/PostsProvider";
+import { useFeeds } from "@/providers/FeedsProvider";
 import Feed from "@/components/feed/feed";
 import { PostType } from "@/types/post";
 import { FeedItemType } from "@/types/feed";
-import { useToast } from "@/app/providers/ToastProvider";
-import { useCurrentAccount } from "@/app/providers/CurrentAccountProvider";
-import { useAccounts } from "@/app/providers/AccountsProvider";
+import { useToast } from "@/providers/ToastProvider";
+import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import { useAccounts } from "@/providers/AccountsProvider";
 import ItemContent from "@/components/post/item_content";
 
 type Props = {

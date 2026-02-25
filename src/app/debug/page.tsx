@@ -3,7 +3,7 @@
 import "./style.css";
 import { useState, useEffect } from 'react';
 import MainHeader from '@/components/main_header/MainHeader';
-import { useToast } from "@/app/providers/ToastProvider";
+import { useToast } from "@/providers/ToastProvider";
 
 export default function Page() {
   const { addToast } = useToast();
