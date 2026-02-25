@@ -4,8 +4,8 @@ import "./style.css"
 import Link from "next/link";
 import { useOverlay } from "@/providers/OverlayProvider";
 import { useTrends } from "@/providers/TrendsProvider";
+import { TrendType } from "@/types/trend";
 import SkeletonBox from "../skeletons/skeleton_box";
-import Footer from "../footer/Footer";
 
 export default function Aside() {
   const { isAsideMenuOpen } = useOverlay();
@@ -40,9 +40,9 @@ export default function Aside() {
           ) : (
             <>
               <div className="aside-trend-list">
-                {topTrends.map((trend, index) => (
+                {topTrends.map((trend: TrendType['ranking'][number], index: number) => (
                   <Link 
-                    href={`/search?query=${encodeURIComponent(trend.word)}`} 
+                    href={`/search?query=${encodeURIComponent(trend.word)}`}
                     className="aside-trend-item" 
                     key={index}
                   >

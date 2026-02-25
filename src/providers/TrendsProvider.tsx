@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { api } from "@/lib/axios";
-import { TrendType } from "../../types/trend";
+import { TrendType } from "@/types/trend";
 import { useCurrentAccount } from "./CurrentAccountProvider";
 import { useToast } from "./ToastProvider";
 
