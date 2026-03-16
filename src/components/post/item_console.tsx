@@ -17,6 +17,9 @@ export default function ItemConsole(initialPost: PostType) {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
   const [isDiffuseConfirmOpen, setIsDiffuseConfirmOpen] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+  const [reportCategory, setReportCategory] = useState('spam')
+  const [reportDetail, setReportDetail] = useState('')
   const { currentAccountStatus, currentAccount } = useCurrentAccount();
   const { addPosts, removePost } = usePosts();
   const { addToast } = useToast();
@@ -51,7 +54,7 @@ export default function ItemConsole(initialPost: PostType) {
   const executeDiffuse = async () => {
     const prevPost = { ...post };
     const newPost = { ...post };
-    
+
     if (post.is_diffused) {
       newPost.diffuses_count = Math.max(0, post.diffuses_count - 1);
       newPost.is_diffused = false;
@@ -86,6 +89,34 @@ export default function ItemConsole(initialPost: PostType) {
     });
   };
 
+  const executeReport = async () => {
+    try {
+      await api.post("/reports", {
+        report: {
+          target_type: "post",
+          target_aid: post.aid,
+          category: reportCategory,
+          description: reportDetail
+        }
+      });
+      addToast({ message: "通報しました" });
+      setReportCategory("spam");
+      setReportDetail("");
+    } catch (error) {
+      console.error("Report failed", error);
+      addToast({ message: "通報に失敗しました" });
+    } finally {
+      setIsReportModalOpen(false);
+      setIsPostMenuOpen(false);
+    }
+  };
+
+  const handleReport = () => {
+    handleAction(() => {
+      setIsReportModalOpen(true);
+    });
+  };
+
   return (
     <>
       <div className="console">
@@ -111,7 +142,7 @@ export default function ItemConsole(initialPost: PostType) {
             <PostForm quotePost={post} onSuccess={() => setIsQuoteModalOpen(false)} />
           </Modal>
         </div>
-        
+
         <div className="console-content">
           <button className={"console-button cb-diffuse" + (post.is_diffused ? " cb-diffused" : "")}
             disabled={post.is_busy === true}
@@ -146,7 +177,7 @@ export default function ItemConsole(initialPost: PostType) {
             </button>
           </div>
         </div>
-        
+
         <div className="console-content">
           <button 
             className='console-button cb-reply' 
@@ -205,6 +236,22 @@ export default function ItemConsole(initialPost: PostType) {
                   投稿を削除
                 </button>
               )}
+
+              {currentAccountStatus === "signed_in" && currentAccount?.aid !== post.account.aid && (
+                <button
+                  onClick={handleReport}
+                  style={{ 
+                    color: 'red', 
+                    cursor: 'pointer',
+                    padding: '8px',
+                    border: '1px solid red',
+                    borderRadius: '4px',
+                    background: 'transparent'
+                  }}
+                >
+                  投稿を通報
+                </button>
+              )}
             </div>
           </Modal>
           <Modal
@@ -247,8 +294,78 @@ export default function ItemConsole(initialPost: PostType) {
               </div>
             </div>
           </Modal>
+
+          <Modal
+            isOpen={isReportModalOpen}
+            onClose={() => setIsReportModalOpen(false)}
+            title="投稿を通報"
+          >
+            <div className="flex flex-col gap-4 p-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold">通報の理由</label>
+                <select 
+                  value={reportCategory}
+                  onChange={(e) => setReportCategory(e.target.value)}
+                  className="p-2 border rounded-md"
+                  style={{
+                    backgroundColor: 'var(--background-color)',
+                    color: 'var(--font-color)',
+                    borderColor: 'var(--border-color)',
+                  }}
+                >
+                  <option value="spam">スパム・迷惑</option>
+                  <option value="hate">ヘイト・嫌がらせ・いじめ・差別</option>
+                  <option value="disinformation">偽情報・なりすまし</option>
+                  <option value="violence">暴力的・テロ・過激的思想</option>
+                  <option value="sensitive">センシティブ・性的・残酷</option>
+                  <option value="suicide">自殺・自傷</option>
+                  <option value="illegal">違法・規制対象・詐欺・不正</option>
+                  <option value="theft">盗用・著作権侵害</option>
+                  <option value="privacy">不同意・プライバシー侵害</option>
+                  <option value="other">その他</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold">詳細（任意）</label>
+                <textarea
+                  value={reportDetail}
+                  onChange={(e) => setReportDetail(e.target.value)}
+                  className="p-2 border rounded-md min-h-[100px]"
+                  placeholder="詳細を入力してください"
+                  style={{
+                    backgroundColor: 'var(--background-color)',
+                    color: 'var(--font-color)',
+                    borderColor: 'var(--border-color)',
+                  }}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 mt-2">
+                <button 
+                  onClick={() => setIsReportModalOpen(false)}
+                  className="px-4 py-2 rounded-md transition-colors cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--inconspicuous-background-color)',
+                    color: 'var(--font-color)',
+                  }}
+                >
+                  キャンセル
+                </button>
+                <button 
+                  onClick={executeReport}
+                  className="px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--accent-color)',
+                  }}
+                >
+                  通報する
+                </button>
+              </div>
+            </div>
+          </Modal>
         </div>
-        
+
       </div>
     </>
   )
