@@ -25,11 +25,17 @@ export const Modal = ({
       document.body.style.overflow = 'hidden';
     } else {
       if (dialog.open) dialog.close();
-      document.body.style.overflow = '';
+      const openDialogs = document.querySelectorAll('dialog[open]');
+      if (openDialogs.length === 0) {
+        document.body.style.overflow = '';
+      }
     }
 
     return () => {
-      document.body.style.overflow = '';
+      const otherOpenDialogs = Array.from(document.querySelectorAll('dialog[open]')).filter(d => d !== dialog);
+      if (otherOpenDialogs.length === 0) {
+        document.body.style.overflow = '';
+      }
     };
   }, [isOpen]);
 
