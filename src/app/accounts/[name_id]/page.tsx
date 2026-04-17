@@ -2,7 +2,7 @@
 
 import MainHeader from "@/components/main_header/MainHeader";
 import { api } from "@/lib/axios";
-import { AccountType } from "@/types/account";
+import { Modal } from '@/components/modal/Modal';
 import { use, useEffect, useState, useCallback } from "react";
 import SkeletonAccount from "./skeleton_account";
 import { formatFullDate } from "@/lib/format_time";
@@ -29,6 +29,13 @@ export default function Page({ params }: Props) {
 }
 
 function AccountContent({ name_id }: { name_id: string }) {
+  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+  const [reportCategory, setReportCategory] = useState('spam')
+  const [reportDetail, setReportDetail] = useState('')
+  const [isBlockingSubmitting, setIsBlockingSubmitting] = useState(false)
+  const [isReportingSubmitting, setIsReportingSubmitting] = useState(false)
+
   const { accounts, fetchAccount, updateAccount } = useAccounts();
 
   const [loading, setLoading] = useState<boolean>(!accounts[name_id]);
@@ -37,7 +44,7 @@ function AccountContent({ name_id }: { name_id: string }) {
   const { addToast } = useToast();
   const { addPosts, getPost } = usePosts();
   const { addFeed, appendFeed, feeds } = useFeeds();
-  const { currentAccountStatus } = useCurrentAccount();
+  const { currentAccountStatus, currentAccount } = useCurrentAccount();
 
   const [posts, setPosts] = useState<PostType[]>(() => {
     if (account && feeds[account.aid]) {
@@ -198,6 +205,79 @@ function AccountContent({ name_id }: { name_id: string }) {
     }
   };
 
+  const handleMenu = () => {
+    setIsMenuModalOpen(true);
+  };
+  
+  const handleBlock = async () => {
+    if (!account || currentAccountStatus !== "signed_in" || isBlockingSubmitting) return;
+
+    const isBlocking = !!account.is_blocking;
+
+    updateAccount(name_id, {
+      is_blocking: !isBlocking,
+    });
+
+    setIsBlockingSubmitting(true);
+    try {
+      if (isBlocking) {
+        await api.delete(`/accounts/${account.aid}/block`);
+      } else {
+        await api.post(`/accounts/${account.aid}/block`);
+      }
+
+      addToast({
+        message: isBlocking ? "ブロックを解除しました" : "ブロックしました",
+      });
+      setIsMenuModalOpen(false);
+    } catch (error) {
+      updateAccount(name_id, {
+        is_blocking: isBlocking,
+      });
+      addToast({
+        message: "エラー",
+        detail: error instanceof Error
+          ? error.message
+          : (isBlocking ? "ブロック解除に失敗しました" : "ブロックに失敗しました"),
+      });
+    } finally {
+      setIsBlockingSubmitting(false);
+    }
+  };
+
+  const executeReport = async () => {
+    if (!account || currentAccountStatus !== "signed_in" || isReportingSubmitting) return;
+
+    setIsReportingSubmitting(true);
+    try {
+      await api.post("/reports", {
+        report: {
+          target_type: "account",
+          target_aid: account.aid,
+          category: reportCategory,
+          description: reportDetail,
+        }
+      });
+      addToast({ message: "通報しました" });
+      setReportCategory("spam");
+      setReportDetail("");
+      setIsReportModalOpen(false);
+      setIsMenuModalOpen(false);
+    } catch (error) {
+      addToast({
+        message: "通報に失敗しました",
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsReportingSubmitting(false);
+    }
+  };
+
+  const handleReport = () => {
+    if (!account || currentAccountStatus !== "signed_in") return;
+    setIsReportModalOpen(true);
+  };
+
   return (
     <>
       <MainHeader>
@@ -279,6 +359,16 @@ function AccountContent({ name_id }: { name_id: string }) {
                   }}
                 >
                   {account.is_following ? 'Following' : 'Follow'}
+                </button>
+                <button
+                  className={`ap-button`}
+                  onClick={handleMenu}
+                  style={{
+                    backgroundColor: "var(--bg-secondary)",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Menu
                 </button>
               </div>
 
@@ -370,6 +460,121 @@ function AccountContent({ name_id }: { name_id: string }) {
                 </div>
               )}
             </div>
+            <Modal
+              isOpen={isMenuModalOpen}
+              onClose={() => setIsMenuModalOpen(false)}
+              title="アカウントメニュー"
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>アカウントのID: {account.aid}</div>
+
+              {currentAccountStatus === "signed_in" && currentAccount?.aid !== account.aid && (
+                <>
+                  <button 
+                    onClick={handleBlock}
+                    disabled={isBlockingSubmitting}
+                    style={{ 
+                      color: 'red', 
+                      cursor: isBlockingSubmitting ? 'not-allowed' : 'pointer',
+                      opacity: isBlockingSubmitting ? 0.7 : 1,
+                      padding: '8px',
+                      border: '1px solid red',
+                      borderRadius: '4px',
+                      background: 'transparent'
+                    }}
+                  >
+                    {account.is_blocking ? 'アカウントのブロックを解除' : 'アカウントをブロック'}
+                  </button>
+                  <button
+                    onClick={handleReport}
+                    style={{ 
+                      color: 'red', 
+                      cursor: 'pointer',
+                      padding: '8px',
+                      border: '1px solid red',
+                      borderRadius: '4px',
+                      background: 'transparent'
+                    }}
+                  >
+                    アカウントを通報
+                  </button>
+                </>
+              )}
+              </div>
+            </Modal>
+
+            <Modal
+              isOpen={isReportModalOpen}
+              onClose={() => setIsReportModalOpen(false)}
+              title="アカウントを通報"
+            >
+              <div className="flex flex-col gap-4 p-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold">通報の理由</label>
+                  <select
+                    value={reportCategory}
+                    onChange={(e) => setReportCategory(e.target.value)}
+                    className="p-2 border rounded-md"
+                    style={{
+                      backgroundColor: 'var(--background-color)',
+                      color: 'var(--font-color)',
+                      borderColor: 'var(--border-color)',
+                    }}
+                  >
+                    <option value="spam">スパム・迷惑</option>
+                    <option value="hate">ヘイト・嫌がらせ・いじめ・差別</option>
+                    <option value="disinformation">偽情報・なりすまし</option>
+                    <option value="violence">暴力的・テロ・過激的思想</option>
+                    <option value="sensitive">センシティブ・性的・残酷</option>
+                    <option value="suicide">自殺・自傷</option>
+                    <option value="illegal">違法・規制対象・詐欺・不正</option>
+                    <option value="theft">盗用・著作権侵害</option>
+                    <option value="privacy">不同意・プライバシー侵害</option>
+                    <option value="other">その他</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold">詳細（任意）</label>
+                  <textarea
+                    value={reportDetail}
+                    onChange={(e) => setReportDetail(e.target.value)}
+                    className="p-2 border rounded-md min-h-[100px]"
+                    placeholder="詳細を入力してください"
+                    style={{
+                      backgroundColor: 'var(--background-color)',
+                      color: 'var(--font-color)',
+                      borderColor: 'var(--border-color)',
+                    }}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 mt-2">
+                  <button
+                    onClick={() => setIsReportModalOpen(false)}
+                    disabled={isReportingSubmitting}
+                    className="px-4 py-2 rounded-md transition-colors cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--inconspicuous-background-color)',
+                      color: 'var(--font-color)',
+                    }}
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={executeReport}
+                    disabled={isReportingSubmitting}
+                    className="px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--accent-color)',
+                      opacity: isReportingSubmitting ? 0.7 : 1,
+                    }}
+                  >
+                    {isReportingSubmitting ? '送信中...' : '通報する'}
+                  </button>
+                </div>
+              </div>
+            </Modal>
           </div>
         ) : (
           <div className="p-4 text-center">アカウントが見つかりません</div>
