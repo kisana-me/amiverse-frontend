@@ -1,0 +1,267 @@
+.drawing-exchange-page {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 24px 16px 120px;
+  display: grid;
+  gap: 18px;
+}
+
+.drawing-exchange-card,
+.drawing-exchange-result,
+.drawing-exchange-signin {
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, #f59e0b 20%, transparent), transparent 42%),
+    linear-gradient(155deg, color-mix(in srgb, var(--inactive-background-color) 94%, #ffe2b6 6%), var(--inactive-background-color));
+  border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 22%, transparent);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px color-mix(in srgb, #000 10%, transparent);
+  animation: exchange-rise 220ms ease-out;
+}
+
+.drawing-exchange-title {
+  margin: 0;
+  font-size: clamp(1.32rem, 3vw, 1.9rem);
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+}
+
+.drawing-exchange-description {
+  margin: 12px 0 0;
+  max-width: 65ch;
+  color: var(--inconspicuous-font-color);
+  line-height: 1.6;
+}
+
+.drawing-exchange-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.drawing-exchange-primary,
+.drawing-exchange-submit,
+.drawing-exchange-signin-primary,
+.drawing-exchange-signin-secondary {
+  border-radius: 999px;
+  border: 0;
+  padding: 11px 20px;
+  font-weight: 700;
+  font-size: 0.93rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.drawing-exchange-primary {
+  background: linear-gradient(130deg, #0e7490, #155e75);
+  color: #fff;
+  box-shadow: 0 8px 24px rgb(14 116 144 / 30%);
+}
+
+.drawing-exchange-submit {
+  background: linear-gradient(130deg, #f97316, #ea580c);
+  color: #fff;
+  box-shadow: 0 8px 24px rgb(249 115 22 / 30%);
+}
+
+.drawing-exchange-primary:disabled,
+.drawing-exchange-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.drawing-exchange-primary:not(:disabled):hover,
+.drawing-exchange-submit:not(:disabled):hover,
+.drawing-exchange-signin-primary:hover,
+.drawing-exchange-signin-secondary:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.05);
+}
+
+.drawing-exchange-preview {
+  margin-top: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.drawing-exchange-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid;
+  border-image-source: linear-gradient(45deg, hsl(0, 75%, 70%), hsl(60, 75%, 70%), hsl(120, 75%, 70%), hsl(180, 75%, 70%), hsl(240, 75%, 70%), hsl(300, 75%, 70%), hsl(360, 75%, 70%));
+  border-image-slice: 1;
+  background: #fff;
+  image-rendering: pixelated;
+}
+
+.drawing-exchange-preview-meta,
+.drawing-exchange-panel-meta {
+  display: grid;
+  gap: 5px;
+}
+
+.drawing-exchange-meta-name {
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.drawing-exchange-meta-description {
+  color: var(--inconspicuous-font-color);
+  line-height: 1.5;
+}
+
+.drawing-exchange-meta-time {
+  color: var(--inconspicuous-font-color);
+  font-size: 0.85rem;
+}
+
+.drawing-exchange-agree {
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+  color: var(--inconspicuous-font-color);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 20%, transparent);
+  background: color-mix(in srgb, var(--inactive-background-color) 92%, #fff 8%);
+}
+
+.drawing-exchange-agree input {
+  margin-top: 3px;
+  accent-color: var(--button-color);
+}
+
+.drawing-exchange-agree a {
+  color: var(--link-color);
+}
+
+.drawing-exchange-result h2,
+.drawing-exchange-signin h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+}
+
+.drawing-exchange-result > p {
+  margin: 0;
+  color: var(--inconspicuous-font-color);
+  line-height: 1.55;
+}
+
+.drawing-exchange-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.drawing-exchange-panel {
+  border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 20%, transparent);
+  border-radius: 14px;
+  padding: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--inactive-background-color) 94%, #fff 6%), var(--inactive-background-color));
+  display: grid;
+  gap: 10px;
+}
+
+.drawing-exchange-panel h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.drawing-exchange-account-wrap {
+  margin-top: 4px;
+}
+
+.drawing-exchange-report-button {
+  margin-top: 4px;
+  justify-self: end;
+  color: color-mix(in srgb, var(--inconspicuous-font-color) 88%, #ef4444 12%);
+  cursor: pointer;
+  padding: 3px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  opacity: 0.72;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+
+.drawing-exchange-report-button:hover {
+  opacity: 0.95;
+  color: #ef4444;
+}
+
+.drawing-exchange-report-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.drawing-exchange-signin p {
+  margin: 0;
+  color: var(--inconspicuous-font-color);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.drawing-exchange-signin-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.drawing-exchange-signin-primary {
+  background: var(--button-color);
+  color: var(--button-font-color);
+}
+
+.drawing-exchange-signin-secondary {
+  background: transparent;
+  color: var(--font-color);
+  border: 1px solid color-mix(in srgb, var(--font-color) 28%, transparent);
+}
+
+.drawing-exchange-primary:focus-visible,
+.drawing-exchange-submit:focus-visible,
+.drawing-exchange-signin-primary:focus-visible,
+.drawing-exchange-signin-secondary:focus-visible,
+.drawing-exchange-report-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--button-color) 70%, #fff 30%);
+  outline-offset: 2px;
+}
+
+@media (min-width: 840px) {
+  .drawing-exchange-page {
+    padding-top: 28px;
+  }
+
+  .drawing-exchange-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes exchange-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
