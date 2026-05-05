@@ -1,5 +1,3 @@
-import { PostType } from "./post";
-
 export type AccountType = {
   aid: string;
   name: string;
@@ -29,6 +27,4 @@ export type AccountType = {
     name: string;
     url: string;
   }[];
-
-  // posts: PostType[];
 }

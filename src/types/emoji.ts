@@ -10,4 +10,4 @@ export type EmojiType = {
   description?: string;
   group?: string;
   subgroup?: string;
-}
+};

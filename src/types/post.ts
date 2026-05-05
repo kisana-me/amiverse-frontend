@@ -27,7 +27,7 @@ export type PostType = {
   reactions?: EmojiType[];
 
   media?: {
-    type: 'image' | 'video';
+    type: "image" | "video";
     aid: string;
     name: string;
     description?: string;
@@ -45,4 +45,4 @@ export type PostType = {
   account: AccountType;
 
   is_busy?: boolean;
-}
+};

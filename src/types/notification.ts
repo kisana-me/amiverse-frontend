@@ -3,7 +3,15 @@ import { PostType } from "./post";
 
 export type NotificationType = {
   aid: string;
-  action: 'reaction' | 'diffuse' | 'reply' | 'quote' | 'follow' | 'mention' | 'signin' | 'system';
+  action:
+    | "reaction"
+    | "diffuse"
+    | "reply"
+    | "quote"
+    | "follow"
+    | "mention"
+    | "signin"
+    | "system";
   content?: string;
   checked: boolean;
   created_at: string;
