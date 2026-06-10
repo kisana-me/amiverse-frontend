@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./style.css";
+import ServiceWorkerRegister from './ServiceWorkerRegister';
 
 // Components import
 import Header from "@/components/header/Header";
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body>
+        <ServiceWorkerRegister />
         <UIProvider>
         <OverlayProvider>
         <ToastProvider>
