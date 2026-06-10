@@ -1,5 +1,11 @@
 self.addEventListener('push', function(event) {
-  const payload = event.data ? event.data.json() : {};
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (error) {
+    console.error('[push-sw] Failed to parse push payload:', error);
+    payload = {};
+  }
   const title = payload.title || 'Amiverse 🔕';
 
   const defaultOptions = {

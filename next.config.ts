@@ -1,14 +1,4 @@
 import type { NextConfig } from 'next';
-import nextPWA from 'next-pwa';
-
-const withPWA = nextPWA({
-  dest: 'public',
-  sw: 'sw.js',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-  importScripts: ['/push-sw.js'],
-});
 
 const nextConfig: NextConfig = {
   watchOptions: {
@@ -58,4 +48,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA(nextConfig);
+export default nextConfig;
