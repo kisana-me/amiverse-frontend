@@ -102,13 +102,13 @@ export default function Post(post: PostProps) {
         <Account account={post.account} />
         <div className='item-info item-top-info'>
           <div className='iti-left'>
-            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link prefetch={false} href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               {post.reply_presence && '返信'}
               {post.quote_presence && (post.reply_presence ? '・引用' : '引用')}
             </Link>
           </div>
           <div className='iti-right'>
-            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link prefetch={false} href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               { formatRelativeTime(new Date(post.created_at)) }
             </Link>
           </div>
@@ -186,12 +186,12 @@ export default function Post(post: PostProps) {
         </div>
         <div className='item-info item-bottom-info'>
           <div className='ibi-left'>
-            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link prefetch={false} href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               {strVisibility(post.visibility)}
             </Link>
           </div>
           <div className='ibi-right'>
-            <Link href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
+            <Link prefetch={false} href={'/posts/' + post.aid} style={{color: 'inherit', textDecoration: 'none'}}>
               {post.views_count}回表示
             </Link>
           </div>

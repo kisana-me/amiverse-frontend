@@ -78,7 +78,7 @@ export default function ItemContent({ content }: ItemContentProps) {
         href = '/' + href;
 
         parts.push(
-          <Link
+          <Link prefetch={false}
             key={`${lineIndex}-${match.index}`}
             href={href}
             onClick={(e) => e.stopPropagation()}
@@ -98,7 +98,7 @@ export default function ItemContent({ content }: ItemContentProps) {
         const query = encodeURIComponent(tagText);
 
         parts.push(
-          <Link
+          <Link prefetch={false}
             key={`${lineIndex}-${match.index}`}
             href={`/search?query=${query}`}
             onClick={(e) => e.stopPropagation()}

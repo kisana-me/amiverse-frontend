@@ -85,10 +85,10 @@ export default function Page() {
                   </span>
                 </div>
                 <div>
-                  <Link href={`/@${currentAccount?.name_id || "/"}`} className="dashboard-profile-button">
+                  <Link prefetch={false} href={`/@${currentAccount?.name_id || "/"}`} className="dashboard-profile-button">
                     プロフページ
                   </Link>
-                  <Link href="/settings/account" className="dashboard-profile-button">
+                  <Link prefetch={false} href="/settings/account" className="dashboard-profile-button">
                     プロフ設定
                   </Link>
                 </div>
@@ -121,7 +121,7 @@ export default function Page() {
             <div className="dashboard-feature-icon">🎨✏️</div>
             <h3 className="dashboard-feature-title">お絵かき</h3>
             <p className="dashboard-feature-description">新しいのを描く</p>
-            <Link href="/" className="dashboard-feature-link">
+            <Link prefetch={false} href="/" className="dashboard-feature-link">
               みんなのを見る
             </Link>
           </div>
@@ -131,7 +131,7 @@ export default function Page() {
             <div className="dashboard-feature-icon">🫧🦄</div>
             <h3 className="dashboard-feature-title">絵文字</h3>
             <p className="dashboard-feature-description">新しいのを作る</p>
-            <Link href="/" className="dashboard-feature-link">
+            <Link prefetch={false} href="/" className="dashboard-feature-link">
               みんなのを見る
             </Link>
           </div>
@@ -141,7 +141,7 @@ export default function Page() {
             <div className="dashboard-feature-icon">🪙💴</div>
             <h3 className="dashboard-feature-title">お財布</h3>
             <p className="dashboard-feature-description">残高 000,000 AMV</p>
-            <Link href="/" className="dashboard-feature-link">
+            <Link prefetch={false} href="/" className="dashboard-feature-link">
               詳細を見る
             </Link>
           </div>
@@ -159,7 +159,7 @@ export default function Page() {
             <div className="dashboard-feature-icon">📚✨</div>
             <h3 className="dashboard-feature-title">コレクション</h3>
             <p className="dashboard-feature-description">お気に入りをまとめる</p>
-            <Link href="/" className="dashboard-feature-link">
+            <Link prefetch={false} href="/" className="dashboard-feature-link">
               コレクションを見る
             </Link>
           </div>
@@ -169,7 +169,7 @@ export default function Page() {
             <div className="dashboard-feature-icon">🏆🎖️</div>
             <h3 className="dashboard-feature-title">アチーブメント</h3>
             <p className="dashboard-feature-description">達成した実績</p>
-            <Link href="/" className="dashboard-feature-link">
+            <Link prefetch={false} href="/" className="dashboard-feature-link">
               実績を見る
             </Link>
           </div>
@@ -211,7 +211,7 @@ export default function Page() {
                 </button>
               </div>
             </Modal>
-            <Link href="/settings" className="dashboard-app-item">
+            <Link prefetch={false} href="/settings" className="dashboard-app-item">
               <div className="dashboard-app-icon">⚙️</div>
               <span className="dashboard-app-name">設定</span>
             </Link>

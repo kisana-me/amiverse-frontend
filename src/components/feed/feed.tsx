@@ -56,7 +56,7 @@ export default function Feed({
                           style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} 
                         />
                         <span style={{ fontWeight: 'bold', marginLeft: '4px' }}>
-                          <Link href={`/@${feedItem.account.name_id}`}>
+                          <Link prefetch={false} href={`/@${feedItem.account.name_id}`}>
                             {feedItem.account.name}
                           </Link>
                         </span>

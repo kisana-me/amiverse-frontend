@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     pollIntervalMs: 1000,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

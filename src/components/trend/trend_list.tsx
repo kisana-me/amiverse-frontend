@@ -24,7 +24,7 @@ export default function TrendList(trend: TrendType) {
 
         <div className="trend-list">
           {trend.ranking.map((t, index) => (
-            <Link href={`/search?query=${t.word}`} className="trend-item" key={index}>
+            <Link prefetch={false} href={`/search?query=${t.word}`} className="trend-item" key={index}>
               <div className="trend-item-top">{index + 1}位</div>
               <div className="trend-item-word">{t.word}</div>
               <div className="trend-item-bottom">{t.count}件</div>

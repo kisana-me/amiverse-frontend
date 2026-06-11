@@ -11,7 +11,7 @@ export default function BottomNav() {
 
   return (
     <nav className='bottom-nav'>
-      <Link href='/'>
+      <Link prefetch={false} href='/'>
         <div className='header-list-container'>
           <div className="header-list-icon">
             {pathname == '/' ?
@@ -34,7 +34,7 @@ export default function BottomNav() {
           </div>
         </div>
       </Link>
-      <Link href='/discovery'>
+      <Link prefetch={false} href='/discovery'>
         <div className='header-list-container'>
           <div className="header-list-icon">
             {pathname == '/discovery' ?
@@ -52,7 +52,7 @@ export default function BottomNav() {
           </div>
         </div>
       </Link>
-      <Link href='/dashboard'>
+      <Link prefetch={false} href='/dashboard'>
         <div className='header-list-container'>
           <div className="header-list-icon">
             {pathname == '/dashboard' ?
@@ -73,7 +73,7 @@ export default function BottomNav() {
           </div>
         </div>
       </Link>
-      <Link href='/notifications'>
+      <Link prefetch={false} href='/notifications'>
         <div className='header-list-container'>
           <div className="header-list-icon" style={{ position: 'relative' }}>
             {unreadCount > 0 && (
@@ -111,7 +111,7 @@ export default function BottomNav() {
           </div>
         </div>
       </Link>
-      <Link href='/communities'>
+      <Link prefetch={false} href='/communities'>
         <div className='header-list-container'>
           <div className="header-list-icon">
             {pathname == '/communities' ?

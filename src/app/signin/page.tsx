@@ -102,8 +102,8 @@ export default function SignInPage() {
 
           <div className="signin-footer">
             <p>
-              利用規約は<Link href="/terms-of-service">こちら</Link>、
-              プライバシーポリシーは<Link href="/privacy-policy">こちら</Link>
+              利用規約は<Link prefetch={false} href="/terms-of-service">こちら</Link>、
+              プライバシーポリシーは<Link prefetch={false} href="/privacy-policy">こちら</Link>
             </p>
           </div>
         </div>

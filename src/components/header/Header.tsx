@@ -16,7 +16,7 @@ export default function Header() {
   const renderCurrentAccountStatus = () => {
     if (currentAccountStatus === "signed_in" && currentAccount) {
       return (
-        <Link href={ '/@' + currentAccount.name_id } style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href={ '/@' + currentAccount.name_id } style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               <img src={currentAccount.icon_url} className="header-list-image" />
@@ -31,7 +31,7 @@ export default function Header() {
 
     if (currentAccountStatus === "signed_out") {
       return (
-        <Link href='/signin' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/signin' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,7 +47,7 @@ export default function Header() {
     }
 
     return (
-      <Link href='/login' style={{color: 'inherit', textDecoration: 'none'}}>
+      <Link prefetch={false} href='/login' style={{color: 'inherit', textDecoration: 'none'}}>
         <div className='header-list-container'>
           <div className="header-list-icon">
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,7 +65,7 @@ export default function Header() {
   return (
     <header className={isHeaderMenuOpen ? 'show-header' : ''}>
       <div className="header-container1">
-        <Link href='/' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {/* <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,7 +111,7 @@ export default function Header() {
         </Link>
       </div>
       <nav>
-        <Link href='/' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {pathname == '/' ?
@@ -134,7 +134,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/discovery' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/discovery' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {pathname == '/discovery' ?
@@ -152,7 +152,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/dashboard' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/dashboard' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {pathname == '/dashboard' ?
@@ -173,7 +173,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/notifications' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/notifications' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon" style={{ position: 'relative' }}>
               {unreadCount > 0 && (
@@ -211,7 +211,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/communities' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/communities' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {pathname == '/communities' ?
@@ -229,7 +229,7 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Link href='/posts/new' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/posts/new' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container header-new-item'>
             <div className="header-list-icon">
               <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -244,7 +244,7 @@ export default function Header() {
       </nav>
       <div className="header-container2">
         { renderCurrentAccountStatus() }
-        <Link href='/settings' style={{color: 'inherit', textDecoration: 'none'}}>
+        <Link prefetch={false} href='/settings' style={{color: 'inherit', textDecoration: 'none'}}>
           <div className='header-list-container'>
             <div className="header-list-icon">
               {false ?

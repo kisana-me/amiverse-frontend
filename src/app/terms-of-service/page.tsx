@@ -13,7 +13,7 @@ export default function Page() {
       
       <p>本サービスの利用規約は、下記リンク先に記載しております。</p>
 
-      <Link
+      <Link prefetch={false}
         href="https://anyur.com/terms-of-service"
         target="_blank"
         rel="noopener noreferrer"

@@ -166,8 +166,8 @@ function SignupContent() {
 
             <div className="signup-footer">
               <p>
-                作成することで<Link href="/terms-of-service">利用規約</Link>と
-                <Link href="/privacy-policy">プライバシーポリシー</Link>に同意したことになります
+                作成することで<Link prefetch={false} href="/terms-of-service">利用規約</Link>と
+                <Link prefetch={false} href="/privacy-policy">プライバシーポリシー</Link>に同意したことになります
               </p>
             </div>
           </div>

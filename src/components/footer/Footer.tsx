@@ -6,13 +6,13 @@ export default function Footer() {
     <footer>
       <ul>
         <li>
-          <Link href='/terms-of-service'>利用規約</Link>
+          <Link prefetch={false} href='/terms-of-service'>利用規約</Link>
         </li>
         <li>
-          <Link href='/privacy-policy'>プライバシーポリシー</Link>
+          <Link prefetch={false} href='/privacy-policy'>プライバシーポリシー</Link>
         </li>
         <li>
-          <Link href='/contact'>お問い合わせ</Link>
+          <Link prefetch={false} href='/contact'>お問い合わせ</Link>
         </li>
       </ul>
       <hr />

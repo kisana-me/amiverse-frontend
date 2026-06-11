@@ -243,7 +243,7 @@ function HomeContent() {
             <button onClick={() => setIsSignInModalOpen(false)} style={{ padding: '0.5rem 1rem', border: 'none', background: 'none', cursor: 'pointer' }}>
               キャンセル
             </button>
-            <Link href="/signin" style={{ padding: '0.5rem 1rem', background: '#747eee', color: 'white', borderRadius: '4px', textDecoration: 'none' }}>
+            <Link prefetch={false} href="/signin" style={{ padding: '0.5rem 1rem', background: '#747eee', color: 'white', borderRadius: '4px', textDecoration: 'none' }}>
               サインイン
             </Link>
           </div>

@@ -12,7 +12,7 @@ export default function ItemQuote({ quote }: { quote: PostType }) {
 
   return (
     <div className="item-quote">
-      <Link href={`/posts/${quote.aid}`} className="item-quote-link">
+      <Link prefetch={false} href={`/posts/${quote.aid}`} className="item-quote-link">
         <div className="item-quote-header">
           <div className="item-quote-account">
             <img src={account.icon_url || "/ast-imgs/icon.png"} alt={account.name} className="item-quote-icon" />

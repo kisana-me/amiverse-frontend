@@ -92,7 +92,7 @@ export default function NativeAppSignInClient() {
           <div className="native-signin-block">
             <p className="native-signin-title">サインインが必要です</p>
             <p className="native-signin-text">まずWebでサインインしてください。</p>
-            <Link className="native-signin-link" href="/signin">
+            <Link prefetch={false} className="native-signin-link" href="/signin">
               サインインページへ
             </Link>
           </div>

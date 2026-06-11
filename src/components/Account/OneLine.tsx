@@ -18,7 +18,7 @@ export default function OneLine(props: OneLineProps) {
   return (
     <>
       <div className={`aol ${classes || ""}`}>
-        <Link className="aol-plate" href={'/@' + account.name_id}>
+        <Link prefetch={false} className="aol-plate" href={'/@' + account.name_id}>
           <div className="aol-ring" style={{
             borderColor: account.ring_color || '#fff0'
           }}>

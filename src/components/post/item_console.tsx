@@ -261,7 +261,7 @@ export default function ItemConsole(initialPost: PostType) {
           >
             <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <p>この操作を行うにはサインインが必要です。</p>
-              <Link href="/signin" style={{ color: '#1d9bf0', textDecoration: 'none' }}>
+              <Link prefetch={false} href="/signin" style={{ color: '#1d9bf0', textDecoration: 'none' }}>
                 サインインする
               </Link>
             </div>

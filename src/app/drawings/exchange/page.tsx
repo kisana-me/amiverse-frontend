@@ -229,7 +229,7 @@ export default function DrawingsExchangePage() {
               disabled={isSubmitting}
             />
             <span>
-              <Link href="/terms-of-service">利用規約</Link> と <Link href="/privacy-policy">プライバシーポリシー</Link> に同意する
+              <Link prefetch={false} href="/terms-of-service">利用規約</Link> と <Link prefetch={false} href="/privacy-policy">プライバシーポリシー</Link> に同意する
             </span>
           </label>
           
@@ -300,7 +300,7 @@ export default function DrawingsExchangePage() {
             <h2>Amiverseに参加してみない？</h2>
             <p>Amiverseは投稿に320×120の白黒ドット絵を描けるSNSです！</p>
             <div className="drawing-exchange-signin-actions">
-              <Link href="/signin" className="drawing-exchange-signin-primary">
+              <Link prefetch={false} href="/signin" className="drawing-exchange-signin-primary">
                 サインイン・サインアップ
               </Link>
             </div>

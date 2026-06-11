@@ -10,7 +10,7 @@ export default function ItemAccount(post: PostType) {
   return (
     <>
       <div className="item-account-info">
-        <Link href={'/@' + account.name_id} className="iai-plate" style={{
+        <Link prefetch={false} href={'/@' + account.name_id} className="iai-plate" style={{
           color: 'inherit',
           textDecoration: 'none',
           minWidth: 0,

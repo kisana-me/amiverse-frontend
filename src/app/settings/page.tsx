@@ -73,7 +73,7 @@ export default function Page() {
             <h2 className="text-xl font-bold mb-4 text-[var(--font-color)]">アカウント</h2>
             <div className="space-y-2">
               {settingsItems.map((item) => (
-                <Link 
+                <Link prefetch={false} 
                   key={item.href} 
                   href={item.href}
                   className={`block p-3 rounded hover:bg-[var(--hover-color)] transition-colors ${item.danger ? 'text-red-500' : 'text-[var(--link-color)]'}`}
@@ -95,7 +95,7 @@ export default function Page() {
                 サインアウト
               </button>
             ) : (
-              <Link 
+              <Link prefetch={false} 
                 href='/signin'
                 className="block w-full text-center px-4 py-2 rounded bg-[var(--primary-color)] text-white hover:opacity-80 transition-opacity"
               >

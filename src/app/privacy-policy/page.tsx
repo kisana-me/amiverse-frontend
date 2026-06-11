@@ -13,7 +13,7 @@ export default function Page() {
       
       <p>本サービスのプライバシーポリシーは、下記リンク先に記載しております。</p>
 
-      <Link
+      <Link prefetch={false}
         href="https://anyur.com/privacy-policy"
         target="_blank"
         rel="noopener noreferrer"

@@ -41,7 +41,7 @@ export default function Aside() {
             <>
               <div className="aside-trend-list">
                 {topTrends.map((trend: TrendType['ranking'][number], index: number) => (
-                  <Link 
+                  <Link prefetch={false} 
                     href={`/search?query=${encodeURIComponent(trend.word)}`}
                     className="aside-trend-item" 
                     key={index}
@@ -52,7 +52,7 @@ export default function Aside() {
                   </Link>
                 ))}
               </div>
-              <Link href="/discovery" className="aside-more-link">
+              <Link prefetch={false} href="/discovery" className="aside-more-link">
                 もっと見る
               </Link>
             </>
@@ -63,13 +63,13 @@ export default function Aside() {
         <footer className="aside-section">
           <h2 className="aside-section-title">リンク</h2>
           <div className="aside-links">
-            <Link href="/terms-of-service" className="aside-link-item">
+            <Link prefetch={false} href="/terms-of-service" className="aside-link-item">
               <div className="aside-link-text">利用規約</div>
             </Link>
-            <Link href="/privacy-policy" className="aside-link-item">
+            <Link prefetch={false} href="/privacy-policy" className="aside-link-item">
               <div className="aside-link-text">プライバシーポリシー</div>
             </Link>
-            <Link href="/contact" className="aside-link-item">
+            <Link prefetch={false} href="/contact" className="aside-link-item">
               <div className="aside-link-text">お問い合わせ</div>
             </Link>
           </div>

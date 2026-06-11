@@ -26,7 +26,7 @@ export default function ActionPrompt() {
   if (currentAccountStatus === "signed_in") {
     return (
       <div className="action-prompt-container">
-        <Link href="/posts/new" className="new-post-fab" aria-label="新規投稿">
+        <Link prefetch={false} href="/posts/new" className="new-post-fab" aria-label="新規投稿">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -55,7 +55,7 @@ export default function ActionPrompt() {
           </p>
         </div>
         <div className="signin-banner-actions">
-          <Link href="/signin" className="signin-banner-button signin-banner-button-primary">
+          <Link prefetch={false} href="/signin" className="signin-banner-button signin-banner-button-primary">
             サインイン
           </Link>
         </div>
