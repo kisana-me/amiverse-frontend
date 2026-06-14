@@ -1,0 +1,264 @@
+[
+  {
+    "aid": "1",
+    "content": "test post!",
+    "visibility": "opened",
+    "created_at": "2026-06-13T21:30:00.000+09:00",
+    "reply_presence": false,
+    "quote_presence": false,
+    "replies_count": 0,
+    "quotes_count": 0,
+    "views_count": 0,
+    "diffuses_count": 0,
+    "is_diffused": false,
+    "reactions_count": 0,
+    "is_reacted": false,
+    "quote": null,
+    "reactions": [
+      {
+        "aid": "12345678901234",
+        "name": "❤️",
+        "name_id": "red_heart",
+        "reactions_count": 0,
+        "reacted": false
+      }
+    ],
+    "media": [],
+    "drawings": [],
+    "account": {
+      "aid": "12345678901234",
+      "name": "文字のみ",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  },
+  {
+    "aid": "2",
+    "content": "",
+    "visibility": "opened",
+    "created_at": "2025-12-01T00:00:00.000+09:00",
+    "reply_presence": false,
+    "quote_presence": false,
+    "replies_count": 0,
+    "quotes_count": 1,
+    "views_count": 0,
+    "diffuses_count": 2,
+    "is_diffused": true,
+    "reactions_count": 3,
+    "is_reacted": true,
+    "quote": null,
+    "reactions": [
+      {
+        "aid": "12345678901234",
+        "name": "🥰",
+        "name_id": "smiling_face_with_hearts",
+        "reactions_count": 3,
+        "reacted": true
+      }
+    ],
+    "media": [],
+    "drawings": [
+      {
+        "aid": "12345678901234",
+        "name": "",
+        "description": "",
+        "created_at": "2025-12-01T00:00:01.565+09:00",
+        "image_url": "https://m.amiverse.net/amiverse/drawings/i59z99sy24vno0.png"
+      }
+    ],
+    "account": {
+      "aid": "12345678901234",
+      "name": "お絵描きのみ",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  },
+  {
+    "aid": "3",
+    "content": "はじめまして @kisana です！\r\nこれからよろしく！\r\nhttps://kisana.me/ は私のサイトです！",
+    "visibility": "opened",
+    "created_at": "2025-12-31T23:59:59.999+09:00",
+    "reply_presence": false,
+    "quote_presence": false,
+    "replies_count": 1,
+    "quotes_count": 0,
+    "views_count": 0,
+    "diffuses_count": 1,
+    "is_diffused": true,
+    "reactions_count": 2,
+    "is_reacted": true,
+    "quote": null,
+    "reactions": [
+      {
+        "aid": "12345678901234",
+        "name": "✌🏻",
+        "name_id": "victory_hand_light_skin_tone",
+        "reactions_count": 1,
+        "reacted": true
+      },
+      {
+        "aid": "12345678901234",
+        "name": "♥️",
+        "name_id": "heart_suit",
+        "reactions_count": 1,
+        "reacted": false
+      }
+    ],
+    "media": [],
+    "drawings": [],
+    "account": {
+      "aid": "12345678901234",
+      "name": "メンションとURL",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  },
+  {
+    "aid": "4",
+    "content": "和歌山行ってきたわ",
+    "visibility": "opened",
+    "created_at": "2026-02-21T01:40:07.407+09:00",
+    "reply_presence": false,
+    "quote_presence": false,
+    "replies_count": 1,
+    "quotes_count": 0,
+    "views_count": 0,
+    "diffuses_count": 0,
+    "is_diffused": false,
+    "reactions_count": 1,
+    "is_reacted": false,
+    "quote": null,
+    "reactions": [
+      {
+        "aid": "d3dsc7es8y5u8s",
+        "name": "✨",
+        "name_id": "sparkles",
+        "reactions_count": 1,
+        "reacted": false
+      }
+    ],
+    "media": [
+      {
+        "type": "image",
+        "aid": "z3tbjl0xdhz3mc",
+        "name": "4749",
+        "description": "",
+        "url": "https://m.amiverse.net/amiverse/images/variants/z3tbjl0xdhz3mc.webp"
+      },
+      {
+        "type": "image",
+        "aid": "v9w08zs0lcgqxk",
+        "name": "4755",
+        "description": "",
+        "url": "https://m.amiverse.net/amiverse/images/variants/v9w08zs0lcgqxk.webp"
+      },
+      {
+        "type": "image",
+        "aid": "cef3ttpt9u56va",
+        "name": "4759",
+        "description": "",
+        "url": "https://m.amiverse.net/amiverse/images/variants/cef3ttpt9u56va.webp"
+      },
+      {
+        "type": "image",
+        "aid": "iqbce4v64elrqq",
+        "name": "4760",
+        "description": "",
+        "url": "https://m.amiverse.net/amiverse/images/variants/iqbce4v64elrqq.webp"
+      }
+    ],
+    "drawings": [],
+    "account": {
+      "aid": "12345678901234",
+      "name": "メディア(画像)4つ",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  },
+  {
+    "aid": "5",
+    "content": "BABYMONSTER\r\nhttps://www.youtube.com/watch?v=naoGk-Zjc1s\r\n最新曲\r\n↓↓",
+    "visibility": "opened",
+    "created_at": "2025-11-30T00:00:00.000+09:00",
+    "reply_presence": false,
+    "quote_presence": false,
+    "replies_count": 1,
+    "quotes_count": 1,
+    "views_count": 0,
+    "diffuses_count": 0,
+    "is_diffused": false,
+    "reactions_count": 1,
+    "is_reacted": true,
+    "quote": null,
+    "reactions": [
+      {
+        "aid": "12345678901234",
+        "name": "🏑",
+        "name_id": "field_hockey",
+        "reactions_count": 1,
+        "reacted": true
+      }
+    ],
+    "media": [],
+    "drawings": [],
+    "account": {
+      "aid": "12345678901234",
+      "name": "YouTube",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  },
+  {
+    "aid": "6",
+    "content": "?",
+    "visibility": "opened",
+    "created_at": "2026-04-20T00:00:00.000+09:00",
+    "reply_presence": false,
+    "quote_presence": true,
+    "replies_count": 0,
+    "quotes_count": 0,
+    "views_count": 0,
+    "diffuses_count": 0,
+    "is_diffused": false,
+    "reactions_count": 0,
+    "is_reacted": false,
+    "quote": {
+      "aid": "12345678901234",
+      "content": "「人気」タブのタイムラインを新しくしました！\n更新するたびに少し違う投稿が流れてきます✨\n良い投稿を見つけたらリアクションしてみてね🤭",
+      "visibility": "opened",
+      "created_at": "2026-04-17T11:12:55.174+09:00",
+      "reply_presence": false,
+      "quote_presence": false,
+      "replies_count": 0,
+      "quotes_count": 1,
+      "views_count": 0,
+      "diffuses_count": 1,
+      "is_diffused": false,
+      "reactions_count": 4,
+      "is_reacted": true,
+      "account": {
+        "aid": "12345678901234",
+        "name": "きさな🍭",
+        "name_id": "kisana",
+        "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+      }
+    },
+    "reactions": [
+      {
+        "aid": "12345678901234",
+        "name": "❤️",
+        "name_id": "red_heart",
+        "reactions_count": 0,
+        "reacted": false
+      }
+    ],
+    "media": [],
+    "drawings": [],
+    "account": {
+      "aid": "12345678901234",
+      "name": "引用",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    }
+  }
+]
