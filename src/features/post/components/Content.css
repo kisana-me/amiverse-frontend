@@ -1,0 +1,22 @@
+.post-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  font-size: 15px;
+}
+.post-content a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+.post-content a:hover {
+  text-decoration: underline;
+}
+.post-content-more {
+  color: var(--link-color);
+  cursor: pointer;
+  margin-top: 4px;
+  display: inline-block;
+}
+.post-content-more:hover {
+  text-decoration: underline;
+}

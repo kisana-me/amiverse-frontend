@@ -1,0 +1,19 @@
+.post-header {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+.ph-left {
+  display: flex;
+  min-width: 0px;
+}
+.ph-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 12px;
+  color: #aaaaaa;
+  flex-shrink: 0;
+}
