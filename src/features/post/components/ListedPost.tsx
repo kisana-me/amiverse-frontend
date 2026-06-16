@@ -8,8 +8,8 @@ import Content from './Content'
 import Drawings from './Drawings'
 import YouTube from './YouTube'
 import Quote from './Quote'
+import Reactions from './Reactions'
 
-import ItemReactions from '@/components/post/item_reactions'
 import ItemConsole from '@/components/post/item_console'
 
 import { PostType } from '@/types/post'
@@ -39,7 +39,7 @@ export default function Post(post: PostProps) {
         <YouTube {...post} />
         <Quote {...post} />
       </div>
-      <ItemReactions {...post} />
+      <Reactions {...post} />
       <ItemConsole {...post} />
     </div>
   )
