@@ -1,0 +1,26 @@
+.images {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px
+}
+.image_container {
+  width: 100%;
+  cursor: pointer;
+}
+.image {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border: 1px solid;
+  border-image-source: linear-gradient(45deg,
+    hsl(0, 75%, 70%),
+    hsl(60, 75%, 70%),
+    hsl(120, 75%, 70%),
+    hsl(180, 75%, 70%),
+    hsl(240, 75%, 70%),
+    hsl(300, 75%, 70%),
+    hsl(360, 75%, 70%)
+  );
+  border-image-slice: 1;
+}

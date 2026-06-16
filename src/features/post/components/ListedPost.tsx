@@ -35,7 +35,7 @@ export default function Post(post: PostProps) {
       </div>
       <div style={{ padding: '0 2px' }}>
         <Content content={post.content} />
-        <Drawings drawings={post.drawings} />
+        <Drawings {...post} />
         <Media {...post} />
         <YouTube {...post} />
         <Quote {...post} />
