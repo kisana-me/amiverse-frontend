@@ -1,17 +1,21 @@
 import { useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
-export function usePostClick(aid: string) {
+export function usePostClick(aid: string, stopPropagation: boolean = false) {
   const router = useRouter()
   const pointerDownTime = useRef<number>(0)
   const pointerDownPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (stopPropagation) e.stopPropagation()
+
     pointerDownTime.current = Date.now()
     pointerDownPos.current = { x: e.clientX, y: e.clientY }
   }
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (stopPropagation) e.stopPropagation()
+
     const target = e.target as Element
 
     // aタグやbuttonなどのインタラクティブ要素をクリックした場合は遷移しない
