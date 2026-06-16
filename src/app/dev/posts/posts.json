@@ -13,7 +13,6 @@
     "is_diffused": false,
     "reactions_count": 0,
     "is_reacted": false,
-    "quote": null,
     "reactions": [
       {
         "aid": "12345678901234",
@@ -46,7 +45,6 @@
     "is_diffused": true,
     "reactions_count": 3,
     "is_reacted": true,
-    "quote": null,
     "reactions": [
       {
         "aid": "12345678901234",
@@ -87,7 +85,6 @@
     "is_diffused": true,
     "reactions_count": 2,
     "is_reacted": true,
-    "quote": null,
     "reactions": [
       {
         "aid": "12345678901234",
@@ -127,7 +124,6 @@
     "is_diffused": false,
     "reactions_count": 1,
     "is_reacted": false,
-    "quote": null,
     "reactions": [
       {
         "aid": "d3dsc7es8y5u8s",
@@ -189,7 +185,6 @@
     "is_diffused": false,
     "reactions_count": 1,
     "is_reacted": true,
-    "quote": null,
     "reactions": [
       {
         "aid": "12345678901234",
