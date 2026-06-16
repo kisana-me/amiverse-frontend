@@ -25,10 +25,12 @@ export default function Post(post: PostProps) {
   return (
     <div className={styles.post} {...postClickHandlers}>
       <Header {...post} />
-      <div className={styles.post_reply}>
+      <div className={styles.post_to}>
         <Link prefetch={false} href={'/posts/' + post.aid}>
-          {post.reply_presence && '返信'}
-          {post.quote_presence && (post.reply_presence ? '・引用' : '引用')}
+          {post.reply_presence && post?.reply && '返信先: @' + post.reply.account.name_id}
+          {post.reply_presence && !post?.reply && '返信'}
+          {post.quote_presence && post?.quote && '引用元: @' + post.quote.account.name_id}
+          {post.quote_presence && !post?.quote && '引用'}
         </Link>
       </div>
       <div style={{ padding: '0 2px' }}>
