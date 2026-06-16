@@ -1,5 +1,6 @@
 'use client'
 
+import { ComponentProps } from 'react'
 import MainHeader from '@/components/main_header/MainHeader'
 // import Feed from '@/components/feed/feed'
 import Post from '@/features/post/components/ListedPost'
@@ -10,7 +11,7 @@ export default function Page() {
     <>
       <MainHeader>Posts</MainHeader>
       {posts.map((post) => (
-        <Post key={post.aid} {...post} />
+        <Post key={post.aid} {...(post as ComponentProps<typeof Post>)} />
       ))}
     </>
   )

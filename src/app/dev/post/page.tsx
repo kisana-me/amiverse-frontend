@@ -1,5 +1,6 @@
 'use client'
 
+import { ComponentProps } from 'react'
 import MainHeader from '@/components/main_header/MainHeader'
 // import Post from '@/components/post/post'
 import Post from '@/features/post/components/ListedPost'
@@ -11,7 +12,7 @@ export default function Page() {
   return (
     <>
       <MainHeader>Post</MainHeader>
-      {post && <Post {...post} />}
+      {post && <Post {...(post as ComponentProps<typeof Post>)} />}
     </>
   )
 }
