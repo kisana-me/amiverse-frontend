@@ -1,8 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import './Header.css'
+import styles from '../styles/Header.module.css'
 import { PostType } from '@/types/post'
 import { formatRelativeTime } from '@/lib/format_time'
 import Account from './Account'
@@ -20,11 +19,11 @@ export default function Header(post: PostType) {
     })[v] ?? '公開状態不明'
 
   return (
-    <div className="post-header">
-      <Link prefetch={false} className="ph-left" href={'/@' + account.name_id}>
+    <div className={styles.header}>
+      <Link prefetch={false} className={styles.header_left} href={'/@' + account.name_id}>
         <Account {...account} />
       </Link>
-      <div className="ph-right">
+      <div className={styles.header_right}>
         <div>{formatRelativeTime(new Date(post.created_at))}</div>
         <div>{strVisibility(post.visibility)}</div>
       </div>

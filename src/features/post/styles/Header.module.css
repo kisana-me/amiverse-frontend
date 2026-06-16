@@ -1,13 +1,13 @@
-.post-header {
+.header {
   height: 50px;
   display: flex;
   justify-content: space-between;
 }
-.ph-left {
+.header_left {
   display: flex;
   min-width: 0px;
 }
-.ph-right {
+.header_right {
   display: flex;
   flex-direction: column;
   justify-content: center;

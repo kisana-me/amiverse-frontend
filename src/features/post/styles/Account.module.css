@@ -1,7 +1,7 @@
-.ph-account {
+.account {
   display: flex;
 }
-.ph-account-ring {
+.account_ring {
   border: 2px solid;
   border-radius: 100%;
   position: relative;
@@ -12,27 +12,27 @@
   height: 50px;
   box-sizing: border-box;
 }
-.ph-account-status {
+.account_status {
   width: 8px;
   height: 8px;
   border-radius: 100%;
   position: absolute;
 }
-.ph-account-icon {
+.account_icon {
   border-radius: 100%;
   height: 42px;
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: top center;
 }
-.ph-account-nameplate {
+.account_nameplate {
   margin-left: 6px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.ph-account-name {
+.account_name {
   font-size: 15px;
   font-weight: bold;
   line-height: 22px;
@@ -40,14 +40,14 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.ph-account:hover .ph-account-name {
+.account:hover .account_name {
   text-decoration: underline;
 }
-.ph-account-nameplate-under {
+.account_nameplate_under {
   display: flex;
   height: 20px;
 }
-.ph-account-name_id {
+.account_name_id {
   font-size: 14px;
   line-height: 20px;
   overflow: hidden;

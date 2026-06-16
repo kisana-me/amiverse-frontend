@@ -1,6 +1,6 @@
 'use client'
 
-import './YouTube.css'
+import styles from '../styles/YouTube.module.css'
 import { PostType } from '@/types/post'
 
 export default function Content(post: PostType) {
@@ -51,7 +51,7 @@ export default function Content(post: PostType) {
   return (
     <>
       {!hasMedia && youtubeVideoId && (
-        <div className="post-youtube" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+        <div className={styles.youtube} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}`}
             title="YouTube"

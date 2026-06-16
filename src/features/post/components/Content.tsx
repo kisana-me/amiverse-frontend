@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import './Content.css'
+import styles from '../styles/Content.module.css'
 
 export default function Content({ content }: { content: string }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -101,13 +101,13 @@ export default function Content({ content }: { content: string }) {
   }
 
   return (
-    <div className="post-content">
+    <div className={styles.content}>
       {displayLines.map((line, index) => (
         <div key={index}>{parseLine(line, index)}</div>
       ))}
       {shouldTruncate && !isExpanded && (
         <div
-          className="post-content-more"
+          className={styles.content_more}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()

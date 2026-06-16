@@ -5,7 +5,7 @@
   border: 0.5px solid #373737;
   border-radius: 8px;
 }
-.post-reply {
+.post_reply {
   font-size: 12px;
   color: var(--inconspicuous-font-color);
 }

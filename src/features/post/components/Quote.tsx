@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { PostType } from '@/types/post'
 import { formatRelativeTime } from '@/lib/format_time'
-import './Quote.css'
+import styles from '../styles/Quote.module.css'
 
 export default function ItemQuote(post: PostType) {
   const { quote } = post
@@ -12,17 +12,17 @@ export default function ItemQuote(post: PostType) {
   const { account } = quote
 
   return (
-    <div className="item-quote">
-      <Link prefetch={false} href={`/posts/${quote.aid}`} className="item-quote-link">
-        <div className="item-quote-header">
-          <div className="item-quote-account">
-            <img src={account.icon_url || '/ast-imgs/icon.png'} alt={account.name} className="item-quote-icon" />
-            <span className="item-quote-name">{account.name}</span>
-            <span className="item-quote-id">@{account.name_id}</span>
+    <div className={styles.item_quote}>
+      <Link prefetch={false} href={`/posts/${quote.aid}`} className={styles.item_quote_link}>
+        <div className={styles.item_quote_header}>
+          <div className={styles.item_quote_account}>
+            <img src={account.icon_url || '/ast-imgs/icon.png'} alt={account.name} className={styles.item_quote_icon} />
+            <span className={styles.item_quote_name}>{account.name}</span>
+            <span className={styles.item_quote_id}>@{account.name_id}</span>
           </div>
-          <div className="item-quote-date">{formatRelativeTime(new Date(quote.created_at))}</div>
+          <div className={styles.item_quote_date}>{formatRelativeTime(new Date(quote.created_at))}</div>
         </div>
-        <div className="item-quote-content">{quote.content}</div>
+        <div className={styles.item_quote_content}>{quote.content}</div>
       </Link>
     </div>
   )

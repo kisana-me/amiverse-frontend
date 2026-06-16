@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import './ListedPost.css'
+import styles from '../styles/ListedPost.module.css'
 
 import Header from './Header'
 import Content from './Content'
@@ -25,9 +24,9 @@ export default function Post(post: PostProps) {
   const postClickHandlers = usePostClick(post.aid)
 
   return (
-    <div className="post" {...postClickHandlers}>
+    <div className={styles.post} {...postClickHandlers}>
       <Header {...post} />
-      <div className="post-reply">
+      <div className={styles.post_reply}>
         <Link prefetch={false} href={'/posts/' + post.aid}>
           {post.reply_presence && '返信'}
           {post.quote_presence && (post.reply_presence ? '・引用' : '引用')}
