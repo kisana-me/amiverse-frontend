@@ -9,8 +9,7 @@ import Drawings from './Drawings'
 import YouTube from './YouTube'
 import Quote from './Quote'
 import Reactions from './Reactions'
-
-import ItemConsole from '@/components/post/item_console'
+import Console from './Console'
 
 import { PostType } from '@/types/post'
 import Media from './Media'
@@ -40,7 +39,7 @@ export default function Post(post: PostProps) {
         <Quote {...post} />
       </div>
       <Reactions {...post} />
-      <ItemConsole {...post} />
+      <Console {...post} />
     </div>
   )
 }

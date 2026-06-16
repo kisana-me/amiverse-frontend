@@ -40,6 +40,7 @@ export const Modal = ({
   }, [isOpen]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    e.stopPropagation();
     const dialog = dialogRef.current;
     if (!dialog) return;
     const rect = dialog.getBoundingClientRect();
