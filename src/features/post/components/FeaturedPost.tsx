@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { PostType } from '@/types/post'
-import { usePostClick } from '../hooks/usePostClick'
-import styles from '../styles/ListedPost.module.css'
+import styles from '../styles/FeaturedPost.module.css'
 
 import Header from './Header'
 import Content from './Content'
@@ -13,17 +12,16 @@ import YouTube from './YouTube'
 import Quote from './Quote'
 import Reactions from './Reactions'
 import Console from './Console'
+import FeaturedInfo from './FeaturedInfo'
 
 type PostProps = PostType & {
   has_thread_line?: boolean
 }
 
-export default function Post(post: PostProps) {
-  const postClickHandlers = usePostClick(post.aid)
-
+export default function FeaturedPost(post: PostProps) {
   return (
-    <div className={styles.post} {...postClickHandlers}>
-      <Header post={post} />
+    <div className={styles.post}>
+      <Header post={post} featured={true} />
       <div className={styles.post_to}>
         <Link prefetch={false} href={'/posts/' + post.aid}>
           {post.reply_presence && post?.reply && '返信先: @' + post.reply.account.name_id}
@@ -41,6 +39,7 @@ export default function Post(post: PostProps) {
       </div>
       <Reactions {...post} />
       <Console {...post} />
+      <FeaturedInfo post={post} />
     </div>
   )
 }

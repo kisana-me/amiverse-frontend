@@ -1,0 +1,18 @@
+.post {
+  background: #171717;
+  margin: 0;
+  padding: 6px 8px 8px;
+  border-top-style: solid;
+  border-top-width: 0.5px;
+  border-bottom-style: solid;
+  border-bottom-width: 0.5px;
+  border-color: #373737;
+}
+.post_to {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: #4d873b;
+}
+.post_to a:hover {
+  text-decoration: underline;
+}

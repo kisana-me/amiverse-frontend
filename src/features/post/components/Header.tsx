@@ -3,10 +3,15 @@
 import Link from 'next/link'
 import styles from '../styles/Header.module.css'
 import { PostType } from '@/types/post'
-import { formatRelativeTime } from '@/lib/format_time'
+import { formatRelativeTime, formatFullDate } from '@/lib/format_time'
 import Account from './Account'
 
-export default function Header(post: PostType) {
+type HeaderProps = {
+  post: PostType
+  featured?: boolean
+}
+
+export default function Header({ post, featured }: HeaderProps) {
   const { account } = post
 
   const strVisibility = (v: string) =>
@@ -24,7 +29,7 @@ export default function Header(post: PostType) {
         <Account {...account} />
       </Link>
       <div className={styles.header_right}>
-        <div>{formatRelativeTime(new Date(post.created_at))}</div>
+        <div>{featured ? formatFullDate(new Date(post.created_at)) : formatRelativeTime(new Date(post.created_at))}</div>
         <div>{strVisibility(post.visibility)}</div>
       </div>
     </div>

@@ -1,0 +1,13 @@
+.info {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  color: #aaaaaa;
+  font-size: 0.8rem;
+}
+.link {
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+}
