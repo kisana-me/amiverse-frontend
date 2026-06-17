@@ -6,7 +6,7 @@ import { formatRelativeTime } from '@/lib/format_time'
 import { usePostClick } from '../hooks/usePostClick'
 import styles from '../styles/Quote.module.css'
 
-export default function ItemQuote(post: PostType) {
+export default function ItemQuote({ post }: { post: PostType }) {
   const { quote } = post
 
   const postClickHandlers = usePostClick(quote?.aid || '', true)

@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PostType } from '@/types/post'
 import styles from '../styles/Content.module.css'
 
-export default function Content({ content }: { content: string }) {
+export default function Content({ post }: { post: PostType }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const { content } = post
   if (!content) return null
 
   const lines = content.split(/\r?\n/)

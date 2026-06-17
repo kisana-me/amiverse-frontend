@@ -7,7 +7,7 @@ import { Modal } from '@/components/modal/Modal'
 import PostForm from '@/components/post/form'
 import { useConsole } from '../hooks/useConsole'
 
-export default function Console(initialPost: PostType) {
+export default function Console({ post: initialPost }: { post: PostType }) {
   const {
     post,
     currentAccount,

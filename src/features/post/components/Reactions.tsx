@@ -7,7 +7,7 @@ import { Modal } from '@/components/modal/Modal'
 import EmojiPicker from '@/components/emoji_picker/EmojiPicker'
 import { useReaction } from '../hooks/useReaction'
 
-export default function Reactions(initialPost: PostType) {
+export default function Reactions({ post: initialPost }: { post: PostType }) {
   const emojiButtonRef = useRef(null)
   const { post, isEmojiMenuOpen, setIsEmojiMenuOpen, isReactionConfirmOpen, setIsReactionConfirmOpen, pendingReactionInput, setPendingReactionInput, confirmModalState, processReaction, handleReact } =
     useReaction(initialPost)

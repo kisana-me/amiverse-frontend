@@ -31,14 +31,14 @@ export default function FeaturedPost(post: PostProps) {
         </Link>
       </div>
       <div style={{ padding: '0 2px' }}>
-        <Content content={post.content} />
-        <Drawings {...post} />
-        <Media {...post} />
-        <YouTube {...post} />
-        <Quote {...post} />
+        <Content post={post} />
+        <Drawings post={post} />
+        <Media post={post} />
+        <YouTube post={post} />
+        <Quote post={post} />
       </div>
-      <Reactions {...post} />
-      <Console {...post} />
+      <Reactions post={post} />
+      <Console post={post} />
       <FeaturedInfo post={post} />
     </div>
   )

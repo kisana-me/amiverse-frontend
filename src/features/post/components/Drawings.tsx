@@ -12,7 +12,7 @@ type ViewerMedia = {
   type: 'image' | 'video' | 'drawing'
 }
 
-export default function Drawings(post: PostType) {
+export default function Drawings({ post }: { post: PostType }) {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [viewerIndex, setViewerIndex] = useState(0)
   const [viewerMediaList, setViewerMediaList] = useState<ViewerMedia[]>([])

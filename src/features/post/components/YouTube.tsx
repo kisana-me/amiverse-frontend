@@ -3,7 +3,7 @@
 import styles from '../styles/YouTube.module.css'
 import { PostType } from '@/types/post'
 
-export default function Content(post: PostType) {
+export default function Content({ post }: { post: PostType }) {
   const extractFirstYouTubeVideoId = (text: string): string | null => {
     if (!text) return null
 
