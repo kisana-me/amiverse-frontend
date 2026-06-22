@@ -6,6 +6,7 @@ import { PostType } from '@/types/post'
 import { Modal } from '@/components/modal/Modal'
 import PostForm from '@/components/post/form'
 import { useConsole } from '../hooks/useConsole'
+import ConsoleReaction from './ConsoleReaction'
 
 export default function Console({ post: initialPost }: { post: PostType }) {
   const {
@@ -66,6 +67,10 @@ export default function Console({ post: initialPost }: { post: PostType }) {
           </div>
           <div className={styles.number}>{post.diffuses_count}</div>
         </button>
+      </div>
+
+      <div className={styles.content}>
+        <ConsoleReaction post={post} />
       </div>
 
       <div className={styles.content}>
