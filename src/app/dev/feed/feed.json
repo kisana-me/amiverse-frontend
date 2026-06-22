@@ -1,0 +1,37 @@
+[
+  {
+    "type": "post",
+    "post_aid": "6"
+  },
+  {
+    "type": "post",
+    "post_aid": "5"
+  },
+  {
+    "type": "post",
+    "post_aid": "4"
+  },
+  {
+    "type": "diffuse",
+    "post_aid": "6",
+    "account": {
+      "aid": "12345678901234",
+      "name": "きさな🍭(YT)",
+      "name_id": "kisana",
+      "icon_url": "https://kisana.me/images/kisana/kisana-logo.png"
+    },
+    "created_at": "2026-06-01T00:11:22.333+09:00"
+  },
+  {
+    "type": "post",
+    "post_aid": "2"
+  },
+  {
+    "type": "post",
+    "post_aid": "1"
+  },
+  {
+    "type": "post",
+    "post_aid": "3"
+  }
+]
