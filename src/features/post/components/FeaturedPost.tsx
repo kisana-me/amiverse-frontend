@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { PostType } from '@/types/post'
 import styles from '../styles/FeaturedPost.module.css'
 
@@ -13,19 +12,13 @@ import Quote from './Quote'
 import Reactions from './Reactions'
 import Console from './Console'
 import FeaturedInfo from './FeaturedInfo'
+import ReplyTo from './ReplyTo'
 
 export default function FeaturedPost({ post }: { post: PostType }) {
   return (
     <div className={styles.post}>
       <Header post={post} featured={true} />
-      <div className={styles.post_to}>
-        <Link prefetch={false} href={'/posts/' + post.aid}>
-          {post.reply_presence && post?.reply && '返信先: @' + post.reply.account.name_id}
-          {post.reply_presence && !post?.reply && '返信'}
-          {post.quote_presence && post?.quote && '引用元: @' + post.quote.account.name_id}
-          {post.quote_presence && !post?.quote && '引用'}
-        </Link>
-      </div>
+      <ReplyTo post={post} />
       <div style={{ padding: '0 2px' }}>
         <Content post={post} />
         <Drawings post={post} />

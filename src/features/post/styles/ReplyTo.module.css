@@ -1,0 +1,11 @@
+.reply_to {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--inconspicuous-font-color);
+}
+.reply_to a {
+  color: var(--link-color);
+}
+.reply_to a:hover {
+  text-decoration: underline;
+}
