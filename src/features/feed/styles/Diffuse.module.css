@@ -10,3 +10,19 @@
   color: var(--inconspicuous-font-color);
   font-size: 0.75rem;
 }
+.diffuse > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.diffuse > *:last-child {
+  margin-left: auto;
+  flex-shrink: 0.4;
+}
+.icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
