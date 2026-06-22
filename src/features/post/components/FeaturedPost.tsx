@@ -19,7 +19,7 @@ export default function FeaturedPost({ post }: { post: PostType }) {
     <div className={styles.post}>
       <Header post={post} featured={true} />
       <ReplyTo post={post} />
-      <div style={{ padding: '0 2px' }}>
+      <div className={styles.main_content}>
         <Content post={post} />
         <Drawings post={post} />
         <Media post={post} />

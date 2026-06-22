@@ -21,7 +21,7 @@ export default function Post({ post }: { post: PostType }) {
     <div className={styles.post} {...postClickHandlers}>
       <Header post={post} />
       <ReplyTo post={post} />
-      <div style={{ padding: '0 2px' }}>
+      <div className={styles.main_content}>
         <Content post={post} />
         <Drawings post={post} />
         <Media post={post} />

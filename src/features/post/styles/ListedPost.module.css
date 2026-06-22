@@ -5,3 +5,10 @@
   border: 0.5px solid var(--border-color);
   border-radius: 8px;
 }
+.main_content {
+  padding: 0 2px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}

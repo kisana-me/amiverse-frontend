@@ -17,7 +17,7 @@ export default function Drawings({ post }: { post: PostType }) {
   const [viewerIndex, setViewerIndex] = useState(0)
   const [viewerMediaList, setViewerMediaList] = useState<ViewerMedia[]>([])
 
-  if (!post.drawings) return null
+  if (!post.drawings || post.drawings.length === 0) return null
 
   const { drawings } = post
 

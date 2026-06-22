@@ -1,6 +1,6 @@
 .reactions {
   height: 22px;
-  margin-bottom: 4px;
+  margin: 0.5rem 0 0.25rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
