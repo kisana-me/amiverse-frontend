@@ -156,7 +156,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --background-color: #ffffff;
       --font-color: #000000;
       --link-color: #46be1b;
-      --border-color: #acacac;
+      --border-color: #d6d6d6;
       --transparent-background-color: #0000003f;
       --content-color: #ffffff;
       --shadow-color: #808080;
@@ -170,6 +170,8 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --accent-color: #f4212e;
       --active-background-color: #ffffff;
       --inactive-background-color: #eaeaea;
+
+      --island-background-color: #ffffff;
     }
   `
 
@@ -178,7 +180,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --background-color: #000000;
       --font-color: #ffffff;
       --link-color: #6ef744;
-      --border-color: #7c7c7c;
+      --border-color: #373737;
       --transparent-background-color: #00000060;
       --content-color: #141414;
       --shadow-color: #808080;
@@ -192,6 +194,8 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --accent-color: #f4212e;
       --active-background-color: #373737;
       --inactive-background-color: #000000;
+
+      --island-background-color: #000000; /* #171717 */
     }
   `
 
@@ -205,19 +209,11 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
           ? "18px"
           : "16px"
       };
-
-      /* Light Theme */
-      --background-light: #ffffff;
-      --text-light: #000000;
-
-      /* Dark Theme */
-      --background-dark: #000000;
-      --text-dark: #ffffff;
     }
 
     body {
-      background-color: var(--background-${effectiveTheme});
-      color: var(--text-${effectiveTheme});
+      background-color: var(--background-color);
+      color: var(--font-color);
       font-size: var(--font-size-base);
     }
   `;

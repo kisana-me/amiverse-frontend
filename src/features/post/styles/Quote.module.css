@@ -1,5 +1,5 @@
 .quote {
-  border: 0.5px solid #373737;
+  border: 0.5px solid var(--border-color);
   border-radius: 8px;
   padding: 8px;
   display: flex;
@@ -31,13 +31,13 @@
   text-overflow: ellipsis;
 }
 .name_id {
-  color: var(--text-color-secondary, #aaaaaa);
+  color: var(--inconspicuous-font-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .date {
-  color: var(--text-color-secondary, #aaaaaa);
+  color: var(--inconspicuous-font-color);
   white-space: nowrap;
   font-size: 0.8em;
 }

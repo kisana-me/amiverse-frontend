@@ -1,17 +1,17 @@
 .post {
-  background: #171717;
+  background: var(--island-background-color);
   margin: 0;
   padding: 6px 8px 8px;
   border-top-style: solid;
   border-top-width: 0.5px;
   border-bottom-style: solid;
   border-bottom-width: 0.5px;
-  border-color: #373737;
+  border-color: var(--border-color);
 }
 .post_to {
   font-size: 0.75rem;
   line-height: 1.2;
-  color: #4d873b;
+  color: var(--link-color);
 }
 .post_to a:hover {
   text-decoration: underline;

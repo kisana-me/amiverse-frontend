@@ -2,7 +2,7 @@
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
-  color: #aaaaaa;
+  color: var(--inconspicuous-font-color);
   font-size: 0.8rem;
 }
 .link {

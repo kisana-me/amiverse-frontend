@@ -37,7 +37,7 @@
   background: #fff3;
 }
 .button_reacted {
-  border: 1px solid #0f0;
+  border: 1px solid var(--link-color);
 }
 /* button inside */
 .icon {
