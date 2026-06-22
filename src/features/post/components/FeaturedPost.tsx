@@ -14,11 +14,7 @@ import Reactions from './Reactions'
 import Console from './Console'
 import FeaturedInfo from './FeaturedInfo'
 
-type PostProps = PostType & {
-  has_thread_line?: boolean
-}
-
-export default function FeaturedPost(post: PostProps) {
+export default function FeaturedPost({ post }: { post: PostType }) {
   return (
     <div className={styles.post}>
       <Header post={post} featured={true} />

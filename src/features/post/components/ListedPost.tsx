@@ -14,11 +14,7 @@ import Quote from './Quote'
 import Reactions from './Reactions'
 import Console from './Console'
 
-type PostProps = PostType & {
-  has_thread_line?: boolean
-}
-
-export default function Post(post: PostProps) {
+export default function Post({ post }: { post: PostType }) {
   const postClickHandlers = usePostClick(post.aid)
 
   return (
