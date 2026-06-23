@@ -1,7 +1,7 @@
 "use client";
 
-import Post from "@/components/post/post";
-import Feed from "@/components/feed/feed";
+// import Post from "@/components/post/post";
+// import Feed from "@/components/feed/feed";
 import SkeletonItem from "@/components/post/skeleton_item";
 import MainHeader from "@/components/main_header/MainHeader";
 import { api } from "@/lib/axios";
@@ -12,6 +12,10 @@ import Link from "next/link";
 import { usePosts } from "@/providers/PostsProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import { useToast } from "@/providers/ToastProvider";
+import Post from "@/features/post/components/ListedPost";
+import FeaturedPost from "@/features/post/components/FeaturedPost";
+import Feed from "@/features/feed/components/Feed";
+import styles from "./PostDetail.module.css";
 
 type Props = {
   params: Promise<{
@@ -82,7 +86,7 @@ export default function PostDetail({ params }: Props) {
           <>
             {post?.reply ? (
               <div ref={replyRef}>
-                <Post {...post.reply} has_thread_line={true} />
+                <Post post={post.reply} />
               </div>
             ) : (post.reply_presence && 'reply' in post) && (
               <div ref={replyRef}>
@@ -91,7 +95,7 @@ export default function PostDetail({ params }: Props) {
                 </div>
               </div>
             )}
-            <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
+            {/* <div className="flex flex-row gap-4 p-2" style={{ borderBottom: "1px var(--border-color) solid", color: 'var(--inconspicuous-font-color)' }}>
               <div>
                 👇🏻注目の投稿👇🏻
               </div>
@@ -110,12 +114,10 @@ export default function PostDetail({ params }: Props) {
               <Link prefetch={false} href={'/posts/' + post.aid + '/reactions'} className="cursor-pointer hover:bg-[var(--hover-color)] p-1 rounded transition-colors whitespace-nowrap">
                 リアクション数: {post.reactions_count || 0}
               </Link>
-            </div>
-            {post.replies && (
-              <>
-                {post.replies && <Feed posts={post.replies} />}
-              </>
-            )}
+            </div> */}
+            <FeaturedPost post={post} />
+            <div className={styles.reply}>返信</div>
+            {post.replies && <Feed posts={post.replies} />}
           </>
         )
         :

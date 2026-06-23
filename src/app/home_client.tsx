@@ -5,7 +5,7 @@ import { useToast } from "@/providers/ToastProvider";
 import { usePosts, CachedPost } from "@/providers/PostsProvider";
 import { useFeeds, FeedTypeKey } from "@/providers/FeedsProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
-import Feed from "@/components/feed/feed";
+import Feed from "@/features/feed/components/Feed";
 import { Modal } from "@/components/modal/Modal";
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";

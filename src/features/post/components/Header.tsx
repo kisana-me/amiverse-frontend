@@ -29,8 +29,8 @@ export default function Header({ post, featured }: HeaderProps) {
         <Account {...account} />
       </Link>
       <div className={styles.header_right}>
-        <div>{featured ? formatFullDate(new Date(post.created_at)) : formatRelativeTime(new Date(post.created_at))}</div>
-        <div>{strVisibility(post.visibility)}</div>
+        <div>{!featured && formatRelativeTime(new Date(post.created_at))}</div>
+        <div>{!featured && strVisibility(post.visibility)}</div>
       </div>
     </div>
   )

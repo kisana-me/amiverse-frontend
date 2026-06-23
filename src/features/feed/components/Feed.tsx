@@ -1,16 +1,10 @@
 'use client'
 
-import Link from 'next/link'
-
 import { PostType } from '@/types/post'
 import { FeedType, FeedItemType } from '@/types/feed'
-
 import Post from '@/features/post/components/ListedPost'
 import SkeletonItem from '@/components/post/skeleton_item'
-import { formatRelativeTime } from '@/lib/format_time'
-
 import Diffuse from './Diffuse'
-
 import styles from '../styles/Feed.module.css'
 
 export default function Feed({ posts, feed, is_loading = false }: { posts: PostType[]; feed?: FeedType; is_loading?: boolean }) {
@@ -39,10 +33,10 @@ export default function Feed({ posts, feed, is_loading = false }: { posts: PostT
     )
   }
 
-  if (displayPosts.length === 0) {
+  if (!is_loading && posts.length === 0) {
     return (
       <div className={styles.feed}>
-        <div>フィードはありません</div>
+        <div className={styles.empty}>投稿はありません</div>
       </div>
     )
   }

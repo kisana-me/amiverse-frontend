@@ -2,7 +2,7 @@
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.5;
-  font-size: 15px;
+  font-size: 1rem;
 }
 .content a {
   color: var(--link-color);

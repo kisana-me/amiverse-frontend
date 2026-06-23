@@ -1,9 +1,15 @@
 .info {
+  color: var(--inconspicuous-font-color);
+  font-size: 0.8rem;
+}
+.info > div:first-child {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
-  color: var(--inconspicuous-font-color);
-  font-size: 0.8rem;
+}
+.info > div:last-child {
+  display: flex;
+  justify-content: space-between;
 }
 .link {
   cursor: pointer;

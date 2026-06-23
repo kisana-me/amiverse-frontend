@@ -1,3 +1,8 @@
 .feed {
   min-height: 80svh;
 }
+.empty {
+  margin: 2rem 0;
+  text-align: center;
+  color: var(--inconspicuous-font-color);
+}
