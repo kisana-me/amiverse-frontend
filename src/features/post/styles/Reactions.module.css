@@ -45,5 +45,8 @@
   height: 18px;
   flex-shrink: 0;
 }
+.emoji, .image {
+  height: 100%;
+}
 .number {
 }

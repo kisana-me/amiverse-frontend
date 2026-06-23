@@ -2,6 +2,11 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { api } from '@/lib/axios';
+import {
+  defaultEmojiGroups,
+  defaultEmojisByGroup,
+  defaultEmojiCache,
+} from '@/data/default_emojis';
 import { EmojiType } from '@/types/emoji';
 
 interface EmojiContextType {
@@ -15,9 +20,9 @@ interface EmojiContextType {
 const EmojiContext = createContext<EmojiContextType | undefined>(undefined);
 
 export const EmojiProvider = ({ children }: { children: React.ReactNode }) => {
-  const [groups, setGroups] = useState<string[]>([]);
-  const [emojisByGroup, setEmojisByGroup] = useState<Record<string, EmojiType[]>>({});
-  const [emojiCache, setEmojiCache] = useState<Record<string, EmojiType>>({});
+  const [groups, setGroups] = useState<string[]>(defaultEmojiGroups);
+  const [emojisByGroup, setEmojisByGroup] = useState<Record<string, EmojiType[]>>(defaultEmojisByGroup);
+  const [emojiCache, setEmojiCache] = useState<Record<string, EmojiType>>(defaultEmojiCache);
   
   const emojisByGroupRef = React.useRef(emojisByGroup);
   React.useEffect(() => {
@@ -32,16 +37,20 @@ export const EmojiProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchingGroups = React.useRef<Set<string>>(new Set());
 
   const fetchGroups = useCallback(async () => {
-    if (groups.length > 0) return;
+    // 既にグループが1つ以上ある場合でも、APIから追加で取得したい場合はこの条件を調整
     try {
       const res = await api.post('/emojis/groups');
-      if (res.data.groups) {
-        setGroups(res.data.groups);
+      const newGroups = res.data.groups;
+      if (Array.isArray(newGroups)) {
+        setGroups(prevGroups => {
+          const combined = [...prevGroups, ...newGroups];
+          return [...new Set(combined)];
+        });
       }
     } catch (error) {
       console.error("Failed to fetch emoji groups", error);
     }
-  }, [groups]);
+  }, []);
 
   const fetchEmojisByGroup = useCallback(async (group: string) => {
     if (emojisByGroupRef.current[group] || fetchingGroups.current.has(group)) return;

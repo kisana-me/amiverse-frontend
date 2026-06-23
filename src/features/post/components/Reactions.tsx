@@ -43,7 +43,7 @@ export default function Reactions({ post: initialPost }: { post: PostType }) {
         {post?.reactions &&
           post.reactions.map((emoji) => (
             <button className={`${styles.button} ${emoji.reacted ? styles.button_reacted : ''}`} key={emoji.name_id} onClick={() => handleReact(emoji.name_id)}>
-              <div className={styles.emoji}>{emoji.name}</div>
+              <div className={styles.emoji}>{emoji.image_url ? <img src={emoji.image_url} alt={emoji.name} className={styles.image} /> : emoji.name}</div>
               <div className={styles.number}>{emoji.reactions_count}</div>
             </button>
           ))}

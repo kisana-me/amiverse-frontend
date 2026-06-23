@@ -1,5 +1,5 @@
 export type EmojiType = {
-  aid: string;
+  aid?: string;
   name: string;
   name_id: string;
   image_url?: string;
