@@ -49,9 +49,25 @@ export default function Content({ post }: { post: PostType }) {
       const hashtagMatch = match[4]
 
       if (urlMatch) {
+        const formatUrlForDisplay = (url: string): string => {
+          let displayUrl = url.replace(/^https?:\/\//, '')
+          if (displayUrl.endsWith('/') && displayUrl.length > 1) {
+            displayUrl = displayUrl.slice(0, -1)
+          }
+
+          const slashIndex = displayUrl.indexOf('/')
+          if (slashIndex === -1) {
+            return displayUrl
+          }
+
+          const path = displayUrl.substring(slashIndex)
+          return path.length > 14 ? `${displayUrl.substring(0, slashIndex)}${path.substring(0, 14)}...` : displayUrl
+        }
+
+        const displayUrl = formatUrlForDisplay(urlMatch)
         parts.push(
           <a key={`${lineIndex}-${match.index}`} href={urlMatch} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-            {urlMatch}
+            {displayUrl}
           </a>,
         )
       } else if (remoteMentionMatch || simpleMentionMatch) {
