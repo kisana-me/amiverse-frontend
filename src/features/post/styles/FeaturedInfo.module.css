@@ -11,3 +11,7 @@
 .link:hover {
   text-decoration: underline;
 }
+.number {
+  font-size: 0.9rem;
+  color: var(--font-color);
+}
