@@ -3,9 +3,9 @@
   margin: 0;
   padding: 6px 8px 8px;
   border-top-style: solid;
-  border-top-width: 0.5px;
+  border-top-width: 1px;
   border-bottom-style: solid;
-  border-bottom-width: 0.5px;
+  border-bottom-width: 1px;
   border-color: var(--border-color);
 }
 .main_content {

@@ -2,7 +2,7 @@
   background: var(--island-background-color);
   margin: 8px;
   padding: 6px 8px 8px;
-  border: 0.5px solid var(--border-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 .main_content {
