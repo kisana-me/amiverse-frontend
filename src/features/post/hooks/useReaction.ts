@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { PostType } from '@/types/post'
 import { EmojiType } from '@/types/emoji'
 import { usePosts } from '@/providers/PostsProvider'
+import { useEmoji } from '@/providers/EmojiProvider'
 import { addReaction, removeReaction } from '../actions/reaction'
 
 export const useReaction = (initialPost: PostType) => {
@@ -16,6 +17,7 @@ export const useReaction = (initialPost: PostType) => {
   const [post, setPost] = useState(initialPost)
   const [prevInitialPost, setPrevInitialPost] = useState(initialPost)
   const { addPosts } = usePosts()
+  const { getEmoji } = useEmoji()
 
   if (initialPost !== prevInitialPost) {
     setPost(initialPost)
@@ -56,14 +58,15 @@ export const useReaction = (initialPost: PostType) => {
           reactions_count: (newPost.reactions[idx].reactions_count || 0) + 1,
           reacted: true,
         }
-      } else if (typeof emojiInput === 'object') {
-        newPost.reactions.push({
-          aid: emojiInput.aid,
-          name: emojiInput.name,
-          name_id: emojiInput.name_id,
-          reactions_count: 1,
-          reacted: true,
-        })
+      } else {
+        const emojiData = typeof emojiInput === 'object' ? emojiInput : await getEmoji(emojiInput)
+        if (emojiData) {
+          newPost.reactions.push({
+            ...emojiData,
+            reactions_count: 1,
+            reacted: true,
+          })
+        }
       }
       newPost.reactions_count = (newPost.reactions_count || 0) + 1
       newPost.is_reacted = true
@@ -108,7 +111,9 @@ export const useReaction = (initialPost: PostType) => {
       }
       setIsReactionConfirmOpen(true)
     } else {
-      processReaction(emojiInput)
+      if (emojiInput) {
+        processReaction(emojiInput)
+      }
     }
   }
 

@@ -35,10 +35,13 @@ export const EmojiProvider = ({ children }: { children: React.ReactNode }) => {
   }, [emojiCache]);
 
   const fetchingGroups = React.useRef<Set<string>>(new Set());
+  const hasFetchedGroups = React.useRef(false);
 
   const fetchGroups = useCallback(async () => {
-    // 既にグループが1つ以上ある場合でも、APIから追加で取得したい場合はこの条件を調整
+    if (hasFetchedGroups.current) return;
+
     try {
+      hasFetchedGroups.current = true;
       const res = await api.post('/emojis/groups');
       const newGroups = res.data.groups;
       if (Array.isArray(newGroups)) {
