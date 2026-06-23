@@ -36,10 +36,9 @@ export const formatRelativeTime = (date: Date) => {
 
 export const formatFullDate = (date: Date) => {
   const year = date.getFullYear()
-  const month = ('0' + (date.getMonth() + 1)).slice(-2)
-  const day = ('0' + date.getDate()).slice(-2)
+  const month = date.getMonth() + 1
+  const day = date.getDate()
   const hours = date.getHours()
-  const minutes = ('0' + date.getMinutes()).slice(-2)
-  const seconds = ('0' + date.getSeconds()).slice(-2)
-  return `${year}年 ${month}月 ${day}日 ${hours}時 ${minutes}分 ${seconds}秒`
+  const minutes = date.getMinutes()
+  return `${year}年${month}月${day}日 ${hours}時${minutes}分`
 }
