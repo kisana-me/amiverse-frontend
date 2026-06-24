@@ -1,13 +1,13 @@
 'use client'
 
-import Feed from '@/features/feed/components/Feed'
 import MainHeader from '@/components/main_header/MainHeader'
+import Feed from '@/features/feed/components/Feed'
 import { api } from '@/lib/axios'
 import { PostType } from '@/types/post'
 import { use, useEffect, useRef, useState } from 'react'
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { usePosts } from '@/providers/PostsProvider'
 import { useToast } from '@/providers/ToastProvider'
-import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 
 type Props = {
   params: Promise<{
@@ -17,9 +17,9 @@ type Props = {
 
 export default function Page({ params }: Props) {
   const { aid } = use(params)
+  const { currentAccountStatus } = useCurrentAccount()
   const { addPosts } = usePosts()
   const { addToast } = useToast()
-  const { currentAccountStatus } = useCurrentAccount()
   const [quotes, setQuotes] = useState<PostType[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const cancelledRef = useRef(false)
@@ -37,7 +37,7 @@ export default function Page({ params }: Props) {
         setQuotes(fetchedQuotes)
       })
       .catch(() => {
-        addToast({ message: '引用一覧の取得に失敗しました' })
+        addToast({ message: '引用した投稿の取得に失敗しました' })
       })
       .finally(() => {
         setLoading(false)
@@ -46,7 +46,7 @@ export default function Page({ params }: Props) {
 
   return (
     <>
-      <MainHeader>引用一覧</MainHeader>
+      <MainHeader>引用した投稿</MainHeader>
       <Feed posts={quotes} is_loading={loading} />
     </>
   )
