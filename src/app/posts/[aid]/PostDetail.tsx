@@ -1,7 +1,5 @@
 "use client";
 
-// import Post from "@/components/post/post";
-// import Feed from "@/components/feed/feed";
 import SkeletonItem from "@/components/post/skeleton_item";
 import MainHeader from "@/components/main_header/MainHeader";
 import { api } from "@/lib/axios";

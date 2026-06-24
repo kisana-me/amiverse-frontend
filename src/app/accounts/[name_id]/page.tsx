@@ -9,7 +9,7 @@ import { formatFullDate } from "@/lib/format_time";
 import "./page.css";
 import { usePosts, CachedPost } from "@/providers/PostsProvider";
 import { useFeeds } from "@/providers/FeedsProvider";
-import Feed from "@/components/feed/feed";
+import Feed from "@/features/feed/components/Feed";
 import { PostType } from "@/types/post";
 import { FeedItemType } from "@/types/feed";
 import { useToast } from "@/providers/ToastProvider";

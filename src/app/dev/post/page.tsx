@@ -1,7 +1,6 @@
 'use client'
 
 import MainHeader from '@/components/main_header/MainHeader'
-// import Post from '@/components/post/post'
 import Post from '@/features/post/components/ListedPost'
 import FeaturedPost from '@/features/post/components/FeaturedPost'
 import post from './post.json'

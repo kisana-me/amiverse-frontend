@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import MainHeader from '@/components/main_header/MainHeader';
 import { api } from "@/lib/axios";
 import { PostType } from "@/types/post";
-import Feed from "@/components/feed/feed";
+import Feed from "@/features/feed/components/Feed";
 import { useToast } from "@/providers/ToastProvider";
 import { FeedItemType } from "@/types/feed";
 
