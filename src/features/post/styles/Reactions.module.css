@@ -1,31 +1,24 @@
 .reactions {
-  height: 22px;
   margin: 0.5rem 0 0.25rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 0.25rem;
   overflow: hidden;
-}
-.content {
-  display: flex;
-  height: 22px;
-}
-.content:first-child {
-}
-.content:last-child {
   scrollbar-width: none;
   overflow-x: scroll;
 }
 /* button */
 .button {
+  height: 1.75rem;
   padding: 0 4px;
   border: 1px solid #0000;
   border-radius: 6px;
-  margin: 0 7px 0 0;
   color: var(--inconspicuous-font-color);
-  background: inherit;
+  background: var(--inconspicuous-background-color);
   display: flex;
   align-items: center;
+  gap: 0.25rem;
   overflow: hidden;
   cursor: pointer;
 }
@@ -34,19 +27,16 @@
   cursor: not-allowed;
 }
 .button:hover:not(:disabled) {
-  background: #fff3;
+  opacity: 0.75;
 }
 .button_reacted {
-  border: 1px solid var(--link-color);
+  border: 1px solid var(--inconspicuous-font-color);
 }
 /* button inside */
-.icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
 .emoji, .image {
   height: 100%;
 }
 .number {
+  font-size: 0.75rem;
+  margin: auto 0;
 }
