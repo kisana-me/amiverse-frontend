@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import styles from '../styles/Media.module.css'
 import { PostType } from '@/types/post'
-import MediaViewer from '@/components/media_viewer/MediaViewer'
+import dynamic from 'next/dynamic'
+
+const MediaViewer = dynamic(() => import('@/components/media_viewer/MediaViewer'), { ssr: false })
 
 type ViewerMedia = {
   url: string

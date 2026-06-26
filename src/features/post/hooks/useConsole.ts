@@ -3,7 +3,7 @@ import { PostType } from '@/types/post'
 import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { usePosts } from '@/providers/PostsProvider'
 import { useToast } from '@/providers/ToastProvider'
-import { deletePost as deletePostApi, addDiffuse, removeDiffuse, reportPost } from '../actions/console'
+import { deletePost as deletePostApi, addDiffuse, removeDiffuse, reportPost } from '../api/console'
 
 export const useConsole = (initialPost: PostType) => {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)

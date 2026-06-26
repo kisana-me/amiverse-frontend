@@ -3,7 +3,7 @@ import { PostType } from '@/types/post'
 import { EmojiType } from '@/types/emoji'
 import { usePosts } from '@/providers/PostsProvider'
 import { useEmoji } from '@/providers/EmojiProvider'
-import { addReaction, removeReaction } from '../actions/reaction'
+import { addReaction, removeReaction } from '../api/reaction'
 
 export const useReaction = (initialPost: PostType) => {
   const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState(false)
