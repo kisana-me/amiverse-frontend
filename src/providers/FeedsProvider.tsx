@@ -16,7 +16,7 @@ type CachedFeed = {
   fetched_at: number;
 };
 
-export type FeedTypeKey = 'index' | 'follow' | 'current';
+export type FeedTypeKey = 'recommended' | 'following' | 'current';
 
 type FeedsContextType = {
   feeds: Record<string, CachedFeed>;
@@ -32,7 +32,7 @@ const FeedsContext = createContext<FeedsContextType | null>(null);
 
 export const FeedsProvider = ({ children }: { children: ReactNode }) => {
   const [feeds, setFeeds] = useState<Record<string, CachedFeed>>({});
-  const [currentFeedType, setCurrentFeedType] = useState<FeedTypeKey>('index');
+  const [currentFeedType, setCurrentFeedType] = useState<FeedTypeKey>('current');
 
   const addFeed = useCallback((feed: FeedType) => {
     const now = Date.now();

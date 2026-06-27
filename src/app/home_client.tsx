@@ -16,7 +16,7 @@ import Link from "next/link";
 import ActionPrompt from "@/components/action_prompt/ActionPrompt";
 
 // Valid tab values for URL query parameter
-const VALID_TABS: FeedTypeKey[] = ['index', 'follow', 'current'];
+const VALID_TABS: FeedTypeKey[] = ['current', 'following', 'recommended'];
 
 function HomeContent() {
   const { addToast } = useToast();
@@ -166,13 +166,13 @@ function HomeContent() {
   }, [currentFeedType, currentAccountStatus])
 
   const handleTabChange = (type: FeedTypeKey) => {
-    if (type === 'follow' && currentAccountStatus !== 'signed_in') {
+    if (type === 'following' && currentAccountStatus !== 'signed_in') {
       setIsSignInModalOpen(true);
       return;
     }
     setCurrentFeedType(type);
-    // Update URL with new tab parameter (use 'index' as default, so omit it from URL)
-    const newUrl = type === 'index' ? '/' : `/?tab=${type}`;
+    // Update URL with new tab parameter (use 'current' as default, so omit it from URL)
+    const newUrl = type === 'current' ? '/' : `/?tab=${type}`;
     router.replace(newUrl);
   };
 
@@ -194,14 +194,14 @@ function HomeContent() {
     <>
       <MainHeader>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => handleTabChange('index')} style={tabStyle('index')}>
-            人気
-          </button>
-          <button onClick={() => handleTabChange('follow')} style={tabStyle('follow')}>
-            フォロー中
-          </button>
           <button onClick={() => handleTabChange('current')} style={tabStyle('current')}>
             最新
+          </button>
+          <button onClick={() => handleTabChange('following')} style={tabStyle('following')}>
+            フォロー中
+          </button>
+          <button onClick={() => handleTabChange('recommended')} style={tabStyle('recommended')}>
+            おすすめ
           </button>
         </div>
       </MainHeader>
@@ -217,7 +217,7 @@ function HomeContent() {
 
       <Feed posts={posts} feed={cachedFeed ? { ...cachedFeed, type: currentFeedType, fetched_at: cachedFeed.fetched_at?.toString() } : undefined} is_loading={isFeedLoading} />
 
-      {currentFeedType !== 'index' && hasMore && posts.length > 0 && !isFeedLoading && (
+      {currentFeedType !== 'recommended' && hasMore && posts.length > 0 && !isFeedLoading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
           <button 
             onClick={loadMore} 
