@@ -7,7 +7,7 @@ import { useFeeds, FeedTypeKey } from "@/providers/FeedsProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import Feed from "@/features/feed/components/Feed";
 import { Modal } from "@/components/modal/Modal";
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PostType } from "@/types/post"
 import { FeedItemType } from "@/types/feed"
@@ -17,6 +17,41 @@ import ActionPrompt from "@/components/action_prompt/ActionPrompt";
 
 // Valid tab values for URL query parameter
 const VALID_TABS: FeedTypeKey[] = ['current', 'following', 'recommended'];
+const FEED_PAGE_SIZE = 30;
+
+// IntersectionObserverを使った無限スクロール用センチネルコンポーネント
+function InfiniteScrollSentinel({ onIntersect, isLoading }: { onIntersect: () => void; isLoading: boolean }) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const onIntersectRef = useRef(onIntersect);
+  onIntersectRef.current = onIntersect;
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onIntersectRef.current();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={sentinelRef} style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+      {isLoading && (
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+          読み込み中...
+        </div>
+      )}
+    </div>
+  );
+}
 
 function HomeContent() {
   const { addToast } = useToast();
@@ -88,6 +123,9 @@ function HomeContent() {
 
       if (data.feed) {
         addFeed({ type: currentFeedType, objects: data.feed });
+        if (data.feed.length < FEED_PAGE_SIZE) {
+          setHasMore(false);
+        }
       } else if (data.posts) {
         // feedがない場合はpostsの順序でfeedを作成
         const generatedFeed: FeedItemType[] = data.posts.map(post => ({
@@ -95,6 +133,11 @@ function HomeContent() {
           post_aid: post.aid,
         }));
         addFeed({ type: currentFeedType, objects: generatedFeed });
+        if (generatedFeed.length < FEED_PAGE_SIZE) {
+          setHasMore(false);
+        }
+      } else {
+        setHasMore(false);
       }
 
     } catch (error) {
@@ -137,12 +180,18 @@ function HomeContent() {
 
       if (newFeedItems.length > 0) {
         appendFeed({ type: currentFeedType, objects: newFeedItems });
+        if (newFeedItems.length < FEED_PAGE_SIZE) {
+          setHasMore(false);
+        }
       } else if (newPosts.length > 0) {
         const generatedFeed: FeedItemType[] = newPosts.map(post => ({
           type: 'post',
           post_aid: post.aid,
         }));
         appendFeed({ type: currentFeedType, objects: generatedFeed });
+        if (generatedFeed.length < FEED_PAGE_SIZE) {
+          setHasMore(false);
+        }
       } else {
         setHasMore(false);
       }
@@ -217,23 +266,16 @@ function HomeContent() {
 
       <Feed posts={posts} feed={cachedFeed ? { ...cachedFeed, type: currentFeedType, fetched_at: cachedFeed.fetched_at?.toString() } : undefined} is_loading={isFeedLoading} />
 
-      {currentFeedType !== 'recommended' && hasMore && posts.length > 0 && !isFeedLoading && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-          <button 
-            onClick={loadMore} 
-            disabled={isLoadingMore}
-            style={{ 
-              padding: '0.5rem 2rem', 
-              background: 'var(--bg-secondary)', 
-              border: 'none', 
-              borderRadius: '20px', 
-              cursor: 'pointer',
-              color: 'var(--text-secondary)'
-            }}
-          >
-            {isLoadingMore ? '読み込み中...' : 'さらに読み込む'}
-          </button>
-        </div>
+      {currentFeedType !== 'recommended' && posts.length > 0 && !isFeedLoading && (
+        <>
+          {hasMore ? (
+            <InfiniteScrollSentinel onIntersect={loadMore} isLoading={isLoadingMore} />
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+              すべてを読み込みました
+            </div>
+          )}
+        </>
       )}
 
       <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">
