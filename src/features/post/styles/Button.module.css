@@ -1,0 +1,27 @@
+.button {
+  height: 1.75rem;
+  padding: 0 4px;
+  border: 1px solid #0000;
+  border-radius: 6px;
+  color: var(--inconspicuous-font-color);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    opacity: 0.75;
+  }
+}
+.button:active:not(:disabled) {
+  opacity: 0.75;
+}
+.used {
+  border: 1px solid var(--inconspicuous-font-color);
+}

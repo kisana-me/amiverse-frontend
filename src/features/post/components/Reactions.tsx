@@ -1,6 +1,7 @@
 'use client'
 
 import styles from '../styles/Reactions.module.css'
+import button_styles from '../styles/Button.module.css'
 import { PostType } from '@/types/post'
 import { Modal } from '@/components/modal/Modal'
 import EmojiPicker from '@/components/emoji_picker/EmojiPicker'
@@ -40,7 +41,7 @@ export default function Reactions({ post: initialPost }: { post: PostType }) {
       </Modal>
 
       {post?.reactions && post.reactions.map((emoji) => (
-        <button className={`${styles.button} ${emoji.reacted ? styles.button_reacted : ''}`} key={emoji.name_id} onClick={() => handleReact(emoji.name_id)}>
+        <button className={`${button_styles.button} ${emoji.reacted ? button_styles.used : ''}`} key={emoji.name_id} onClick={() => handleReact(emoji.name_id)}>
           <div className={styles.emoji}>{emoji.image_url ? <img src={emoji.image_url} alt={emoji.name} className={styles.image} /> : emoji.name}</div>
           <div className={styles.number}>{emoji.reactions_count}</div>
         </button>

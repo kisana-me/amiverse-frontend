@@ -1,56 +1,42 @@
 .console {
-  height: 22px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
   overflow: hidden;
 }
-.content {
-  display: flex;
+@media (hover: hover) {
+  .button_quote:hover:not(:disabled) {
+    background-color: #16f9db88;
+  }
+  .button_diffuse:hover:not(:disabled) {
+    background-color: #52f91688;
+  }
+  .button_reaction:hover:not(:disabled) {
+    background-color: #db16f988;
+  }
+  .button_reply:hover:not(:disabled) {
+    background-color: #e6f91688;
+  }
+  .button_menu:hover:not(:disabled) {
+    background-color: #f9161688;
+  }
 }
-.content:nth-child(3) {
-  justify-content: center;
+.button_quote:active:not(:disabled) {
+    background-color: #16f9db88;
 }
-.content:nth-child(n + 4) {
-  flex-direction: row-reverse;
+.button_diffuse:active:not(:disabled) {
+    background-color: #52f91688;
 }
-/* button */
-.button {
-  padding: 0 4px;
-  border: 1px solid #0000;
-  border-radius: 6px;
-  color: var(--inconspicuous-font-color);
-  background: inherit;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  cursor: pointer;
+.button_reaction:active:not(:disabled) {
+    background-color: #db16f988;
 }
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.button_reply:active:not(:disabled) {
+    background-color: #e6f91688;
 }
-.button:hover:not(:disabled) {
-  background: #fff3;
+.button_menu:active:not(:disabled) {
+    background-color: #f9161688;
 }
-.button_diffused {
-  border: 1px solid #0f0;
-}
-/* center */
-.rating {
-  display: flex;
-  width: 100%;
-}
-.rating .rating_left {
-  border-right: 0.5px solid;
-  border-radius: 6px 0 0 6px;
-}
-.rating .rating_right {
-  border-left: 0.5px solid;
-  border-radius: 0 6px 6px 0;
-}
-/* button inside */
 .icon {
   width: 18px;
   height: 18px;

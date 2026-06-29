@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
-import styles from '../styles/ConsoleReaction.module.css'
+import styles from '../styles/Console.module.css'
+import button_styles from '../styles/Button.module.css'
 import { PostType } from '@/types/post'
 import { Modal } from '@/components/modal/Modal'
 import EmojiPicker from '@/components/emoji_picker/EmojiPicker'
@@ -14,7 +15,7 @@ export default function ConsoleReaction({ post: initialPost }: { post: PostType 
 
   return (
     <>
-      <button ref={emojiButtonRef} className={`${styles.button} ${post.is_reacted ? styles.button_reacted : ''}`} onClick={() => setIsEmojiMenuOpen(true)}>
+      <button ref={emojiButtonRef} className={`${button_styles.button} ${styles.button_reaction} ${post.is_reacted ? button_styles.used : ''}`} onClick={() => setIsEmojiMenuOpen(true)}>
         <div className={styles.icon}>
           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path

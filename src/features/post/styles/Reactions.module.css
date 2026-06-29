@@ -8,31 +8,13 @@
   scrollbar-width: none;
   overflow-x: scroll;
 }
-/* button */
-.button {
-  height: 1.75rem;
-  padding: 0 4px;
-  border: 1px solid #0000;
-  border-radius: 6px;
-  color: var(--inconspicuous-font-color);
+.reactions > button {
   background: var(--inconspicuous-background-color);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  overflow: hidden;
-  cursor: pointer;
-}
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.button:hover:not(:disabled) {
-  opacity: 0.75;
-}
-.button_reacted {
-  border: 1px solid var(--inconspicuous-font-color);
 }
 /* button inside */
+.emoji {
+  line-height: calc(1.75rem - 2px);
+}
 .emoji, .image {
   height: 100%;
 }

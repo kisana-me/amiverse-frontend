@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import styles from '../styles/Console.module.css'
+import button_styles from '../styles/Button.module.css'
 import { PostType } from '@/types/post'
 import { Modal } from '@/components/modal/Modal'
 import PostForm from '@/components/post/form'
@@ -40,7 +41,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
   return (
     <div className={styles.console}>
       <div className={styles.content}>
-        <button className={`${styles.button} ${styles.button_quote}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsQuoteModalOpen(true))}>
+        <button className={`${button_styles.button} ${styles.button_quote}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsQuoteModalOpen(true))}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M44 20H11V56H35V71L29 71V80H44V20ZM89.0002 20H56.0002L56.0002 56H80.0002V71L74.0002 71V80H89.0002V20Z" fill="currentColor" />
@@ -54,7 +55,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
       </div>
 
       <div className={styles.content}>
-        <button className={`${styles.button} ${styles.button_diffuse} ${post.is_diffused ? styles.button_diffused : ''}`} disabled={post.is_busy === true} onClick={handleDiffuse}>
+        <button className={`${button_styles.button} ${styles.button_diffuse} ${post.is_diffused ? button_styles.used : ''}`} disabled={post.is_busy === true} onClick={handleDiffuse}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -74,7 +75,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
       </div>
 
       <div className={styles.content}>
-        <button className={`${styles.button} ${styles.button_reply}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsReplyModalOpen(true))}>
+        <button className={`${button_styles.button} ${styles.button_reply}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsReplyModalOpen(true))}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -93,7 +94,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
       </div>
 
       <div className={styles.content}>
-        <button className={`${styles.button} ${styles.button_menu}`} onClick={() => setIsPostMenuOpen(true)}>
+        <button className={`${button_styles.button} ${styles.button_menu}`} onClick={() => setIsPostMenuOpen(true)}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -104,7 +105,6 @@ export default function Console({ post: initialPost }: { post: PostType }) {
               />
             </svg>
           </div>
-          <div className={styles.number}></div>
         </button>
 
         <Modal isOpen={isPostMenuOpen} onClose={() => setIsPostMenuOpen(false)} title="投稿メニュー">
