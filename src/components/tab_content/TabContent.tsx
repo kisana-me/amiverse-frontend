@@ -121,8 +121,6 @@ export default function TabContent<K extends string = string>(props: TabContentP
   const scrollPositionsRef = useRef<Record<string, number>>({});
 
   const handleTabChange = useCallback((key: K) => {
-    scrollPositionsRef.current[currentTab as string] = window.scrollY;
-
     if (!isControlled) {
       const onBeforeChange = (props as TabContentUncontrolledProps<K>).onBeforeChange;
       if (onBeforeChange && !onBeforeChange(key, currentTab)) return;
@@ -130,6 +128,9 @@ export default function TabContent<K extends string = string>(props: TabContentP
     }
     props.onTabChange?.(key);
   }, [isControlled, currentTab, props]);
+
+  // パネルごとのY方向オフセット（スワイプ中・トランジション中のスクロール位置調整用）
+  const panelOffsetsRef = useRef<Record<string, number>>({});
 
   // --- スワイプ処理 ---
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,16 +147,36 @@ export default function TabContent<K extends string = string>(props: TabContentP
 
   useEffect(() => {
     if (previousTabRef.current !== currentTab) {
+      const oldTab = previousTabRef.current;
+      
+      // 現在のスクロール位置を古いタブに保存
+      const currentY = window.scrollY;
+      scrollPositionsRef.current[oldTab as string] = currentY;
+
+      const targetY = scrollPositionsRef.current[currentTab as string] || 0;
+
+      // 新しいタブが正しいスクロール位置に見えるようにオフセットを計算
+      const newOffsets: Record<string, number> = {};
+      tabKeysRef.current.forEach(k => {
+        if (k === currentTab) {
+          newOffsets[k] = 0;
+        } else {
+          const savedK = scrollPositionsRef.current[k as string] || 0;
+          newOffsets[k] = targetY - savedK;
+        }
+      });
+      panelOffsetsRef.current = newOffsets;
+
+      previousTabRef.current = currentTab;
+
       setIsTransitioning(true);
       const timer = setTimeout(() => {
         setIsTransitioning(false);
       }, 300);
-      previousTabRef.current = currentTab;
       
       // スクロール位置の復元
       setTimeout(() => {
-        const savedPos = scrollPositionsRef.current[currentTab as string] || 0;
-        window.scrollTo(0, savedPos);
+        window.scrollTo(0, targetY);
       }, 0);
 
       return () => clearTimeout(timer);
@@ -173,6 +194,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
     startTime: 0,
     directionDecided: false,
     isHorizontal: false,
+    initialScrollY: 0,
   });
 
   useEffect(() => {
@@ -180,6 +202,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
     if (!container) return;
 
     const handleTouchStart = (e: TouchEvent) => {
+      const currentY = window.scrollY;
       const touch = e.touches[0];
       touchRef.current = {
         startX: touch.clientX,
@@ -187,7 +210,22 @@ export default function TabContent<K extends string = string>(props: TabContentP
         startTime: Date.now(),
         directionDecided: false,
         isHorizontal: false,
+        initialScrollY: currentY,
       };
+
+      // スワイプ開始時の状態を保存し、非アクティブタブのオフセットを計算
+      scrollPositionsRef.current[currentTab as string] = currentY;
+      const newOffsets: Record<string, number> = {};
+      tabKeysRef.current.forEach(k => {
+        if (k === currentTab) {
+          newOffsets[k] = 0;
+        } else {
+          const savedK = scrollPositionsRef.current[k as string] || 0;
+          newOffsets[k] = currentY - savedK;
+        }
+      });
+      panelOffsetsRef.current = newOffsets;
+
       swipeOffsetRef.current = 0;
       isSwipingRef.current = true;
       setIsSwiping(true);
@@ -249,6 +287,16 @@ export default function TabContent<K extends string = string>(props: TabContentP
       const idx = activeIndexRef.current;
       const tabKeysCurrent = tabKeysRef.current;
 
+      // スワイプ中の縦スクロール分をすべてのタブの保存位置に反映
+      const deltaY = window.scrollY - touchRef.current.initialScrollY;
+      if (deltaY !== 0) {
+        tabKeysCurrent.forEach(k => {
+          if (scrollPositionsRef.current[k as string] !== undefined) {
+            scrollPositionsRef.current[k as string] += deltaY;
+          }
+        });
+      }
+
       if (Math.abs(offset) > distanceThreshold || velocity > velocityThreshold) {
         if (offset > 0 && idx > 0) {
           onTabChangeRef.current(tabKeysCurrent[idx - 1]);
@@ -298,14 +346,28 @@ export default function TabContent<K extends string = string>(props: TabContentP
         style={{ transform: `translateX(${translateValue})` }}
       >
         {keys.map((key) => {
-          const isActive = key === currentTab;
-          const showFullHeight = isActive || isSwiping || isTransitioning;
+          const isActuallyActive = key === currentTab;
+          // useEffectが走る前の1フレームでは、古いタブをアクティブとして扱いオフセットを維持する
+          const isLimbo = previousTabRef.current !== currentTab;
+          const isActive = isLimbo ? key === previousTabRef.current : isActuallyActive;
+          
+          const showFullHeight = isActuallyActive || key === previousTabRef.current || isSwiping || isTransitioning;
+          
+          let transform = "";
+          if (showFullHeight && !isActive) {
+            const offset = panelOffsetsRef.current[key as string] || 0;
+            if (offset !== 0) {
+              transform = `translateY(${offset}px)`;
+            }
+          }
+
           return (
             <div 
               key={key} 
               className={`tab-content-panel${!showFullHeight ? " tab-content-panel--inactive" : ""}`}
+              style={transform ? { transform } : undefined}
             >
-              {children(key, isActive)}
+              {children(key, isActuallyActive)}
             </div>
           );
         })}
