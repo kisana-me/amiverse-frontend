@@ -1,12 +1,15 @@
 "use client";
 
 import MainHeader from "@/components/main_header/MainHeader";
+import TabBar from "@/components/tab_bar/TabBar";
+import TabContent from "@/components/tab_content/TabContent";
 import { useToast } from "@/providers/ToastProvider";
 import { usePosts, CachedPost } from "@/providers/PostsProvider";
 import { useFeeds, FeedTypeKey } from "@/providers/FeedsProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import Feed from "@/features/feed/components/Feed";
 import { Modal } from "@/components/modal/Modal";
+import { useTabs } from "@/hooks/useTabs";
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PostType } from "@/types/post"
@@ -15,8 +18,11 @@ import { api } from "@/lib/axios";
 import Link from "next/link";
 import ActionPrompt from "@/components/action_prompt/ActionPrompt";
 
-// Valid tab values for URL query parameter
-const VALID_TABS: FeedTypeKey[] = ['current', 'following', 'recommended'];
+const HOME_TABS: { key: FeedTypeKey; label: string }[] = [
+  { key: 'current', label: '最新' },
+  { key: 'following', label: 'フォロー中' },
+  { key: 'recommended', label: 'おすすめ' },
+];
 const FEED_PAGE_SIZE = 30;
 
 // IntersectionObserverを使った無限スクロール用センチネルコンポーネント
@@ -60,40 +66,48 @@ function HomeContent() {
   const { currentAccountStatus } = useCurrentAccount();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
-  // Initialize feed type from URL query parameter
+  const { tabs, activeTab, changeTab, setActiveTab } = useTabs<FeedTypeKey>({
+    tabs: HOME_TABS,
+    defaultTab: 'current',
+    onBeforeChange: (nextTab) => {
+      if (nextTab === 'following' && currentAccountStatus !== 'signed_in') {
+        setIsSignInModalOpen(true);
+        return false;
+      }
+      return true;
+    },
+  });
+
+  // タブ変更を FeedsProvider と URL に同期
+  useEffect(() => {
+    setCurrentFeedType(activeTab);
+    const newUrl = activeTab === 'current' ? '/' : `/?tab=${activeTab}`;
+    router.replace(newUrl, { scroll: false });
+  }, [activeTab, setCurrentFeedType, router]);
+
+  // URL クエリパラメータからタブを初期化
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && VALID_TABS.includes(tabParam as FeedTypeKey)) {
-      setCurrentFeedType(tabParam as FeedTypeKey);
+    if (tabParam && HOME_TABS.some(t => t.key === tabParam)) {
+      setActiveTab(tabParam as FeedTypeKey);
     }
-  }, [searchParams, setCurrentFeedType]);
+  }, [searchParams, setActiveTab]);
 
-  const [posts, setPosts] = useState<PostType[]>(() => {
-    const cachedFeed = feeds[currentFeedType];
-    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
-      return cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
-    }
-    return [];
-  });
   const [isFeedLoading, setIsFeedLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const cachedFeed = feeds[currentFeedType];
-  const fetchedAt = cachedFeed?.fetched_at;
-
-  // キャッシュまたは投稿データが更新されたら表示を更新
-  useEffect(() => {
-    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
-      const cachedPosts = cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
-      setPosts(cachedPosts);
-    } else {
-      setPosts([]);
+  // キャッシュからタブごとの投稿を導出するヘルパー
+  const getPostsForFeed = useCallback((type: FeedTypeKey): CachedPost[] => {
+    const feed = feeds[type];
+    if (feed && Array.isArray(feed.objects)) {
+      return feed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
     }
-  }, [cachedFeed, getPost]);
+    return [];
+  }, [feeds, getPost]);
 
   // Reset hasMore when feed type changes
   useEffect(() => {
@@ -152,9 +166,10 @@ function HomeContent() {
   }, [addPosts, addFeed, addToast, currentFeedType, currentAccountStatus, feeds]);
 
   const loadMore = async () => {
-    if (isLoadingMore || !hasMore || posts.length === 0) return;
+    const currentPosts = getPostsForFeed(currentFeedType);
+    if (isLoadingMore || !hasMore || currentPosts.length === 0) return;
     
-    const lastPost = posts[posts.length - 1];
+    const lastPost = currentPosts[currentPosts.length - 1];
     setIsLoadingMore(true);
 
     try {
@@ -214,69 +229,54 @@ function HomeContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentFeedType, currentAccountStatus])
 
-  const handleTabChange = (type: FeedTypeKey) => {
-    if (type === 'following' && currentAccountStatus !== 'signed_in') {
-      setIsSignInModalOpen(true);
-      return;
-    }
-    setCurrentFeedType(type);
-    // Update URL with new tab parameter (use 'current' as default, so omit it from URL)
-    const newUrl = type === 'current' ? '/' : `/?tab=${type}`;
-    router.replace(newUrl);
-  };
-
-  const tabStyle = (type: string) => ({
-    fontSize: '.8rem',
-    fontWeight: currentFeedType === type ? 'bold' : 'normal',
-    borderBottom: currentFeedType === type ? '2px solid currentColor' : '2px solid transparent',
-    borderTop: 'none',
-    borderLeft: 'none',
-    borderRight: 'none',
-    padding: '0.5rem 1rem',
-    background: 'none',
-    cursor: 'pointer',
-    color: 'inherit',
-    opacity: currentFeedType === type ? 1 : 0.7
-  });
-
   return (
-    <>
-      <MainHeader>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => handleTabChange('current')} style={tabStyle('current')}>
-            最新
-          </button>
-          <button onClick={() => handleTabChange('following')} style={tabStyle('following')}>
-            フォロー中
-          </button>
-          <button onClick={() => handleTabChange('recommended')} style={tabStyle('recommended')}>
-            おすすめ
-          </button>
-        </div>
-      </MainHeader>
-      
-      <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#888', borderBottom: '1px solid var(--border-color)' }}>
-        <div>
-          {fetchedAt ? `最終更新: ${new Date(fetchedAt).toLocaleString()}` : '未取得'}
-        </div>
-        <button onClick={fetchPost} disabled={isRefetching || isFeedLoading} style={{ cursor: 'pointer', background: 'none', border: '1px solid currentColor', borderRadius: '4px', padding: '2px 8px', color: 'inherit', opacity: (isRefetching || isFeedLoading) ? 0.5 : 1 }}>
-          {isRefetching ? '更新中...' : '再読み込み'}
-        </button>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', position: 'relative' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 80 }}>
+        <MainHeader>
+          <TabBar tabs={tabs} activeTab={activeTab} onTabChange={changeTab} />
+        </MainHeader>
       </div>
 
-      <Feed posts={posts} feed={cachedFeed ? { ...cachedFeed, type: currentFeedType, fetched_at: cachedFeed.fetched_at?.toString() } : undefined} is_loading={isFeedLoading} />
+      <TabContent
+        tabKeys={tabs.map(t => t.key)}
+        activeTab={activeTab}
+        onTabChange={changeTab}
+      >
+        {(tabKey) => {
+          const feedType = tabKey as FeedTypeKey;
+          const feed = feeds[feedType];
+          const tabPosts = getPostsForFeed(feedType);
+          const isThisTabLoading = feedType === currentFeedType && isFeedLoading && !feed;
+          const isThisTabRefetching = feedType === currentFeedType && isRefetching;
 
-      {currentFeedType !== 'recommended' && posts.length > 0 && !isFeedLoading && (
-        <>
-          {hasMore ? (
-            <InfiniteScrollSentinel onIntersect={loadMore} isLoading={isLoadingMore} />
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-              すべてを読み込みました
+          return (
+            <div style={{ paddingTop: '50px', paddingBottom: '70px', minHeight: '100%' }}>
+              <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#888', borderBottom: '1px solid var(--border-color)' }}>
+                <div>
+                  {feed?.fetched_at ? `最終更新: ${new Date(feed.fetched_at).toLocaleString()}` : '未取得'}
+                </div>
+                <button onClick={fetchPost} disabled={isThisTabRefetching || isThisTabLoading} style={{ cursor: 'pointer', background: 'none', border: '1px solid currentColor', borderRadius: '4px', padding: '2px 8px', color: 'inherit', opacity: (isThisTabRefetching || isThisTabLoading) ? 0.5 : 1 }}>
+                  {isThisTabRefetching ? '更新中...' : '再読み込み'}
+                </button>
+              </div>
+
+              <Feed posts={tabPosts} feed={feed ? { ...feed, type: feedType, fetched_at: feed.fetched_at?.toString() } : undefined} is_loading={isThisTabLoading} />
+
+              {feedType !== 'recommended' && tabPosts.length > 0 && !isThisTabLoading && (
+                <>
+                  {feedType === currentFeedType && hasMore ? (
+                    <InfiniteScrollSentinel onIntersect={loadMore} isLoading={isLoadingMore} />
+                  ) : feedType === currentFeedType ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                      すべてを読み込みました
+                    </div>
+                  ) : null}
+                </>
+              )}
             </div>
-          )}
-        </>
-      )}
+          );
+        }}
+      </TabContent>
 
       <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">
         <div style={{ padding: '1rem' }}>
@@ -293,7 +293,7 @@ function HomeContent() {
       </Modal>
 
       <ActionPrompt />
-    </>
+    </div>
   );
 }
 

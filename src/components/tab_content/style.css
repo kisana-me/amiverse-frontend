@@ -1,0 +1,29 @@
+.tab-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-content-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-content-slider {
+  display: flex;
+  align-items: flex-start;
+  will-change: transform;
+}
+
+.tab-content-slider--animating {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tab-content-panel {
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+.tab-content-panel--inactive {
+  height: 0;
+  overflow: hidden;
+}

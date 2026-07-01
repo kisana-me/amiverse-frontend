@@ -1,6 +1,6 @@
 /* New Post FAB Button */
 .action-prompt-container {
-  position: sticky;
+  position: absolute;
   bottom: 70px; /* BottomNav(60px) + 余白 */
   width: 100%;
   display: flex;
