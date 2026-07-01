@@ -1,4 +1,5 @@
 .info {
+  margin: 0.25rem 0 0;
   color: var(--inconspicuous-font-color);
   font-size: 0.8rem;
 }

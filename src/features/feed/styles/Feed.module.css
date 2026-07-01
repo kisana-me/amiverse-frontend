@@ -1,5 +1,9 @@
 .feed {
   min-height: 80svh;
+  padding: 8px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
 }
 .empty {
   margin: 2rem 0;
