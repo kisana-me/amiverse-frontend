@@ -1,22 +1,4 @@
+/* 修飾表示の本体は components/rich_text/RichText に共通化。ここでは投稿本文向けの調整のみ */
 .content {
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.5;
   font-size: 1rem;
-}
-.content a {
-  color: var(--link-color);
-  text-decoration: none;
-}
-.content a:hover {
-  text-decoration: underline;
-}
-.content_more {
-  color: var(--link-color);
-  cursor: pointer;
-  margin-top: 4px;
-  display: inline-block;
-}
-.content_more:hover {
-  text-decoration: underline;
 }

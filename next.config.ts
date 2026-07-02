@@ -45,6 +45,14 @@ const nextConfig: NextConfig = {
         source: '/@:name_id',
         destination: '/accounts/:name_id',
       },
+      {
+        source: '/@:name_id/following',
+        destination: '/accounts/:name_id/following',
+      },
+      {
+        source: '/@:name_id/followers',
+        destination: '/accounts/:name_id/followers',
+      },
     ];
   },
 };

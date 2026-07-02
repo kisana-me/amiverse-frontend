@@ -42,3 +42,11 @@ export const formatFullDate = (date: Date) => {
   const minutes = date.getMinutes()
   return `${year}年${month}月${day}日 ${hours}時${minutes}分`
 }
+
+// 時・分を含まない年月日のみの表記（誕生日・参加日など）
+export const formatDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  return `${year}年${month}月${day}日`
+}

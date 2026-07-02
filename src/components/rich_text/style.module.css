@@ -1,0 +1,25 @@
+.rich_text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.rich_text a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.rich_text a:hover {
+  text-decoration: underline;
+}
+
+.rich_text_more {
+  color: var(--link-color);
+  cursor: pointer;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.rich_text_more:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,37 @@
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.tab {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.content {
+  min-height: 200px;
+}
+
+/*
+ * TabContent のコンテナ（タッチリスナーの載る要素）を画面下端まで伸ばし、
+ * リストが短いときの空白部分でもスワイプできるようにする。
+ * 固定 height と違い min-height なのでリストが長い場合は通常どおり伸びる。
+ * 85px = MainHeader(50px) + タブバー(約35px)
+ */
+.swipe_area {
+  min-height: calc(100dvh - 85px);
+}
+
+/* スケルトン用のタブプレースホルダー */
+.tab_selector {
+  padding: 10px 16px;
+  font-weight: bold;
+  color: var(--inconspicuous-font-color);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.tab_selector:hover {
+  background: var(--hover-color);
+}

@@ -1,0 +1,15 @@
+.tab_bar {
+  height: 50px;
+  flex-shrink: 0;
+}
+
+/*
+ * TabContent のコンテナ（タッチリスナーの載る要素）を画面下端まで伸ばし、
+ * リストが短いときの空白部分でもスワイプできるようにする。
+ * 以前の「外側を固定 height で包む」方式はリストが長いと overflow: hidden で
+ * クリップされてスクロールできなくなるため、min-height 方式に変更。
+ * 100px = MainHeader(50px) + タブバー(50px)
+ */
+.swipe_area {
+  min-height: calc(100dvh - 100px);
+}
