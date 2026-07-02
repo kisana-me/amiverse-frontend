@@ -1,20 +1,21 @@
 "use client";
 
 import MainHeader from "@/components/main_header/MainHeader";
+import TabBar from "@/components/tab_bar/TabBar";
+import TabContent from "@/components/tab_content/TabContent";
 import { api } from "@/lib/axios";
 import { Modal } from '@/components/modal/Modal';
-import { use, useEffect, useState, useCallback } from "react";
+import { use, useEffect, useState, useCallback, useRef } from "react";
 import SkeletonAccount from "./skeleton_account";
 import { formatFullDate } from "@/lib/format_time";
 import "./page.css";
-import { usePosts, CachedPost } from "@/providers/PostsProvider";
-import { useFeeds } from "@/providers/FeedsProvider";
-import Feed from "@/features/feed/components/Feed";
-import { PostType } from "@/types/post";
-import { FeedItemType } from "@/types/feed";
 import { useToast } from "@/providers/ToastProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import { useAccounts } from "@/providers/AccountsProvider";
+import { useTabs } from "@/hooks/useTabs";
+import { useFeedTimeline, FeedPage, UseFeedTimelineReturn } from "@/hooks/useFeedTimeline";
+import FeedTimeline from "@/features/feed/components/FeedTimeline";
+import PullToRefresh from "@/components/pull_to_refresh/PullToRefresh";
 import ItemContent from "@/components/post/item_content";
 
 type Props = {
@@ -22,6 +23,18 @@ type Props = {
     name_id: string;
   }>;
 };
+
+type AccountTabKey = 'posts' | 'replies' | 'media' | 'drawings';
+
+const ACCOUNT_TABS: { key: AccountTabKey; label: string }[] = [
+  { key: 'posts', label: '投稿' },
+  { key: 'replies', label: '返信' },
+  { key: 'media', label: 'メディア' },
+  { key: 'drawings', label: 'お絵描き' },
+];
+
+// MainHeader (.main-header) の高さ。未訪問タブ切替時の基準スクロール算出に使う
+const HEADER_HEIGHT = 50;
 
 export default function Page({ params }: Props) {
   const { name_id } = use(params);
@@ -40,26 +53,12 @@ function AccountContent({ name_id }: { name_id: string }) {
 
   const [loading, setLoading] = useState<boolean>(!accounts[name_id]);
   const account = accounts[name_id] || null;
+  const aid = account?.aid;
 
   const { addToast } = useToast();
-  const { addPosts, getPost } = usePosts();
-  const { addFeed, appendFeed, feeds } = useFeeds();
   const { currentAccountStatus, currentAccount } = useCurrentAccount();
 
-  const [posts, setPosts] = useState<PostType[]>(() => {
-    if (account && feeds[account.aid]) {
-      const cachedFeed = feeds[account.aid];
-      if (cachedFeed && Array.isArray(cachedFeed.objects)) {
-        return cachedFeed.objects
-          .map((item) => getPost(item.post_aid))
-          .filter((p): p is CachedPost => !!p);
-      }
-    }
-    return [];
-  });
-  const [isFeedLoading, setIsFeedLoading] = useState(!!account && !feeds[account.aid]);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [isAccountRefreshing, setIsAccountRefreshing] = useState(false);
 
   useEffect(() => {
     if (!name_id) return;
@@ -75,104 +74,94 @@ function AccountContent({ name_id }: { name_id: string }) {
     }
   }, [name_id, currentAccountStatus, fetchAccount, accounts]);
 
-  const fetchFeed = useCallback(async (aid: string) => {
-    if (feeds[aid]) return;
-    
-    setIsFeedLoading(true);
+  // --- タブ状態 ---
+  const { tabs, activeTab, changeTab } = useTabs<AccountTabKey>({
+    tabs: ACCOUNT_TABS,
+    defaultTab: 'posts',
+  });
+
+  // --- タブごとのタイムライン ---
+  const fetchAccountPage = useCallback(async (filter: AccountTabKey, cursor?: number): Promise<FeedPage | null> => {
+    if (!aid) return null;
+    const res = await api.post('/feeds/account', { aid, filter, ...(cursor ? { cursor } : {}) });
+    return (res.data ?? null) as FeedPage | null;
+  }, [aid]);
+
+  const fetchPosts = useCallback((c?: number) => fetchAccountPage('posts', c), [fetchAccountPage]);
+  const fetchReplies = useCallback((c?: number) => fetchAccountPage('replies', c), [fetchAccountPage]);
+  const fetchMedia = useCallback((c?: number) => fetchAccountPage('media', c), [fetchAccountPage]);
+  const fetchDrawings = useCallback((c?: number) => fetchAccountPage('drawings', c), [fetchAccountPage]);
+
+  const statusReady = currentAccountStatus !== 'loading';
+  const makeKey = (k: AccountTabKey) => `${aid ?? 'pending'}:${k}`;
+
+  const postsTimeline = useFeedTimeline({
+    feedKey: makeKey('posts'),
+    fetchPage: fetchPosts,
+    enabled: !!aid && statusReady && activeTab === 'posts',
+    errorMessage: '投稿取得エラー',
+  });
+  const repliesTimeline = useFeedTimeline({
+    feedKey: makeKey('replies'),
+    fetchPage: fetchReplies,
+    enabled: !!aid && statusReady && activeTab === 'replies',
+    errorMessage: '投稿取得エラー',
+  });
+  const mediaTimeline = useFeedTimeline({
+    feedKey: makeKey('media'),
+    fetchPage: fetchMedia,
+    enabled: !!aid && statusReady && activeTab === 'media',
+    errorMessage: '投稿取得エラー',
+  });
+  const drawingsTimeline = useFeedTimeline({
+    feedKey: makeKey('drawings'),
+    fetchPage: fetchDrawings,
+    enabled: !!aid && statusReady && activeTab === 'drawings',
+    errorMessage: '投稿取得エラー',
+  });
+
+  const timelines: Record<AccountTabKey, UseFeedTimelineReturn> = {
+    posts: postsTimeline,
+    replies: repliesTimeline,
+    media: mediaTimeline,
+    drawings: drawingsTimeline,
+  };
+  const activeTimeline = timelines[activeTab];
+
+  // 未訪問タブに切り替えたときの基準スクロール位置。
+  // ページ最上部（バナー）まで戻らず、タブバーがヘッダー直下に来る位置に合わせる。
+  const tabBarRef = useRef<HTMLDivElement>(null);
+  const getTabBarScrollTop = useCallback(() => {
+    const el = tabBarRef.current;
+    if (!el) return 0;
+    return Math.max(0, el.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT);
+  }, []);
+
+  // Pull-to-Refresh / タブ再クリックでアカウント情報とタイムラインを一緒に更新する
+  const handleRefresh = useCallback(async () => {
+    setIsAccountRefreshing(true);
     try {
-      const res = await api.post('/feeds/account', { aid });
-      if (!res.data) return;
-
-      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
-
-      if (data.posts) {
-        addPosts(data.posts);
-      }
-
-      if (data.feed) {
-        addFeed({ type: aid, objects: data.feed });
-      } else if (data.posts) {
-        const generatedFeed: FeedItemType[] = data.posts.map(post => ({
-          type: 'post',
-          post_aid: post.aid,
-        }));
-        addFeed({ type: aid, objects: generatedFeed });
-      }
-    } catch (error) {
-      addToast({
-        message: "投稿取得エラー",
-        detail: error instanceof Error ? error.message : String(error),
-      });
+      await Promise.all([
+        fetchAccount(name_id, { force: true }),
+        activeTimeline.refresh(),
+      ]);
     } finally {
-      setIsFeedLoading(false);
+      setIsAccountRefreshing(false);
     }
-  }, [addPosts, addFeed, addToast, feeds]);
+  }, [name_id, fetchAccount, activeTimeline]);
 
-  useEffect(() => {
-    if (currentAccountStatus === 'loading') return;
-    if (!account) return;
-    if (!feeds[account.aid]) {
-        fetchFeed(account.aid);
-    }
-  }, [account, feeds, fetchFeed, currentAccountStatus]);
-
-  useEffect(() => {
-    if (!account) return;
-    const cachedFeed = feeds[account.aid];
-    if (cachedFeed && Array.isArray(cachedFeed.objects)) {
-      const cachedPosts = cachedFeed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
-      setPosts(cachedPosts);
-    }
-  }, [feeds, account, getPost]);
-
-  const loadMore = async () => {
-    if (isLoadingMore || !hasMore || posts.length === 0 || !account) return;
-    
-    const lastPost = posts[posts.length - 1];
-    setIsLoadingMore(true);
-
-    try {
-      const cursor = Math.floor(new Date(lastPost.created_at).getTime() / 1000);
-      const res = await api.post('/feeds/account', {
-        aid: account.aid,
-        cursor
-      });
-
-      if (!res.data) return;
-
-      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
-      const newPosts = data.posts || [];
-      const newFeedItems = data.feed || [];
-
-      if (newPosts.length === 0 && newFeedItems.length === 0) {
-        setHasMore(false);
+  // アクティブなタブを再クリック: スクロール中なら最上部へ、最上部なら再読み込み
+  const handleTabSelect = useCallback((key: AccountTabKey) => {
+    if (key === activeTab) {
+      if (window.scrollY > 0) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-
-      if (newPosts.length > 0) {
-        addPosts(newPosts);
-      }
-
-      if (newFeedItems.length > 0) {
-        appendFeed({ type: account.aid, objects: newFeedItems });
-      } else if (newPosts.length > 0) {
-        const generatedFeed: FeedItemType[] = newPosts.map(post => ({
-          type: 'post',
-          post_aid: post.aid,
-        }));
-        appendFeed({ type: account.aid, objects: generatedFeed });
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      addToast({
-        message: "読み込みエラー",
-        detail: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setIsLoadingMore(false);
+      if (!isAccountRefreshing && !activeTimeline.isRefetching) handleRefresh();
+      return;
     }
-  };
+    changeTab(key);
+  }, [activeTab, isAccountRefreshing, activeTimeline, handleRefresh, changeTab]);
 
   const handleFollow = async () => {
     if (!account) return;
@@ -208,7 +197,7 @@ function AccountContent({ name_id }: { name_id: string }) {
   const handleMenu = () => {
     setIsMenuModalOpen(true);
   };
-  
+
   const handleBlock = async () => {
     if (!account || currentAccountStatus !== "signed_in" || isBlockingSubmitting) return;
 
@@ -303,7 +292,7 @@ function AccountContent({ name_id }: { name_id: string }) {
             </div>
             <div className="amh-right">
               <button
-                className={`iai-button ${account.is_following ? 'active' : ''}`} 
+                className={`iai-button ${account.is_following ? 'active' : ''}`}
                 onClick={handleFollow}
                 style={{
                   backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--accent-color)',
@@ -321,6 +310,11 @@ function AccountContent({ name_id }: { name_id: string }) {
 
       {loading ? <SkeletonAccount /> :
         account ? (
+          <PullToRefresh
+            onRefresh={handleRefresh}
+            refreshing={isAccountRefreshing || activeTimeline.isRefetching}
+            disabled={loading || activeTimeline.isLoading}
+          >
           <div className="account-container">
             <div className="account-banner-container">
               <img
@@ -350,8 +344,8 @@ function AccountContent({ name_id }: { name_id: string }) {
               </div>
 
               <div className="ap-buttons">
-                <button 
-                  className={`ap-button ${account.is_following ? 'active' : ''}`} 
+                <button
+                  className={`ap-button ${account.is_following ? 'active' : ''}`}
                   onClick={handleFollow}
                   style={{
                     backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--accent-color)',
@@ -427,38 +421,28 @@ function AccountContent({ name_id }: { name_id: string }) {
               </div>
             </div>
 
-            <div className="account-tab">
-              <div className="account-tab-selector active">投稿</div>
-              <div className="account-tab-selector">返信</div>
-              <div className="account-tab-selector">メディア</div>
-              <div className="account-tab-selector">リアクション</div>
+            <div className="account-tab" ref={tabBarRef}>
+              <TabBar tabs={tabs} activeTab={activeTab} onTabChange={handleTabSelect} />
             </div>
 
             <div className="account-content">
-              <Feed 
-                posts={posts} 
-                feed={account && feeds[account.aid] ? { ...feeds[account.aid], type: account.aid, fetched_at: feeds[account.aid].fetched_at?.toString() } : undefined} 
-                is_loading={isFeedLoading} 
-              />
-              
-              {hasMore && posts.length > 0 && !isFeedLoading && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-                  <button 
-                    onClick={loadMore} 
-                    disabled={isLoadingMore}
-                    style={{ 
-                      padding: '0.5rem 2rem', 
-                      background: 'var(--bg-secondary)', 
-                      border: 'none', 
-                      borderRadius: '20px', 
-                      cursor: 'pointer',
-                      color: 'var(--text-secondary)'
-                    }}
-                  >
-                    {isLoadingMore ? '読み込み中...' : 'さらに読み込む'}
-                  </button>
-                </div>
-              )}
+              <TabContent
+                tabKeys={tabs.map(t => t.key)}
+                activeTab={activeTab}
+                onTabChange={changeTab}
+                defaultScrollTop={getTabBarScrollTop}
+              >
+                {(tabKey) => {
+                  const feedType = tabKey as AccountTabKey;
+                  return (
+                    <FeedTimeline
+                      timeline={timelines[feedType]}
+                      feedType={makeKey(feedType)}
+                      isActive={feedType === activeTab}
+                    />
+                  );
+                }}
+              </TabContent>
             </div>
             <Modal
               isOpen={isMenuModalOpen}
@@ -470,11 +454,11 @@ function AccountContent({ name_id }: { name_id: string }) {
 
               {currentAccountStatus === "signed_in" && currentAccount?.aid !== account.aid && (
                 <>
-                  <button 
+                  <button
                     onClick={handleBlock}
                     disabled={isBlockingSubmitting}
-                    style={{ 
-                      color: 'red', 
+                    style={{
+                      color: 'red',
                       cursor: isBlockingSubmitting ? 'not-allowed' : 'pointer',
                       opacity: isBlockingSubmitting ? 0.7 : 1,
                       padding: '8px',
@@ -487,8 +471,8 @@ function AccountContent({ name_id }: { name_id: string }) {
                   </button>
                   <button
                     onClick={handleReport}
-                    style={{ 
-                      color: 'red', 
+                    style={{
+                      color: 'red',
                       cursor: 'pointer',
                       padding: '8px',
                       border: '1px solid red',
@@ -576,6 +560,7 @@ function AccountContent({ name_id }: { name_id: string }) {
               </div>
             </Modal>
           </div>
+          </PullToRefresh>
         ) : (
           <div className="p-4 text-center">アカウントが見つかりません</div>
         )

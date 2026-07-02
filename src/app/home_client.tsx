@@ -3,17 +3,14 @@
 import MainHeader from "@/components/main_header/MainHeader";
 import TabBar from "@/components/tab_bar/TabBar";
 import TabContent from "@/components/tab_content/TabContent";
-import { useToast } from "@/providers/ToastProvider";
-import { usePosts, CachedPost } from "@/providers/PostsProvider";
 import { useFeeds, FeedTypeKey } from "@/providers/FeedsProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
-import Feed from "@/features/feed/components/Feed";
 import { Modal } from "@/components/modal/Modal";
 import { useTabs } from "@/hooks/useTabs";
-import { useEffect, useState, useCallback, useRef, Suspense } from "react";
+import { useFeedTimeline, FeedPage, UseFeedTimelineReturn } from "@/hooks/useFeedTimeline";
+import FeedTimeline from "@/features/feed/components/FeedTimeline";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { PostType } from "@/types/post"
-import { FeedItemType } from "@/types/feed"
 import { api } from "@/lib/axios";
 import Link from "next/link";
 import ActionPrompt from "@/components/action_prompt/ActionPrompt";
@@ -24,46 +21,9 @@ const HOME_TABS: { key: FeedTypeKey; label: string }[] = [
   { key: 'following', label: 'フォロー中' },
   { key: 'recommended', label: 'おすすめ' },
 ];
-const FEED_PAGE_SIZE = 30;
-
-// IntersectionObserverを使った無限スクロール用センチネルコンポーネント
-function InfiniteScrollSentinel({ onIntersect, isLoading }: { onIntersect: () => void; isLoading: boolean }) {
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const onIntersectRef = useRef(onIntersect);
-  onIntersectRef.current = onIntersect;
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onIntersectRef.current();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={sentinelRef} style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-      {isLoading && (
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-          読み込み中...
-        </div>
-      )}
-    </div>
-  );
-}
 
 function HomeContent() {
-  const { addToast } = useToast();
-  const { addPosts, getPost } = usePosts();
-  const { addFeed, appendFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
+  const { setCurrentFeedType } = useFeeds();
   const { currentAccountStatus } = useCurrentAccount();
   const searchParams = useSearchParams();
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
@@ -97,139 +57,43 @@ function HomeContent() {
     }
   }, [searchParams, setActiveTab]);
 
-  const [isFeedLoading, setIsFeedLoading] = useState(false);
-  const [isRefetching, setIsRefetching] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  // フィード種別ごとの取得関数（cursor 未指定なら先頭ページ）
+  const fetchFeedPage = useCallback(async (type: FeedTypeKey, cursor?: number): Promise<FeedPage | null> => {
+    const res = await api.post(`/feeds/${type}`, cursor ? { cursor } : undefined);
+    return (res.data ?? null) as FeedPage | null;
+  }, []);
 
-  // キャッシュからタブごとの投稿を導出するヘルパー
-  const getPostsForFeed = useCallback((type: FeedTypeKey): CachedPost[] => {
-    const feed = feeds[type];
-    if (feed && Array.isArray(feed.objects)) {
-      return feed.objects.map(item => getPost(item.post_aid)).filter((p): p is CachedPost => !!p);
-    }
-    return [];
-  }, [feeds, getPost]);
+  const fetchCurrent = useCallback((cursor?: number) => fetchFeedPage('current', cursor), [fetchFeedPage]);
+  const fetchFollowing = useCallback((cursor?: number) => fetchFeedPage('following', cursor), [fetchFeedPage]);
+  const fetchRecommended = useCallback((cursor?: number) => fetchFeedPage('recommended', cursor), [fetchFeedPage]);
 
-  // Reset hasMore when feed type changes
-  useEffect(() => {
-    setHasMore(true);
-  }, [currentFeedType]);
+  const statusReady = currentAccountStatus !== 'loading';
 
-  const fetchPost = useCallback(async () => {
-    if (currentAccountStatus === 'loading') return;
+  const currentTimeline = useFeedTimeline({
+    feedKey: 'current',
+    fetchPage: fetchCurrent,
+    enabled: statusReady && activeTab === 'current',
+    errorMessage: 'タイムライン取得エラー',
+  });
+  const followingTimeline = useFeedTimeline({
+    feedKey: 'following',
+    fetchPage: fetchFollowing,
+    enabled: statusReady && activeTab === 'following',
+    errorMessage: 'タイムライン取得エラー',
+  });
+  const recommendedTimeline = useFeedTimeline({
+    feedKey: 'recommended',
+    fetchPage: fetchRecommended,
+    enabled: statusReady && activeTab === 'recommended',
+    errorMessage: 'タイムライン取得エラー',
+  });
 
-    // キャッシュがない場合のみスケルトンローディングを表示
-    if (!feeds[currentFeedType]) {
-      setIsFeedLoading(true);
-    } else {
-      setIsRefetching(true);
-    }
-
-    try {
-      const res = await api.post(`/feeds/${currentFeedType}`)
-      if (!res.data) return
-
-      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
-
-      // Store posts content
-      if (data.posts) {
-        addPosts(data.posts);
-      }
-
-      if (data.feed) {
-        addFeed({ type: currentFeedType, objects: data.feed });
-        if (data.feed.length < FEED_PAGE_SIZE) {
-          setHasMore(false);
-        }
-      } else if (data.posts) {
-        // feedがない場合はpostsの順序でfeedを作成
-        const generatedFeed: FeedItemType[] = data.posts.map(post => ({
-          type: 'post',
-          post_aid: post.aid,
-        }));
-        addFeed({ type: currentFeedType, objects: generatedFeed });
-        if (generatedFeed.length < FEED_PAGE_SIZE) {
-          setHasMore(false);
-        }
-      } else {
-        setHasMore(false);
-      }
-
-    } catch (error) {
-      addToast({
-        message: "タイムライン取得エラー",
-        detail: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setIsFeedLoading(false);
-      setIsRefetching(false);
-    }
-  }, [addPosts, addFeed, addToast, currentFeedType, currentAccountStatus, feeds]);
-
-  const loadMore = async () => {
-    const currentPosts = getPostsForFeed(currentFeedType);
-    if (isLoadingMore || !hasMore || currentPosts.length === 0) return;
-    
-    const lastPost = currentPosts[currentPosts.length - 1];
-    setIsLoadingMore(true);
-
-    try {
-      const cursor = Math.floor(new Date(lastPost.created_at).getTime() / 1000);
-      const res = await api.post(`/feeds/${currentFeedType}`, {
-        cursor
-      });
-
-      if (!res.data) return;
-
-      const data = res.data as { posts: PostType[], feed?: FeedItemType[] };
-      const newPosts = data.posts || [];
-      const newFeedItems = data.feed || [];
-
-      if (newPosts.length === 0 && newFeedItems.length === 0) {
-        setHasMore(false);
-        return;
-      }
-
-      if (newPosts.length > 0) {
-        addPosts(newPosts);
-      }
-
-      if (newFeedItems.length > 0) {
-        appendFeed({ type: currentFeedType, objects: newFeedItems });
-        if (newFeedItems.length < FEED_PAGE_SIZE) {
-          setHasMore(false);
-        }
-      } else if (newPosts.length > 0) {
-        const generatedFeed: FeedItemType[] = newPosts.map(post => ({
-          type: 'post',
-          post_aid: post.aid,
-        }));
-        appendFeed({ type: currentFeedType, objects: generatedFeed });
-        if (generatedFeed.length < FEED_PAGE_SIZE) {
-          setHasMore(false);
-        }
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      addToast({
-        message: "読み込みエラー",
-        detail: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setIsLoadingMore(false);
-    }
+  const timelines: Record<FeedTypeKey, UseFeedTimelineReturn> = {
+    current: currentTimeline,
+    following: followingTimeline,
+    recommended: recommendedTimeline,
   };
-
-  useEffect(()=>{
-    if (currentAccountStatus === 'loading') return;
-
-    if (!feeds[currentFeedType]) {
-      fetchPost();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFeedType, currentAccountStatus])
+  const activeTimeline = timelines[activeTab];
 
   // タブバーのクリック。アクティブなタブをもう一度クリックしたとき、
   // 最上部なら再読み込み（PC向けの更新操作）、スクロール中なら最上部へスムーズスクロール
@@ -239,11 +103,11 @@ function HomeContent() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      if (!isRefetching && !isFeedLoading) fetchPost();
+      if (!activeTimeline.isRefetching && !activeTimeline.isLoading) activeTimeline.refresh();
       return;
     }
     changeTab(key);
-  }, [activeTab, isRefetching, isFeedLoading, fetchPost, changeTab]);
+  }, [activeTab, activeTimeline, changeTab]);
 
   return (
     <>
@@ -251,37 +115,24 @@ function HomeContent() {
         <TabBar tabs={tabs} activeTab={activeTab} onTabChange={handleTabSelect} />
       </MainHeader>
 
-      <PullToRefresh onRefresh={fetchPost} refreshing={isRefetching} disabled={isFeedLoading}>
-      <TabContent
-        tabKeys={tabs.map(t => t.key)}
-        activeTab={activeTab}
-        onTabChange={changeTab}
-      >
-        {(tabKey) => {
-          const feedType = tabKey as FeedTypeKey;
-          const feed = feeds[feedType];
-          const tabPosts = getPostsForFeed(feedType);
-          const isThisTabLoading = feedType === currentFeedType && isFeedLoading && !feed;
-
-          return (
-            <div style={{ minHeight: '100%' }}>
-              <Feed posts={tabPosts} feed={feed ? { ...feed, type: feedType, fetched_at: feed.fetched_at?.toString() } : undefined} is_loading={isThisTabLoading} />
-
-              {feedType !== 'recommended' && tabPosts.length > 0 && !isThisTabLoading && (
-                <>
-                  {feedType === currentFeedType && hasMore ? (
-                    <InfiniteScrollSentinel onIntersect={loadMore} isLoading={isLoadingMore} />
-                  ) : feedType === currentFeedType ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                      すべてを読み込みました
-                    </div>
-                  ) : null}
-                </>
-              )}
-            </div>
-          );
-        }}
-      </TabContent>
+      <PullToRefresh onRefresh={activeTimeline.refresh} refreshing={activeTimeline.isRefetching} disabled={activeTimeline.isLoading}>
+        <TabContent
+          tabKeys={tabs.map(t => t.key)}
+          activeTab={activeTab}
+          onTabChange={changeTab}
+        >
+          {(tabKey) => {
+            const feedType = tabKey as FeedTypeKey;
+            return (
+              <FeedTimeline
+                timeline={timelines[feedType]}
+                feedType={feedType}
+                isActive={feedType === activeTab}
+                infiniteScroll={feedType !== 'recommended'}
+              />
+            );
+          }}
+        </TabContent>
       </PullToRefresh>
 
       <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">

@@ -28,6 +28,13 @@ type TabContentBaseProps<K extends string = string> = {
    * 指定すると自動で flex column ラッパーが追加される。
    */
   renderHeader?: (tabBar: ReactNode) => ReactNode;
+  /**
+   * まだ表示していない（保存スクロール位置が無い）タブに切り替えたときの
+   * 基準スクロール位置（document 座標）を返す関数。未指定なら 0（最上部）。
+   * タブバーがページ途中にある画面で、切替時にページ最上部まで戻らず
+   * タブバーが画面上端に来る位置を基準にしたい場合に使う。
+   */
+  defaultScrollTop?: () => number;
 };
 
 /**
@@ -165,13 +172,18 @@ export default function TabContent<K extends string = string>(props: TabContentP
   const swipeOffsetRef = useRef(0);
   const isSwipingRef = useRef(false);
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const defaultScrollTopRef = useRef(props.defaultScrollTop);
 
   // タッチイベントハンドラと後続の layout effect から最新値を参照するための同期
   useLayoutEffect(() => {
     activeIndexRef.current = activeIndex;
     tabKeysRef.current = keys;
     onTabChangeRef.current = handleTabChange;
+    defaultScrollTopRef.current = props.defaultScrollTop;
   });
+
+  // まだ表示していないタブの基準スクロール位置。未指定なら最上部(0)。
+  const getDefaultScroll = useCallback(() => defaultScrollTopRef.current?.() ?? 0, []);
 
   // 「スクロールの保存・復元まで処理し終えたタブ」。currentTab が変わってから
   // 下の layout effect が走るまでの1コミットだけ currentTab とずれる。
@@ -187,11 +199,11 @@ export default function TabContent<K extends string = string>(props: TabContentP
     // このコミットでは旧パネルがまだ全高のまま残っている（showFullHeight 参照）ため、
     // ドキュメントが縮んで scrollY がクランプされる前に正確な位置を保存できる
     scrollPositionsRef.current[oldTab] = window.scrollY;
-    const targetY = scrollPositionsRef.current[currentTab] ?? 0;
+    const targetY = scrollPositionsRef.current[currentTab] ?? getDefaultScroll();
 
     const newOffsets: Record<string, number> = {};
     tabKeysRef.current.forEach(k => {
-      newOffsets[k] = k === currentTab ? 0 : targetY - (scrollPositionsRef.current[k] ?? 0);
+      newOffsets[k] = k === currentTab ? 0 : targetY - (scrollPositionsRef.current[k] ?? getDefaultScroll());
     });
     setPanelOffsets(newOffsets);
     setLeavingTab(oldTab);
@@ -201,7 +213,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
 
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
     leaveTimerRef.current = setTimeout(() => setLeavingTab(null), 300);
-  }, [currentTab, displayedTab]);
+  }, [currentTab, displayedTab, getDefaultScroll]);
 
   useEffect(() => {
     return () => {
@@ -232,7 +244,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
 
       const newOffsets: Record<string, number> = {};
       tabKeys.forEach(k => {
-        newOffsets[k] = k === activeKey ? 0 : currentY - (scrollPositionsRef.current[k] ?? 0);
+        newOffsets[k] = k === activeKey ? 0 : currentY - (scrollPositionsRef.current[k] ?? (defaultScrollTopRef.current?.() ?? 0));
       });
       setPanelOffsets(newOffsets);
 
