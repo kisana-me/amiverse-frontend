@@ -17,6 +17,7 @@ import { FeedItemType } from "@/types/feed"
 import { api } from "@/lib/axios";
 import Link from "next/link";
 import ActionPrompt from "@/components/action_prompt/ActionPrompt";
+import PullToRefresh from "@/components/pull_to_refresh/PullToRefresh";
 
 const HOME_TABS: { key: FeedTypeKey; label: string }[] = [
   { key: 'current', label: '最新' },
@@ -230,14 +231,27 @@ function HomeContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentFeedType, currentAccountStatus])
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', position: 'relative' }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 80 }}>
-        <MainHeader>
-          <TabBar tabs={tabs} activeTab={activeTab} onTabChange={changeTab} />
-        </MainHeader>
-      </div>
+  // タブバーのクリック。アクティブなタブをもう一度クリックしたとき、
+  // 最上部なら再読み込み（PC向けの更新操作）、スクロール中なら最上部へスムーズスクロール
+  const handleTabSelect = useCallback((key: FeedTypeKey) => {
+    if (key === activeTab) {
+      if (window.scrollY > 0) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (!isRefetching && !isFeedLoading) fetchPost();
+      return;
+    }
+    changeTab(key);
+  }, [activeTab, isRefetching, isFeedLoading, fetchPost, changeTab]);
 
+  return (
+    <>
+      <MainHeader>
+        <TabBar tabs={tabs} activeTab={activeTab} onTabChange={handleTabSelect} />
+      </MainHeader>
+
+      <PullToRefresh onRefresh={fetchPost} refreshing={isRefetching} disabled={isFeedLoading}>
       <TabContent
         tabKeys={tabs.map(t => t.key)}
         activeTab={activeTab}
@@ -248,19 +262,9 @@ function HomeContent() {
           const feed = feeds[feedType];
           const tabPosts = getPostsForFeed(feedType);
           const isThisTabLoading = feedType === currentFeedType && isFeedLoading && !feed;
-          const isThisTabRefetching = feedType === currentFeedType && isRefetching;
 
           return (
-            <div style={{ paddingTop: '50px', paddingBottom: '70px', minHeight: '100%' }}>
-              <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#888', borderBottom: '1px solid var(--border-color)' }}>
-                <div>
-                  {feed?.fetched_at ? `最終更新: ${new Date(feed.fetched_at).toLocaleString()}` : '未取得'}
-                </div>
-                <button onClick={fetchPost} disabled={isThisTabRefetching || isThisTabLoading} style={{ cursor: 'pointer', background: 'none', border: '1px solid currentColor', borderRadius: '4px', padding: '2px 8px', color: 'inherit', opacity: (isThisTabRefetching || isThisTabLoading) ? 0.5 : 1 }}>
-                  {isThisTabRefetching ? '更新中...' : '再読み込み'}
-                </button>
-              </div>
-
+            <div style={{ minHeight: '100%' }}>
               <Feed posts={tabPosts} feed={feed ? { ...feed, type: feedType, fetched_at: feed.fetched_at?.toString() } : undefined} is_loading={isThisTabLoading} />
 
               {feedType !== 'recommended' && tabPosts.length > 0 && !isThisTabLoading && (
@@ -278,6 +282,7 @@ function HomeContent() {
           );
         }}
       </TabContent>
+      </PullToRefresh>
 
       <Modal isOpen={isSignInModalOpen} onClose={() => setIsSignInModalOpen(false)} title="サインインが必要です">
         <div style={{ padding: '1rem' }}>
@@ -294,7 +299,7 @@ function HomeContent() {
       </Modal>
 
       <ActionPrompt />
-    </div>
+    </>
   );
 }
 

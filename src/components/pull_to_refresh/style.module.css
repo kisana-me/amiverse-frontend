@@ -1,0 +1,46 @@
+.container {
+  position: relative;
+  /* コンテンツ上端より上に置いたインジケーターを通常時は隠す */
+  overflow: hidden;
+}
+
+.track {
+  will-change: transform;
+}
+
+/* プル中（指に追従中）以外は transform をアニメーションさせる */
+.track_settling {
+  transition: transform 0.25s ease;
+}
+
+/* コンテンツ上端のすぐ上に配置し、プルで下がると現れる */
+.indicator {
+  position: absolute;
+  top: -64px; /* PullToRefresh.tsx の PULL_THRESHOLD と合わせる */
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--link-color);
+  border-radius: 50%;
+  transition: opacity 0.15s ease;
+}
+
+.spinner_spinning {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
