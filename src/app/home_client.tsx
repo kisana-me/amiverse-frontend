@@ -11,7 +11,7 @@ import Feed from "@/features/feed/components/Feed";
 import { Modal } from "@/components/modal/Modal";
 import { useTabs } from "@/hooks/useTabs";
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { PostType } from "@/types/post"
 import { FeedItemType } from "@/types/feed"
 import { api } from "@/lib/axios";
@@ -65,7 +65,6 @@ function HomeContent() {
   const { addFeed, appendFeed, feeds, currentFeedType, setCurrentFeedType } = useFeeds();
   const { currentAccountStatus } = useCurrentAccount();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
   const { tabs, activeTab, changeTab, setActiveTab } = useTabs<FeedTypeKey>({
@@ -83,9 +82,11 @@ function HomeContent() {
   // タブ変更を FeedsProvider と URL に同期
   useEffect(() => {
     setCurrentFeedType(activeTab);
+    // router.replace はサーバーへの RSC リクエストと再レンダーを伴い
+    // タブ切替のたびにちらつくため、履歴だけ shallow に書き換える
     const newUrl = activeTab === 'current' ? '/' : `/?tab=${activeTab}`;
-    router.replace(newUrl, { scroll: false });
-  }, [activeTab, setCurrentFeedType, router]);
+    window.history.replaceState(null, '', newUrl);
+  }, [activeTab, setCurrentFeedType]);
 
   // URL クエリパラメータからタブを初期化
   useEffect(() => {
