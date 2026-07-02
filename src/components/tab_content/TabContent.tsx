@@ -231,6 +231,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
       startTime: 0,
       directionDecided: false,
       isHorizontal: false,
+      ignored: false,
     };
 
     // 横方向のジェスチャーが確定した時点で初めてスワイプ状態に入る。
@@ -263,6 +264,11 @@ export default function TabContent<K extends string = string>(props: TabContentP
     };
 
     const handleTouchStart = (e: TouchEvent) => {
+      // モーダル(<dialog>)はインラインでレンダリングされるためタッチイベントが
+      // ここまでバブリングしてくる。モーダル内で始まったジェスチャーは無視する。
+      touch.ignored = !!(e.target as Element | null)?.closest?.("dialog[open]");
+      if (touch.ignored) return;
+
       const t = e.touches[0];
       touch.startX = t.clientX;
       touch.startY = t.clientY;
@@ -272,6 +278,8 @@ export default function TabContent<K extends string = string>(props: TabContentP
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (touch.ignored) return;
+
       const t = e.touches[0];
       const dx = t.clientX - touch.startX;
       const dy = t.clientY - touch.startY;
@@ -304,6 +312,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
     };
 
     const handleTouchEnd = () => {
+      if (touch.ignored) return;
       if (!touch.isHorizontal || !isSwipingRef.current) return;
 
       const containerWidth = container.offsetWidth;
