@@ -27,19 +27,22 @@ const MAX_SCALE = 5;
 const DOUBLE_TAP_DELAY = 300;
 const DOUBLE_TAP_ZOOM = 2.5;
 const SINGLE_TAP_MAX_MOVE = 10;
+// 基準倍率(1)の前後この範囲は1に吸着させ、通過時に引っかかりを作る
+const SCALE_SNAP_RANGE = 0.12;
+// ホイール操作がこの時間空いたら別ジェスチャとみなし、吸着後の倍率から再開する
+const WHEEL_GESTURE_GAP_MS = 400;
+// タッチ操作後にブラウザが発火する合成マウスイベントを無視する時間
+const SYNTHETIC_MOUSE_SUPPRESS_MS = 800;
 
 export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }: MediaViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isPinching, setIsPinching] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isInitialRender, setIsInitialRender] = useState(true);
   const [showUI, setShowUI] = useState(true);
-
-  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
-  const [initialScale, setInitialScale] = useState<number>(1);
 
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
   const [swipeOffsetY, setSwipeOffsetY] = useState(0);
@@ -47,6 +50,17 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
   const [isSwipeTransitioning, setIsSwipeTransitioning] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // ジェスチャ処理は再レンダリングを待たず連続で走るため、最新値をrefでも保持する
+  const scaleRef = useRef(1);
+  const positionRef = useRef({ x: 0, y: 0 });
+  // 吸着(スナップ)前の生の倍率。吸着帯を通り抜ける判定に使う
+  const rawScaleRef = useRef(1);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const pinchRef = useRef<{ dist: number; midX: number; midY: number } | null>(null);
+  const lastWheelTimeRef = useRef(0);
+  const lastTouchTimeRef = useRef(0);
+  const touchMovedRef = useRef(false);
 
   const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(null);
   const singleTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -108,6 +122,9 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
     let timer: ReturnType<typeof setTimeout>;
     if (isOpen) {
       setCurrentIndex(initialIndex);
+      rawScaleRef.current = 1;
+      scaleRef.current = 1;
+      positionRef.current = { x: 0, y: 0 };
       setScale(1);
       setPosition({ x: 0, y: 0 });
       setSwipeOffsetX(0);
@@ -134,22 +151,59 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
     };
   }, []);
 
+  const clampScale = (value: number) => Math.min(Math.max(MIN_SCALE, value), MAX_SCALE);
+
+  // 基準倍率付近は1に吸着させる
+  const snapScale = (value: number) => (Math.abs(value - 1) < SCALE_SNAP_RANGE ? 1 : value);
+
+  const setTransform = (nextScale: number, nextPosition: { x: number; y: number }) => {
+    scaleRef.current = nextScale;
+    positionRef.current = nextPosition;
+    setScale(nextScale);
+    setPosition(nextPosition);
+  };
+
+  // prevFocal の直下にある画像上の点が、倍率変更後に focal の位置へ来るような position を求める
+  const calcFocalPosition = (
+    nextScale: number,
+    focal: { x: number; y: number },
+    prevFocal: { x: number; y: number },
+  ) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return positionRef.current;
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const ratio = nextScale / scaleRef.current;
+    return {
+      x: focal.x - cx - (prevFocal.x - cx - positionRef.current.x) * ratio,
+      y: focal.y - cy - (prevFocal.y - cy - positionRef.current.y) * ratio,
+    };
+  };
+
   const resetZoom = () => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
+    rawScaleRef.current = 1;
+    setTransform(1, { x: 0, y: 0 });
   };
 
   const nextImage = useCallback(() => {
     if (currentIndex < mediaList.length - 1) {
       setCurrentIndex(prev => prev + 1);
-      resetZoom();
+      rawScaleRef.current = 1;
+      scaleRef.current = 1;
+      positionRef.current = { x: 0, y: 0 };
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
     }
   }, [currentIndex, mediaList.length]);
 
   const prevImage = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
-      resetZoom();
+      rawScaleRef.current = 1;
+      scaleRef.current = 1;
+      positionRef.current = { x: 0, y: 0 };
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
     }
   }, [currentIndex]);
 
@@ -178,20 +232,33 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
 
   const handleWheel = (e: React.WheelEvent) => {
     e.stopPropagation();
-    const delta = e.deltaY * -0.002;
-    const newScale = Math.min(Math.max(MIN_SCALE, scale + delta), MAX_SCALE);
-    setScale(newScale);
-    if (newScale <= 1) {
-      setPosition({ x: 0, y: 0 });
+    const now = Date.now();
+    // 一連のホイール操作が途切れたら、吸着中の生の倍率を表示倍率に合わせ直す
+    if (now - lastWheelTimeRef.current > WHEEL_GESTURE_GAP_MS) {
+      rawScaleRef.current = scaleRef.current;
     }
+    lastWheelTimeRef.current = now;
+
+    rawScaleRef.current = clampScale(rawScaleRef.current + e.deltaY * -0.002);
+    const newScale = snapScale(rawScaleRef.current);
+    if (newScale === scaleRef.current) return;
+
+    // マウスカーソル位置を基準に拡大縮小する
+    const focal = { x: e.clientX, y: e.clientY };
+    const newPosition = newScale <= 1 ? { x: 0, y: 0 } : calcFocalPosition(newScale, focal, focal);
+    setTransform(newScale, newPosition);
   };
 
+  // タッチ操作の直後に発火する合成マウスイベントか
+  const isSyntheticMouse = () => Date.now() - lastTouchTimeRef.current < SYNTHETIC_MOUSE_SUPPRESS_MS;
+
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (isSyntheticMouse()) return;
     mouseDownRef.current = { x: e.clientX, y: e.clientY };
     didDragRef.current = false;
-    if (scale > 1) {
+    if (scaleRef.current > 1) {
       setIsDragging(true);
-      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+      dragStartRef.current = { x: e.clientX - positionRef.current.x, y: e.clientY - positionRef.current.y };
     }
   };
 
@@ -203,11 +270,11 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
         didDragRef.current = true;
       }
     }
-    if (isDragging && scale > 1) {
+    if (isDragging && scaleRef.current > 1) {
       e.preventDefault();
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+      setTransform(scaleRef.current, {
+        x: e.clientX - dragStartRef.current.x,
+        y: e.clientY - dragStartRef.current.y,
       });
     }
   };
@@ -222,23 +289,18 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
   };
 
   const handleDoubleTap = (x: number, y: number) => {
-    if (scale !== 1) {
-      setScale(1);
-      setPosition({ x: 0, y: 0 });
+    if (scaleRef.current !== 1) {
+      resetZoom();
     } else {
-      const container = containerRef.current;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const offsetX = (centerX - x) * (DOUBLE_TAP_ZOOM - 1);
-      const offsetY = (centerY - y) * (DOUBLE_TAP_ZOOM - 1);
-      setScale(DOUBLE_TAP_ZOOM);
-      setPosition({ x: offsetX, y: offsetY });
+      const focal = { x, y };
+      rawScaleRef.current = DOUBLE_TAP_ZOOM;
+      setTransform(DOUBLE_TAP_ZOOM, calcFocalPosition(DOUBLE_TAP_ZOOM, focal, focal));
     }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    lastTouchTimeRef.current = Date.now();
+
     if (e.touches.length === 1) {
       const now = Date.now();
       const touch = e.touches[0];
@@ -249,21 +311,24 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
         Math.abs(touch.clientX - lastTapRef.current.x) < 30 &&
         Math.abs(touch.clientY - lastTapRef.current.y) < 30
       ) {
+        // ダブルタップ: 予約済みのシングルタップ(UI切替)を取り消してズームのみ行う
         if (singleTapTimerRef.current) {
           clearTimeout(singleTapTimerRef.current);
           singleTapTimerRef.current = null;
         }
         lastTapRef.current = null;
+        touchMovedRef.current = true;
         handleDoubleTap(touch.clientX, touch.clientY);
         touchStartRef.current = null;
         return;
       }
 
       lastTapRef.current = { time: now, x: touch.clientX, y: touch.clientY };
+      touchMovedRef.current = false;
 
-      if (scale > 1 || scale < 1) {
+      if (scaleRef.current !== 1) {
         setIsDragging(true);
-        setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y });
+        dragStartRef.current = { x: touch.clientX - positionRef.current.x, y: touch.clientY - positionRef.current.y };
       } else {
         touchStartRef.current = {
           x: touch.clientX,
@@ -281,28 +346,43 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
       }
       touchStartRef.current = null;
       lastTapRef.current = null;
+      touchMovedRef.current = true;
+      setIsDragging(false);
       setSwipeDirection('none');
       setSwipeOffsetX(0);
       setSwipeOffsetY(0);
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      setInitialPinchDistance(dist);
-      setInitialScale(scale);
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+      pinchRef.current = {
+        dist: Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY),
+        midX: (t0.clientX + t1.clientX) / 2,
+        midY: (t0.clientY + t1.clientY) / 2,
+      };
+      rawScaleRef.current = scaleRef.current;
+      setIsPinching(true);
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
-      if (scale !== 1 && isDragging) {
-        setPosition({
-          x: e.touches[0].clientX - dragStart.x,
-          y: e.touches[0].clientY - dragStart.y
+      const touch = e.touches[0];
+
+      if (
+        lastTapRef.current &&
+        (Math.abs(touch.clientX - lastTapRef.current.x) > SINGLE_TAP_MAX_MOVE ||
+          Math.abs(touch.clientY - lastTapRef.current.y) > SINGLE_TAP_MAX_MOVE)
+      ) {
+        touchMovedRef.current = true;
+      }
+
+      if (scaleRef.current !== 1 && isDragging) {
+        setTransform(scaleRef.current, {
+          x: touch.clientX - dragStartRef.current.x,
+          y: touch.clientY - dragStartRef.current.y,
         });
-      } else if (scale <= 1 && touchStartRef.current) {
-        const dx = e.touches[0].clientX - touchStartRef.current.x;
-        const dy = e.touches[0].clientY - touchStartRef.current.y;
+      } else if (scaleRef.current === 1 && touchStartRef.current) {
+        const dx = touch.clientX - touchStartRef.current.x;
+        const dy = touch.clientY - touchStartRef.current.y;
 
         if (swipeDirection === 'none') {
           if (Math.abs(dx) > DIRECTION_LOCK_THRESHOLD || Math.abs(dy) > DIRECTION_LOCK_THRESHOLD) {
@@ -324,22 +404,51 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
           setSwipeOffsetY(dy);
         }
       }
-    } else if (e.touches.length === 2 && initialPinchDistance) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, initialScale * (dist / initialPinchDistance)));
-      setScale(newScale);
+    } else if (e.touches.length === 2 && pinchRef.current) {
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+      const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      const mid = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
+      const prev = pinchRef.current;
+
+      if (prev.dist > 0) {
+        rawScaleRef.current = clampScale(rawScaleRef.current * (dist / prev.dist));
+      }
+      const newScale = snapScale(rawScaleRef.current);
+      // 2本指の中間点を基準に拡大縮小し、中間点の移動には画像を追従させる
+      const newPosition = newScale <= 1
+        ? { x: 0, y: 0 }
+        : calcFocalPosition(newScale, mid, { x: prev.midX, y: prev.midY });
+      setTransform(newScale, newPosition);
+      pinchRef.current = { dist, midX: mid.x, midY: mid.y };
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    lastTouchTimeRef.current = Date.now();
+
+    if (pinchRef.current) {
+      if (e.touches.length >= 2) return;
+      pinchRef.current = null;
+      setIsPinching(false);
+      if (scaleRef.current === 1) {
+        rawScaleRef.current = 1;
+      }
+      if (e.touches.length === 1 && scaleRef.current !== 1) {
+        // 指が1本残った場合はそのままドラッグに移行する
+        const touch = e.touches[0];
+        setIsDragging(true);
+        dragStartRef.current = { x: touch.clientX - positionRef.current.x, y: touch.clientY - positionRef.current.y };
+      } else {
+        setIsDragging(false);
+      }
+      return;
+    }
+
     const wasSwiping = swipeDirection !== 'none';
-    const wasDragging = isDragging && scale !== 1;
     const touchStart = touchStartRef.current;
 
-    if (scale <= 1 && touchStart && wasSwiping) {
+    if (scaleRef.current <= 1 && touchStart && wasSwiping) {
       const elapsed = Date.now() - touchStart.time;
 
       if (swipeDirection === 'horizontal') {
@@ -368,21 +477,15 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
       setSwipeDirection('none');
     }
 
-    if (!wasSwiping && !wasDragging && touchStart) {
-      const dx = lastTapRef.current ? Math.abs(lastTapRef.current.x - touchStart.x) : 0;
-      const dy = lastTapRef.current ? Math.abs(lastTapRef.current.y - touchStart.y) : 0;
-      const didMove = dx > SINGLE_TAP_MAX_MOVE || dy > SINGLE_TAP_MAX_MOVE;
-
-      if (!didMove) {
-        singleTapTimerRef.current = setTimeout(() => {
-          singleTapTimerRef.current = null;
-          setShowUI(prev => !prev);
-        }, DOUBLE_TAP_DELAY);
-      }
+    if (e.touches.length === 0 && !wasSwiping && !touchMovedRef.current && lastTapRef.current) {
+      // シングルタップ: ダブルタップ猶予が過ぎてからUI表示を切り替える
+      singleTapTimerRef.current = setTimeout(() => {
+        singleTapTimerRef.current = null;
+        setShowUI(prev => !prev);
+      }, DOUBLE_TAP_DELAY);
     }
 
     setIsDragging(false);
-    setInitialPinchDistance(null);
     touchStartRef.current = null;
   };
 
@@ -474,7 +577,7 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
                     height: '100%',
                     transform: `scale(${scale}) translate(${position.x / scale}px, ${(position.y + (swipeDirection === 'vertical' ? swipeOffsetY : 0)) / scale}px)`,
                     cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                    transition: isDragging || swipeDirection === 'vertical' ? 'none' : 'transform 0.2s ease-out',
+                    transition: isDragging || isPinching || swipeDirection === 'vertical' ? 'none' : 'transform 0.2s ease-out',
                     opacity: 1 - dismissProgress * 0.3,
                     imageRendering: media.type === 'drawing' ? 'pixelated' : undefined
                   } : {

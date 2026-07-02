@@ -1,8 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { AccountType } from '@/types/account'
 import styles from '../styles/AccountPlate.module.css'
+
+const MediaViewer = dynamic(() => import('@/components/media_viewer/MediaViewer'), { ssr: false })
 
 type Props = {
   account: AccountType
@@ -12,12 +16,17 @@ type Props = {
 }
 
 export default function AccountPlate({ account, isOwnAccount = false, onFollow, onMenu }: Props) {
+  const [isIconViewerOpen, setIsIconViewerOpen] = useState(false)
+  const iconUrl = account.icon_url || '/ast-imgs/icon.png'
+
   return (
     <div className={styles.plate}>
-      <div className={styles.icon_container} style={{ borderColor: account.ring_color || '#fff0' }}>
+      <div className={styles.icon_container} style={{ borderColor: account.ring_color || '#fff0' }} onClick={() => setIsIconViewerOpen(true)}>
         <div className={styles.icon_status} style={{ background: account.status_rb_color || '#fff0' }}></div>
-        <img className={styles.icon_image} src={account.icon_url || '/ast-imgs/icon.png'} alt="アイコン" />
+        <img className={styles.icon_image} src={iconUrl} alt="アイコン" />
       </div>
+
+      {isIconViewerOpen && <MediaViewer mediaList={[{ url: iconUrl, type: 'image' }]} initialIndex={0} isOpen={isIconViewerOpen} onClose={() => setIsIconViewerOpen(false)} />}
 
       <div className={styles.nameplate}>
         <div className={styles.name}>{account.name}</div>
