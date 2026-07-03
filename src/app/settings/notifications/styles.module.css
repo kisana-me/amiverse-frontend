@@ -51,8 +51,8 @@
   flex-shrink: 0;
   font-size: 0.7rem;
   font-weight: bold;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
+  color: var(--link-color);
+  border: 1px solid var(--link-color);
   border-radius: 9999px;
   padding: 0.1rem 0.5rem;
 }

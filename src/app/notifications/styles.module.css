@@ -60,11 +60,9 @@
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
   gap: 12px;
-  background-color: var(--inactive-background-color);
 }
 
 .unread {
-  background-color: var(--active-background-color);
 }
 
 .iconWrapper {
@@ -188,7 +186,7 @@
   border: none;
   cursor: pointer;
   font-size: 13px;
-  color: var(--primary-color);
+  color: var(--link-color);
 }
 
 .expandToggle:hover {

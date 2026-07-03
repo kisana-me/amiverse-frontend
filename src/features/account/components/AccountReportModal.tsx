@@ -74,7 +74,7 @@ export default function AccountReportModal({ isOpen, onClose, category, onCatego
             disabled={submitting}
             className="px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
             style={{
-              backgroundColor: 'var(--accent-color)',
+              backgroundColor: 'var(--attention-color)',
               opacity: submitting ? 0.7 : 1,
             }}
           >

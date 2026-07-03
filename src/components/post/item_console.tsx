@@ -356,7 +356,7 @@ export default function ItemConsole(initialPost: PostType) {
                   onClick={executeReport}
                   className="px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
                   style={{
-                    backgroundColor: 'var(--accent-color)',
+                    backgroundColor: 'var(--attention-color)',
                   }}
                 >
                   通報する

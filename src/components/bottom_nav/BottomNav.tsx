@@ -81,7 +81,7 @@ export default function BottomNav() {
                 position: 'absolute',
                 top: '-2px',
                 right: '-2px',
-                backgroundColor: 'var(--accent-color)',
+                backgroundColor: 'var(--attention-color)',
                 color: 'white',
                 borderRadius: '50%',
                 width: '16px',

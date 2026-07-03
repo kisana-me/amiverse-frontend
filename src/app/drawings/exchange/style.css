@@ -11,7 +11,7 @@
 .drawing-exchange-signin {
   background:
     radial-gradient(circle at 100% 0%, color-mix(in srgb, #f59e0b 20%, transparent), transparent 42%),
-    linear-gradient(155deg, color-mix(in srgb, var(--inactive-background-color) 94%, #ffe2b6 6%), var(--inactive-background-color));
+    linear-gradient(155deg, color-mix(in srgb, var(--background-color) 94%, #ffe2b6 6%), var(--background-color));
   border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 22%, transparent);
   border-radius: 18px;
   padding: 18px;
@@ -133,7 +133,7 @@
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 20%, transparent);
-  background: color-mix(in srgb, var(--inactive-background-color) 92%, #fff 8%);
+  background: color-mix(in srgb, var(--background-color) 92%, #fff 8%);
 }
 
 .drawing-exchange-agree input {
@@ -169,7 +169,7 @@
   border: 1px solid color-mix(in srgb, var(--inconspicuous-font-color) 20%, transparent);
   border-radius: 14px;
   padding: 14px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--inactive-background-color) 94%, #fff 6%), var(--inactive-background-color));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--background-color) 94%, #fff 6%), var(--background-color));
   display: grid;
   gap: 10px;
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import styles from './style.module.css'
+import styles from './styles.module.css'
 import { useEffect, useMemo, useState } from 'react'
 import MainHeader from '@/components/main_header/MainHeader'
 import PullToRefresh from '@/components/pull_to_refresh/PullToRefresh'

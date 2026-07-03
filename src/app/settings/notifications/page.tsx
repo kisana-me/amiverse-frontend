@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import styles from './style.module.css'
+import styles from './styles.module.css'
 import MainHeader from '@/components/main_header/MainHeader'
 import { api } from '@/lib/axios'
 import { useToast } from '@/providers/ToastProvider'

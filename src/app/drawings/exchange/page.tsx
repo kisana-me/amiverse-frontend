@@ -381,7 +381,7 @@ export default function DrawingsExchangePage() {
               disabled={isReportingSubmitting}
               className="px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
               style={{
-                backgroundColor: "var(--accent-color)",
+                backgroundColor: "var(--attention-color)",
                 opacity: isReportingSubmitting ? 0.7 : 1,
               }}
             >

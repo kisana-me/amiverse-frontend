@@ -9,7 +9,7 @@
 }
 
 .post-form-target {
-  border-left: 3px solid var(--primary-color, #1d9bf0);
+  border-left: 3px solid var(--link-color);
   padding-left: 1rem;
   margin-bottom: 1rem;
   opacity: 0.8;
@@ -78,7 +78,7 @@
 
 .post-form-submit {
   padding: 0.5rem 1.5rem;
-  background-color: var(--primary-color, #1d9bf0);
+  background-color: var(--link-color);
   color: white;
   border: none;
   border-radius: 9999px;

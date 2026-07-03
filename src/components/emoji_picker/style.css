@@ -20,7 +20,7 @@
   color: var(--font-color, #fff);
 }
 .emoji-group-tab.active {
-  border-bottom-color: var(--primary-color, #0f0);
+  border-bottom-color: var(--link-color);
   font-weight: bold;
 }
 .emoji-menu-grid {

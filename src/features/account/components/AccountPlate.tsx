@@ -43,8 +43,8 @@ export default function AccountPlate({ account, isOwnAccount = false, onFollow, 
             className={styles.button}
             onClick={onFollow}
             style={{
-              backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--accent-color)',
-              color: account.is_following ? 'var(--text-primary)' : '#fff',
+              backgroundColor: account.is_following ? 'var(--bg-secondary)' : 'var(--link-color)',
+              color: account.is_following ? 'var(--text-primary)' : '#000',
             }}
           >
             {account.is_following ? 'Following' : 'Follow'}
