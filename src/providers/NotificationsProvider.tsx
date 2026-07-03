@@ -1,198 +1,200 @@
-"use client";
+'use client'
 
-import React, { createContext, useContext, useState, useCallback } from "react";
-import { api } from "@/lib/axios";
-import { NotificationType } from "@/types/notification";
-import { useCurrentAccount } from "./CurrentAccountProvider";
-import { useToast } from "./ToastProvider";
+import React, { createContext, useContext, useState, useCallback } from 'react'
+import { api } from '@/lib/axios'
+import { NotificationType } from '@/types/notification'
+import { useCurrentAccount } from './CurrentAccountProvider'
+import { useToast } from './ToastProvider'
 
 type NotificationsContextType = {
-  notifications: NotificationType[];
-  isLoading: boolean;
-  hasMore: boolean;
-  fetchedAt: Date | null;
-  unreadCount: number;
-  fetchNotifications: (refresh?: boolean) => Promise<void>;
-  fetchUnreadCount: () => Promise<void>;
-  markAsRead: () => void;
-  subscribeToPush: () => Promise<void>;
-  permission: NotificationPermission;
-  isSupported: boolean;
-  pushError: string | null;
-};
-
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-
-const urlBase64ToUint8Array = (base64String: string) => {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
+  notifications: NotificationType[]
+  isLoading: boolean
+  hasMore: boolean
+  fetchedAt: Date | null
+  unreadCount: number
+  fetchNotifications: (refresh?: boolean) => Promise<void>
+  fetchUnreadCount: () => Promise<void>
+  markAsRead: () => void
+  subscribeToPush: () => Promise<void>
+  permission: NotificationPermission
+  isSupported: boolean
+  pushError: string | null
 }
 
-const NotificationsContext = createContext<NotificationsContextType | null>(null);
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+
+// この端末で通知解除したことを記憶するキー（自動再購読を防ぐ）
+export const WEBPUSH_OPT_OUT_KEY = 'webpush_opt_out'
+
+const urlBase64ToUint8Array = (base64String: string) => {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
+const NotificationsContext = createContext<NotificationsContextType | null>(null)
 
 export const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { currentAccountStatus } = useCurrentAccount();
-  const { addToast } = useToast();
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [fetchedAt, setFetchedAt] = useState<Date | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
-  const [isSupported, setIsSupported] = useState(false);
-  const [pushError, setPushError] = useState<string | null>(null);
+  const { currentAccountStatus } = useCurrentAccount()
+  const { addToast } = useToast()
+  const [notifications, setNotifications] = useState<NotificationType[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [fetchedAt, setFetchedAt] = useState<Date | null>(null)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [permission, setPermission] = useState<NotificationPermission>('default')
+  const [isSupported, setIsSupported] = useState(false)
+  const [pushError, setPushError] = useState<string | null>(null)
 
   React.useEffect(() => {
     try {
       if ('serviceWorker' in navigator && 'PushManager' in window) {
-        setIsSupported(true);
+        setIsSupported(true)
         if (typeof Notification !== 'undefined') {
-          setPermission(Notification.permission);
+          setPermission(Notification.permission)
         }
       }
     } catch (error) {
       // Feature detection errors should not show toast - it's normal on unsupported browsers
-      console.error('[NotificationsProvider] Error checking push notification support:', error);
-      setIsSupported(false);
+      console.error('[NotificationsProvider] Error checking push notification support:', error)
+      setIsSupported(false)
     }
-  }, []);
+  }, [])
 
   const subscribeToPush = useCallback(async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-    if (currentAccountStatus !== "signed_in") return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
+    if (currentAccountStatus !== 'signed_in') return
     if (typeof Notification === 'undefined') {
-      console.error('[NotificationsProvider] Notification API not available');
-      return;
+      console.error('[NotificationsProvider] Notification API not available')
+      return
     }
 
-    setPushError(null);
+    setPushError(null)
+    // 明示的な購読操作なのでオプトアウト状態を解除する
+    localStorage.removeItem(WEBPUSH_OPT_OUT_KEY)
 
     try {
       // 既に登録済みのService Workerがあればそれを使い、無ければ /sw.js を登録
-      let registration = await navigator.serviceWorker.getRegistration();
+      let registration = await navigator.serviceWorker.getRegistration()
       if (!registration) {
-        registration = await navigator.serviceWorker.register('/sw.js');
+        registration = await navigator.serviceWorker.register('/sw.js')
       }
 
       // Service Workerがアクティブになるのを待つ
-      await navigator.serviceWorker.ready;
-      registration = registration ?? (await navigator.serviceWorker.ready);
+      await navigator.serviceWorker.ready
+      registration = registration ?? (await navigator.serviceWorker.ready)
 
-      let subscription = await registration.pushManager.getSubscription();
+      let subscription = await registration.pushManager.getSubscription()
 
       // 既存のサブスクリプションがない場合は新規登録
       if (!subscription) {
-        const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+        const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: convertedVapidKey
-        });
+          applicationServerKey: convertedVapidKey,
+        })
       }
 
-      await api.post('/webpush_subscriptions', subscription);
-      setPermission(Notification.permission);
+      await api.post('/webpush_subscriptions', subscription)
+      setPermission(Notification.permission)
     } catch (error) {
-      console.error('[NotificationsProvider] Failed to subscribe to push notifications:', error);
+      console.error('[NotificationsProvider] Failed to subscribe to push notifications:', error)
       // エラー詳細をログに出力
       if (error instanceof Error) {
-        console.error('[NotificationsProvider] Error name:', error.name);
-        console.error('[NotificationsProvider] Error message:', error.message);
-        setPushError(error.message);
+        console.error('[NotificationsProvider] Error name:', error.name)
+        console.error('[NotificationsProvider] Error message:', error.message)
+        setPushError(error.message)
       } else {
-        setPushError('不明なエラーが発生しました');
+        setPushError('不明なエラーが発生しました')
       }
       if (typeof Notification !== 'undefined') {
-        setPermission(Notification.permission);
+        setPermission(Notification.permission)
       }
       addToast({
-        message: "プッシュ通知登録エラー",
-        detail: "プッシュ通知の登録に失敗しました",
-      });
+        message: 'プッシュ通知登録エラー',
+        detail: 'プッシュ通知の登録に失敗しました',
+      })
     }
-  }, [currentAccountStatus, addToast]);
+  }, [currentAccountStatus, addToast])
 
   const fetchUnreadCount = useCallback(async () => {
-    if (currentAccountStatus !== "signed_in") return;
+    if (currentAccountStatus !== 'signed_in') return
     try {
-      const response = await api.post("/notifications/unread_count");
-      setUnreadCount(response.data.count);
+      const response = await api.post('/notifications/unread_count')
+      setUnreadCount(response.data.count)
     } catch (error) {
-      console.error("Failed to fetch unread count:", error);
+      console.error('Failed to fetch unread count:', error)
     }
-  }, [currentAccountStatus]);
+  }, [currentAccountStatus])
 
-  const fetchNotifications = useCallback(async (refresh = false) => {
-    if (isLoading) return;
-    if (currentAccountStatus === "loading") return;
+  const fetchNotifications = useCallback(
+    async (refresh = false) => {
+      if (isLoading) return
+      if (currentAccountStatus === 'loading') return
 
-    setIsLoading(true);
+      setIsLoading(true)
 
-    try {
-      const currentCursor = refresh ? null : cursor;
-      const response = await api.post("/notifications", {
-        cursor: currentCursor,
-      });
+      try {
+        const currentCursor = refresh ? null : cursor
+        const response = await api.post('/notifications', {
+          cursor: currentCursor,
+        })
 
-      const newNotifications = response.data.data;
-      const nextCursor = response.headers["x-next-cursor"];
+        const newNotifications = response.data.data
+        const nextCursor = response.headers['x-next-cursor']
 
-      setNotifications((prev: NotificationType[]) => {
-        if (refresh) return newNotifications;
-        // 重複排除
-        const existingIds = new Set(prev.map((n) => n.aid));
-        const uniqueNewNotifications = newNotifications.filter(
-          (n: NotificationType) => !existingIds.has(n.aid)
-        );
-        return [...prev, ...uniqueNewNotifications];
-      });
+        setNotifications((prev: NotificationType[]) => {
+          if (refresh) return newNotifications
+          // 重複排除
+          const existingIds = new Set(prev.map((n) => n.aid))
+          const uniqueNewNotifications = newNotifications.filter((n: NotificationType) => !existingIds.has(n.aid))
+          return [...prev, ...uniqueNewNotifications]
+        })
 
-      if (refresh) {
-        setFetchedAt(new Date());
-        setUnreadCount(0);
+        if (refresh) {
+          setFetchedAt(new Date())
+          setUnreadCount(0)
+        }
+
+        setCursor(nextCursor || null)
+        setHasMore(!!nextCursor)
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error)
+      } finally {
+        setIsLoading(false)
       }
-
-      setCursor(nextCursor || null);
-      setHasMore(!!nextCursor);
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [cursor, isLoading, currentAccountStatus]);
+    },
+    [cursor, isLoading, currentAccountStatus],
+  )
 
   const markAsRead = useCallback(() => {
-    setNotifications((prev: NotificationType[]) =>
-      prev.map((n) => ({ ...n, checked: true }))
-    );
-    setUnreadCount(0);
-  }, []);
+    setNotifications((prev: NotificationType[]) => prev.map((n) => ({ ...n, checked: true })))
+    setUnreadCount(0)
+  }, [])
 
   // 定期的に未読件数を取得する（例: 60秒ごと）
   React.useEffect(() => {
-    if (currentAccountStatus === "signed_in") {
-      fetchUnreadCount();
+    if (currentAccountStatus === 'signed_in') {
+      fetchUnreadCount()
       try {
-        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-          subscribeToPush();
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem(WEBPUSH_OPT_OUT_KEY) !== '1') {
+          subscribeToPush()
         }
       } catch (error) {
-        console.error('[NotificationsProvider] Error checking Notification permission:', error);
+        console.error('[NotificationsProvider] Error checking Notification permission:', error)
       }
-      const interval = setInterval(fetchUnreadCount, 60000);
-      return () => clearInterval(interval);
+      const interval = setInterval(fetchUnreadCount, 60000)
+      return () => clearInterval(interval)
     }
-  }, [currentAccountStatus, fetchUnreadCount, subscribeToPush]);
+  }, [currentAccountStatus, fetchUnreadCount, subscribeToPush])
 
   return (
     <NotificationsContext.Provider
@@ -213,13 +215,13 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
     >
       {children}
     </NotificationsContext.Provider>
-  );
-};
+  )
+}
 
 export const useNotifications = () => {
-  const context = useContext(NotificationsContext);
+  const context = useContext(NotificationsContext)
   if (!context) {
-    throw new Error("useNotifications must be used within a NotificationsProvider");
+    throw new Error('useNotifications must be used within a NotificationsProvider')
   }
-  return context;
-};
+  return context
+}

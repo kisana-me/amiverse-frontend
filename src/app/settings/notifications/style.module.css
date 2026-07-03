@@ -1,0 +1,107 @@
+.devicesSection {
+  margin-top: 2.5rem;
+}
+
+.devicesTitle {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--font-color);
+}
+
+.devicesDescription {
+  font-size: 0.75rem;
+  color: var(--inconspicuous-font-color);
+  margin-bottom: 1rem;
+}
+
+.deviceList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.deviceItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.deviceItem + .deviceItem {
+  border-top: 1px solid var(--border-color);
+}
+
+.deviceInfo {
+  min-width: 0;
+}
+
+.deviceName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--font-color);
+}
+
+.deviceBadge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 9999px;
+  padding: 0.1rem 0.5rem;
+}
+
+.deviceDate {
+  font-size: 0.75rem;
+  color: var(--inconspicuous-font-color);
+  margin-top: 0.25rem;
+}
+
+.deviceUnsubscribeButton {
+  flex-shrink: 0;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--content-color);
+  border: 1px solid var(--border-color);
+  color: var(--font-color);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.deviceUnsubscribeButton:hover {
+  background-color: var(--hover-color);
+}
+
+.deviceSubscribeButton {
+  margin-top: 1rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--content-color);
+  border: 1px solid var(--border-color);
+  color: var(--font-color);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.deviceSubscribeButton:hover {
+  background-color: var(--hover-color);
+}
+
+.devicesEmpty {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--inconspicuous-font-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
