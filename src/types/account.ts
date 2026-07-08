@@ -10,6 +10,9 @@ export type AccountType = {
   visibility?: string;
   created_at?: string;
 
+  reveal_sensitive?: boolean;
+  is_adult?: boolean;
+
   followers_count?: number;
   following_count?: number;
   posts_count?: number;

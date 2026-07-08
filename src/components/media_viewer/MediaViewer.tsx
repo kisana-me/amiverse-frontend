@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
+import { getMediaCoverState } from '@/lib/media_rating';
+import { RatingType } from '@/types/post';
 
 type MediaType = {
-  url: string;
+  url: string | null;
   aid?: string;
   name?: string;
   description?: string;
+  rating?: RatingType;
   type: 'image' | 'video' | 'drawing';
 };
 
@@ -16,6 +20,10 @@ interface MediaViewerProps {
   initialIndex: number;
   isOpen: boolean;
   onClose: () => void;
+  // メディア個別のカバー開閉の手動上書き(aid 単位)。投稿表示と同期させるために親から受け取る。
+  // 未操作(undefined)のメディアは reveal_sensitive 設定に従う。
+  revealOverrides?: Map<string, boolean>;
+  onRevealChange?: (aid: string, next: boolean) => void;
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -34,7 +42,8 @@ const WHEEL_GESTURE_GAP_MS = 400;
 // タッチ操作後にブラウザが発火する合成マウスイベントを無視する時間
 const SYNTHETIC_MOUSE_SUPPRESS_MS = 800;
 
-export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }: MediaViewerProps) {
+export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose, revealOverrides, onRevealChange }: MediaViewerProps) {
+  const { currentAccount } = useCurrentAccount();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -279,8 +288,12 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
     }
   };
 
-  const handleMouseUp = () => {
-    if (mouseDownRef.current && !didDragRef.current) {
+  // カバー上のタップはカバー解除(click)に充て、UI表示の切り替えは行わない
+  const isOnCover = (target: EventTarget | null) =>
+    target instanceof Element && !!target.closest('[data-media-cover]');
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (mouseDownRef.current && !didDragRef.current && !isOnCover(e.target)) {
       setShowUI(prev => !prev);
     }
     mouseDownRef.current = null;
@@ -477,7 +490,7 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
       setSwipeDirection('none');
     }
 
-    if (e.touches.length === 0 && !wasSwiping && !touchMovedRef.current && lastTapRef.current) {
+    if (e.touches.length === 0 && !wasSwiping && !touchMovedRef.current && lastTapRef.current && !isOnCover(e.target)) {
       // シングルタップ: ダブルタップ猶予が過ぎてからUI表示を切り替える
       singleTapTimerRef.current = setTimeout(() => {
         singleTapTimerRef.current = null;
@@ -497,6 +510,19 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
     pointerEvents: showUI ? 'auto' : 'none',
     transition: 'opacity 0.25s ease-out',
   };
+
+  // メディアのカバー状態。投稿表示と同じ aid 単位の revealed を共有する。
+  // カバーは各スライド内に描画し、スワイプ中も画像に追従して見えるようにする。
+  const getCover = (media: MediaType) => {
+    const state = getMediaCoverState(media.rating, currentAccount);
+    const override = media.aid ? revealOverrides?.get(media.aid) : undefined;
+    const revealed = !state.locked && (override ?? state.defaultRevealed);
+    return { ...state, revealed };
+  };
+
+  const currentMedia = mediaList[currentIndex];
+  const currentCover = getCover(currentMedia);
+  const showRecoverToggle = currentCover.gated && currentCover.revealed;
 
   return createPortal(
     <div
@@ -563,8 +589,10 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
                 : 'transform 0.3s ease-out',
           }}
         >
-          {mediaList.map((media, index) => (
-            <div key={media.aid || index} className="w-full h-full flex-shrink-0 flex items-center justify-center p-4">
+          {mediaList.map((media, index) => {
+            const cover = getCover(media);
+            return (
+            <div key={media.aid || index} className="relative w-full h-full flex-shrink-0 flex items-center justify-center p-4">
               {media.type === 'image' || media.type === 'drawing' ? (
                 <img
                   src={media.url}
@@ -606,17 +634,61 @@ export default function MediaViewer({ mediaList, initialIndex, isOpen, onClose }
                   />
                 </div>
               )}
+              {cover.gated && !cover.revealed && (
+                <div
+                  data-media-cover
+                  className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-2 px-6 text-center text-white cursor-pointer bg-black/50 backdrop-blur-xl"
+                  style={index === currentIndex && swipeDirection === 'vertical' ? {
+                    transform: `translateY(${swipeOffsetY}px)`,
+                    transition: 'none',
+                    opacity: 1 - dismissProgress * 0.3,
+                  } : undefined}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!cover.locked && media.aid) onRevealChange?.(media.aid, true);
+                  }}
+                >
+                  <span className={`text-base font-bold ${media.rating === 'r18' ? 'text-[#ff6b6b]' : ''}`}>
+                    {media.rating === 'r18' ? 'R-18' : 'センシティブ'}
+                  </span>
+                  <span className="text-sm opacity-85">
+                    {cover.locked
+                      ? media.rating === 'r18'
+                        ? '年齢確認が必要です'
+                        : '設定により非表示'
+                      : 'タップで表示'}
+                  </span>
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       <div
-        className="absolute top-4 left-4 z-50 text-white/80 bg-black/40 px-3 py-1 rounded-full text-sm backdrop-blur-sm select-text cursor-text"
+        className="absolute bottom-4 left-4 z-50 text-white/80 bg-black/40 px-3 py-1 rounded-full text-sm backdrop-blur-sm select-text cursor-text"
         style={uiStyle}
       >
         {currentIndex + 1} / {mediaList.length}
       </div>
+
+      {showRecoverToggle && (
+        <button
+          type="button"
+          className="absolute top-4 left-4 z-50 inline-flex items-center gap-1 text-xs font-bold text-white bg-black/50 px-2.5 py-1 rounded-full backdrop-blur-sm hover:bg-black/70 transition-colors"
+          style={uiStyle}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (currentMedia.aid) onRevealChange?.(currentMedia.aid, false);
+          }}
+          aria-label="カバーを戻す"
+        >
+          <span className={currentMedia.rating === 'r18' ? 'text-[#ff6b6b]' : undefined}>
+            {currentMedia.rating === 'r18' ? 'R-18' : 'NSFW'}
+          </span>
+        </button>
+      )}
 
       {(mediaList[currentIndex].name || mediaList[currentIndex].description) && (
         <div

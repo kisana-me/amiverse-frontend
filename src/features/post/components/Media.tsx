@@ -2,15 +2,18 @@
 
 import { useState } from 'react'
 import styles from '../styles/Media.module.css'
-import { PostType } from '@/types/post'
+import { PostType, RatingType } from '@/types/post'
 import dynamic from 'next/dynamic'
+import MediaCover from './MediaCover'
+import { useMediaReveal } from '../hooks/useMediaReveal'
 
 const MediaViewer = dynamic(() => import('@/components/media_viewer/MediaViewer'), { ssr: false })
 
 type ViewerMedia = {
-  url: string
+  url: string | null
   aid?: string
   name?: string
+  rating?: RatingType
   type: 'image' | 'video' | 'drawing'
 }
 
@@ -18,6 +21,7 @@ export default function Media({ post }: { post: PostType }) {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [viewerIndex, setViewerIndex] = useState(0)
   const [viewerMediaList, setViewerMediaList] = useState<ViewerMedia[]>([])
+  const { revealOverrides, setReveal } = useMediaReveal()
 
   const openViewer = (index: number, list: ViewerMedia[]) => {
     setViewerMediaList(list)
@@ -38,10 +42,13 @@ export default function Media({ post }: { post: PostType }) {
                 openViewer(index, post.media!)
               }}
             >
-              {media.type === 'image' ? <img src={media.url} className={styles.image} alt={media.name || 'media'} /> : <video src={media.url} className={styles.video} />}
+              {media.type === 'image' ? <img src={media.url ?? undefined} className={styles.image} alt={media.name || 'media'} /> : <video src={media.url ?? undefined} className={styles.video} />}
+              <MediaCover rating={media.rating} revealOverride={revealOverrides.get(media.aid)} onRevealChange={(next) => setReveal(media.aid, next)} />
             </div>
           ))}
-          {isViewerOpen && <MediaViewer mediaList={viewerMediaList} initialIndex={viewerIndex} isOpen={isViewerOpen} onClose={() => setIsViewerOpen(false)} />}
+          {isViewerOpen && (
+            <MediaViewer mediaList={viewerMediaList} initialIndex={viewerIndex} isOpen={isViewerOpen} onClose={() => setIsViewerOpen(false)} revealOverrides={revealOverrides} onRevealChange={setReveal} />
+          )}
         </div>
       )}
     </>

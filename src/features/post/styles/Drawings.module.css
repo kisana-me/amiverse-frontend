@@ -5,6 +5,7 @@
   gap: 4px
 }
 .image_container {
+  position: relative;
   width: 100%;
   cursor: pointer;
 }

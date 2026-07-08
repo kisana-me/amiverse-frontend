@@ -18,6 +18,7 @@ export default function AccountSettingsPage() {
     name_id: "",
     description: "",
     birthdate: "",
+    reveal_sensitive: false,
   });
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -53,6 +54,7 @@ export default function AccountSettingsPage() {
         name_id: currentAccount.name_id || "",
         description: currentAccount.description || "",
         birthdate: formatDateForInput(currentAccount.birthdate),
+        reveal_sensitive: currentAccount.reveal_sensitive || false,
       });
       setPreviewIcon(currentAccount.icon_url);
       setPreviewBanner(currentAccount.banner_url || null);
@@ -60,7 +62,7 @@ export default function AccountSettingsPage() {
   }, [currentAccountStatus, currentAccount, router, addToast]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -92,6 +94,7 @@ export default function AccountSettingsPage() {
     submitData.append("account[name_id]", formData.name_id);
     submitData.append("account[description]", formData.description);
     submitData.append("account[birthdate]", formData.birthdate);
+    submitData.append("account[reveal_sensitive]", formData.reveal_sensitive ? "true" : "false");
     if (iconFile) {
       submitData.append("account[icon_file]", iconFile);
     }
@@ -283,6 +286,20 @@ export default function AccountSettingsPage() {
                 onChange={handleChange}
                 className="form-input"
               />
+            </div>
+
+            <div className="form-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.reveal_sensitive}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, reveal_sensitive: e.target.checked }))
+                  }
+                />
+                {" "}センシティブなメディア(NSFW/R-18)をカバーなしで表示する
+              </label>
+              <p className="form-hint">R-18は生年月日で18歳以上が確認できる場合のみ表示されます</p>
             </div>
           </div>
 

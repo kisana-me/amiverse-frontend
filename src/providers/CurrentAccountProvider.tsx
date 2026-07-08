@@ -23,6 +23,8 @@ export type CurrentAccount = {
   banner_url?: string;
   description: string;
   birthdate?: string;
+  reveal_sensitive?: boolean;
+  is_adult?: boolean;
   followers_count: number;
   following_count: number;
   posts_count: number;

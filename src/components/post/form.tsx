@@ -17,16 +17,27 @@ interface PostFormProps {
   onSuccess?: () => void;
 }
 
+// 画像・動画は投稿本体とは別に、メディアごとにレーティング・名前・説明を持てる
+type MediaItem = {
+  file: File;
+  url: string;
+  rating: string;
+  name: string;
+  description: string;
+};
+
 export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormProps) {
   const router = useRouter();
   const { prependFeedItem } = useFeeds();
   const { addPosts } = usePosts();
   const [content, setContent] = useState('');
   const [visibility, setVisibility] = useState('opened');
-  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [rating, setRating] = useState('general');
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawingOpen, setIsDrawingOpen] = useState(false);
   const [drawingData, setDrawingData] = useState<{ blob: Blob, packed: string, previewUrl: string, name: string, description: string } | null>(null);
+  const [drawingRating, setDrawingRating] = useState('general');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addToast } = useToast();
 
@@ -46,26 +57,42 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      if (mediaFiles.length + files.length > 8) {
+      if (mediaItems.length + files.length > 8) {
         addToast({ message: 'エラー', detail: '画像・動画は最大8個までです' });
         return;
       }
-      setMediaFiles([...mediaFiles, ...files]);
+      const newItems: MediaItem[] = files.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+        rating: 'general',
+        name: '',
+        description: '',
+      }));
+      setMediaItems([...mediaItems, ...newItems]);
     }
   };
 
+  const updateMediaItem = (index: number, patch: Partial<MediaItem>) => {
+    setMediaItems((items) => items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  };
+
   const removeFile = (index: number) => {
-    setMediaFiles(mediaFiles.filter((_, i) => i !== index));
+    setMediaItems((items) => {
+      const target = items[index];
+      if (target) URL.revokeObjectURL(target.url);
+      return items.filter((_, i) => i !== index);
+    });
   };
 
   const handleSubmit = async () => {
-    if (!content && mediaFiles.length === 0 && !drawingData) return;
-    
+    if (!content && mediaItems.length === 0 && !drawingData) return;
+
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append('post[content]', content);
     formData.append('post[visibility]', visibility);
-    
+    formData.append('post[user_rating]', rating);
+
     if (replyPost) {
       formData.append('post[reply_aid]', replyPost.aid);
     }
@@ -74,14 +101,17 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     }
 
     if (drawingData) {
-      // Send as array of attributes to match backend expectation
       formData.append('post[drawing_attributes][data]', drawingData.packed);
       formData.append('post[drawing_attributes][name]', drawingData.name || '');
       formData.append('post[drawing_attributes][description]', drawingData.description || '');
+      formData.append('post[drawing_attributes][rating]', drawingRating);
     }
 
-    mediaFiles.forEach((file) => {
-      formData.append('post[media_files][]', file);
+    mediaItems.forEach((item, i) => {
+      formData.append(`post[media_attributes][${i}][file]`, item.file);
+      formData.append(`post[media_attributes][${i}][rating]`, item.rating);
+      formData.append(`post[media_attributes][${i}][name]`, item.name);
+      formData.append(`post[media_attributes][${i}][description]`, item.description);
     });
 
     try {
@@ -97,12 +127,16 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
 
       addToast({ message: '投稿しました' });
       setContent('');
-      setMediaFiles([]);
+      mediaItems.forEach((item) => URL.revokeObjectURL(item.url));
+      setMediaItems([]);
+      setRating('general');
+      setDrawingRating('general');
       if (onSuccess) onSuccess();
       router.push('/?tab=current');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      const errorMessage = error.response?.data?.errors?.join(', ') || '投稿に失敗しました';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorMessage = (error as any).response?.data?.errors?.join(', ') || '投稿に失敗しました';
       addToast({ message: 'エラー', detail: errorMessage });
     } finally {
       setIsSubmitting(false);
@@ -136,30 +170,74 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         disabled={isSubmitting}
       />
 
-      {mediaFiles.length > 0 && (
-        <div className="post-form-media-preview">
-          {mediaFiles.map((file, index) => (
-            <div key={index} className="media-preview-item">
-              {file.type.startsWith('video') ? (
-                <video src={URL.createObjectURL(file)} />
-              ) : (
-                <img src={URL.createObjectURL(file)} alt="preview" />
-              )}
-              <button className="media-remove-btn" onClick={() => removeFile(index)}>×</button>
+      {mediaItems.length > 0 && (
+        <div className="post-form-media-list">
+          {mediaItems.map((item, index) => (
+            <div key={index} className="media-edit-item">
+              <div className="media-edit-preview">
+                {item.file.type.startsWith('video') ? <video src={item.url} /> : <img src={item.url} alt="preview" />}
+                <button className="media-remove-btn" onClick={() => removeFile(index)}>×</button>
+              </div>
+              <div className="media-edit-fields">
+                <input
+                  type="text"
+                  className="media-edit-input"
+                  placeholder="名前(任意)"
+                  maxLength={50}
+                  value={item.name}
+                  onChange={(e) => updateMediaItem(index, { name: e.target.value })}
+                  disabled={isSubmitting}
+                />
+                <input
+                  type="text"
+                  className="media-edit-input"
+                  placeholder="説明(任意)"
+                  maxLength={500}
+                  value={item.description}
+                  onChange={(e) => updateMediaItem(index, { description: e.target.value })}
+                  disabled={isSubmitting}
+                />
+                <select
+                  className="media-edit-input"
+                  value={item.rating}
+                  onChange={(e) => updateMediaItem(index, { rating: e.target.value })}
+                  disabled={isSubmitting}
+                  title="このメディアのレーティング"
+                >
+                  <option value="general">全年齢</option>
+                  <option value="nsfw">センシティブ</option>
+                  <option value="r18">R-18</option>
+                </select>
+              </div>
             </div>
           ))}
         </div>
       )}
 
       {drawingData && (
-        <div className="post-form-media-preview">
-          <div className="media-preview-item" style={{ width: '100%', maxWidth: '320px', height: 'auto', aspectRatio: '320/120' }}>
-            <img 
-              src={drawingData.previewUrl} 
-              alt="drawing preview" 
-              style={{ width: '100%', height: '100%', objectFit: 'contain', imageRendering: 'pixelated', backgroundColor: '#fff' }} 
-            />
-            <button className="media-remove-btn" onClick={handleRemoveDrawing}>×</button>
+        <div className="post-form-media-list">
+          <div className="media-edit-item">
+            <div className="media-edit-preview" style={{ maxWidth: '320px', aspectRatio: '320/120' }}>
+              <img
+                src={drawingData.previewUrl}
+                alt="drawing preview"
+                style={{ width: '100%', height: '100%', objectFit: 'contain', imageRendering: 'pixelated', backgroundColor: '#fff' }}
+              />
+              <button className="media-remove-btn" onClick={handleRemoveDrawing}>×</button>
+            </div>
+            <div className="media-edit-fields">
+              <select
+                className="media-edit-input"
+                value={drawingRating}
+                onChange={(e) => setDrawingRating(e.target.value)}
+                disabled={isSubmitting}
+                title="このお絵描きのレーティング"
+              >
+                <option value="general">全年齢</option>
+                <option value="nsfw">センシティブ</option>
+                <option value="r18">R-18</option>
+              </select>
+            </div>
           </div>
         </div>
       )}
@@ -204,12 +282,24 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
           >
             <option value="opened">全体公開</option>
           </select>
+
+          <select
+            className="visibility-select"
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
+            disabled={isSubmitting}
+            title="レーティング"
+          >
+            <option value="general">全年齢</option>
+            <option value="nsfw">センシティブ</option>
+            <option value="r18">R-18</option>
+          </select>
         </div>
 
         <button
           className="post-form-submit"
           onClick={handleSubmit}
-          disabled={isSubmitting || (!content && mediaFiles.length === 0 && !drawingData)}
+          disabled={isSubmitting || (!content && mediaItems.length === 0 && !drawingData)}
         >
           {isSubmitting ? '送信中...' : '投稿する'}
         </button>

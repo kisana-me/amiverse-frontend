@@ -25,7 +25,9 @@ export default function ItemQuote({ post }: { post: PostType }) {
         </div>
         <div className={styles.date}>{formatRelativeTime(new Date(quote.created_at))}</div>
       </div>
-      <div className={styles.content}>{quote.content}</div>
+      <div className={styles.content}>
+        {quote.rating === 'nsfw' || quote.rating === 'r18' ? <span style={{ opacity: 0.7 }}>{quote.rating === 'r18' ? '[R-18]' : '[センシティブ]'} タップして投稿を表示</span> : quote.content}
+      </div>
     </div>
   )
 }

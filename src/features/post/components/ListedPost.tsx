@@ -13,6 +13,7 @@ import Quote from './Quote'
 import Reactions from './Reactions'
 import Console from './Console'
 import ReplyTo from './ReplyTo'
+import SensitiveGate from './SensitiveGate'
 
 export default function Post({ post }: { post: PostType }) {
   const postClickHandlers = usePostClick(post.aid)
@@ -22,11 +23,13 @@ export default function Post({ post }: { post: PostType }) {
       <Header post={post} />
       <ReplyTo post={post} />
       <div className={styles.main_content}>
-        <Content post={post} />
-        <Drawings post={post} />
-        <Media post={post} />
-        <YouTube post={post} />
-        <Quote post={post} />
+        <SensitiveGate rating={post.rating}>
+          <Content post={post} />
+          <Drawings post={post} />
+          <Media post={post} />
+          <YouTube post={post} />
+          <Quote post={post} />
+        </SensitiveGate>
       </div>
       <Reactions post={post} />
       <Console post={post} />

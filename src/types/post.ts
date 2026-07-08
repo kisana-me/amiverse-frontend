@@ -1,10 +1,13 @@
 import { AccountType } from "./account";
 import { EmojiType } from "./emoji";
 
+export type RatingType = "general" | "nsfw" | "r18" | "rejected";
+
 export type PostType = {
   aid: string;
   content: string;
   visibility: string;
+  rating?: RatingType;
   created_at: string;
 
   reply_presence: boolean;
@@ -32,6 +35,7 @@ export type PostType = {
     name: string;
     description?: string;
     url: string;
+    rating?: RatingType;
   }[];
 
   drawings?: {
@@ -39,6 +43,7 @@ export type PostType = {
     name: string;
     description: string;
     image_url: string;
+    rating?: RatingType;
     created_at: string;
   }[];
 
