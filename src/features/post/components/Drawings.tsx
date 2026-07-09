@@ -8,7 +8,7 @@ import { useMediaReveal } from '../hooks/useMediaReveal'
 import styles from '../styles/Drawings.module.css'
 
 type ViewerMedia = {
-  url: string | null
+  url: string
   aid?: string
   name?: string
   rating?: RatingType

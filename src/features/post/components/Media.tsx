@@ -10,7 +10,7 @@ import { useMediaReveal } from '../hooks/useMediaReveal'
 const MediaViewer = dynamic(() => import('@/components/media_viewer/MediaViewer'), { ssr: false })
 
 type ViewerMedia = {
-  url: string | null
+  url: string
   aid?: string
   name?: string
   rating?: RatingType

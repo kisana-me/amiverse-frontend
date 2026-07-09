@@ -7,7 +7,7 @@ import { getMediaCoverState } from '@/lib/media_rating';
 import { RatingType } from '@/types/post';
 
 type MediaType = {
-  url: string | null;
+  url: string;
   aid?: string;
   name?: string;
   description?: string;
