@@ -1,4 +1,5 @@
 .quote {
+  margin: 0.5rem 0 0 0;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px;

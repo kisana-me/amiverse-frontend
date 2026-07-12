@@ -27,15 +27,13 @@ export default function Post({ post }: { post: PostType }) {
       <div className={styles.right}>
         <ListedHeader post={post} />
         <ReplyTo post={post} />
-        <div className={styles.main_content}>
-          <SensitiveGate rating={post.rating}>
-            <Content post={post} />
-            <Drawings post={post} />
-            <Media post={post} />
-            <YouTube post={post} />
-            <Quote post={post} />
-          </SensitiveGate>
-        </div>
+        <SensitiveGate rating={post.rating}>
+          <Content post={post} />
+          <Drawings post={post} />
+          <Media post={post} />
+          <YouTube post={post} />
+          <Quote post={post} />
+        </SensitiveGate>
         <Reactions post={post} />
         <Console post={post} />
       </div>

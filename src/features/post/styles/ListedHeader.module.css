@@ -1,5 +1,4 @@
 .header {
-  margin: 0 0 0.5rem 0;
   display: flex;
   line-height: 22px;
 }
@@ -26,7 +25,7 @@
 .relative_time {
   margin: 0 0 0 auto;
   color: var(--inconspicuous-font-color);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

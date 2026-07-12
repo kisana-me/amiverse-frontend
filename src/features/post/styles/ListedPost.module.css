@@ -10,10 +10,3 @@
 .right {
   flex: 1;
 }
-.main_content {
-  padding: 0 2px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: 0.5rem;
-}
