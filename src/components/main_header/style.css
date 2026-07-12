@@ -1,6 +1,7 @@
 .main-header {
   height: 50px;
   width: 100%;
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0px;
   display: flex;

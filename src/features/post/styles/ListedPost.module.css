@@ -1,8 +1,14 @@
 .post {
   margin: 0;
-  padding: 6px 8px 8px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 8px;
+}
+.left {
+}
+.right {
+  flex: 1;
 }
 .main_content {
   padding: 0 2px;

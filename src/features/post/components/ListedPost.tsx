@@ -4,7 +4,8 @@ import { PostType } from '@/types/post'
 import { usePostClick } from '../hooks/usePostClick'
 import styles from '../styles/ListedPost.module.css'
 
-import Header from './Header'
+import AccountIcon from './AccountIcon'
+import ListedHeader from './ListedHeader'
 import Content from './Content'
 import Drawings from './Drawings'
 import Media from './Media'
@@ -20,19 +21,24 @@ export default function Post({ post }: { post: PostType }) {
 
   return (
     <div className={styles.post} {...postClickHandlers}>
-      <Header post={post} />
-      <ReplyTo post={post} />
-      <div className={styles.main_content}>
-        <SensitiveGate rating={post.rating}>
-          <Content post={post} />
-          <Drawings post={post} />
-          <Media post={post} />
-          <YouTube post={post} />
-          <Quote post={post} />
-        </SensitiveGate>
+      <div className={styles.left}>
+        <AccountIcon {...post.account} />
       </div>
-      <Reactions post={post} />
-      <Console post={post} />
+      <div className={styles.right}>
+        <ListedHeader post={post} />
+        <ReplyTo post={post} />
+        <div className={styles.main_content}>
+          <SensitiveGate rating={post.rating}>
+            <Content post={post} />
+            <Drawings post={post} />
+            <Media post={post} />
+            <YouTube post={post} />
+            <Quote post={post} />
+          </SensitiveGate>
+        </div>
+        <Reactions post={post} />
+        <Console post={post} />
+      </div>
     </div>
   )
 }

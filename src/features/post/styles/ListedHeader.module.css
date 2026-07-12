@@ -1,0 +1,36 @@
+.header {
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  line-height: 22px;
+}
+.account_name {
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.account_name:hover {
+  text-decoration: underline;
+}
+.account_name_id {
+  margin: 0 0 0 0.25rem;
+  color: var(--inconspicuous-font-color);
+  font-size: 0.9rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.account_name_id:hover {
+  text-decoration: underline;
+}
+.relative_time {
+  margin: 0 0 0 auto;
+  color: var(--inconspicuous-font-color);
+  font-size: 0.9rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.relative_time:hover {
+  text-decoration: underline;
+}

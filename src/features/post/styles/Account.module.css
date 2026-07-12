@@ -25,6 +25,9 @@
   object-fit: cover;
   object-position: top center;
 }
+.account_icon:hover {
+  filter: brightness(0.8);
+}
 .account_nameplate {
   margin-left: 6px;
   min-width: 0;

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import styles from '../styles/Header.module.css'
 import { PostType } from '@/types/post'
-import { formatRelativeTime, formatFullDate } from '@/lib/format_time'
+import { formatRelativeTime } from '@/lib/format_time'
 import Account from './Account'
 
 type HeaderProps = {
