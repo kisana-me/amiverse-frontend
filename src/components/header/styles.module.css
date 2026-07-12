@@ -1,6 +1,6 @@
-header {
+.header {
   width: 200px;
-  height: 100vh;
+  height: 100svh;
   top: 0;
   left: -200px;
   position: fixed;
@@ -17,38 +17,28 @@ header {
   z-index: 88;
   transition: left 0.2s cubic-bezier(0.9, 0, 0.1, 1);
 }
-header.show-header {
+.show_header {
   left: 0;
 }
-/* 三つの要素 */
-.header-container1 {
-  height: 60px;
-  margin: 0 0 60px 0;
-  position: static;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.logo {
+  margin: 0 0 60px;
 }
-nav {
+.nav {
   width: 100%;
   height: 100%;
-  margin: 0px;
-  padding: 0px;
   display: flex;
   flex-direction: column;
   justify-content: normal;
   align-items: center;
   flex-grow: 1;
 }
-.header-container2 {
+.bottom {
   margin: 60px 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-/* 子要素 */
-.header-list-container {
+.link {
   width: 190px;
   height: 50px;
   padding: 10px;
@@ -61,35 +51,30 @@ nav {
   align-items: center;
   color: var(--font-color);
 }
-.header-list-container:hover {
+.link:hover {
   background: var(--hover-color);
 }
-.header-list-icon {
+.icon {
   height: 36px;
   width: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
 }
-.header-container1 .header-list-icon {
-  height: 50px;
-  width: 50px;
-}
-.header-list-text {
+.text {
   margin-left: 7px;
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.header-new-item {
+.post {
   color: var(--button-font-color);
   background: var(--button-color);
 }
-.header-list-image {
+.image {
   width: 36px;
   aspect-ratio: 1/1;
   object-fit: cover;
@@ -97,34 +82,49 @@ nav {
   border-radius: 18px;
   display: block;
 }
+.notifications_count {
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  background-color: var(--attention-color);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid var(--border-color);
+}
 @media (min-width: 700px) and (min-height: 720px) {
-  header {
+  .header {
     width: 70px;
     position: sticky;
   }
-  .header-list-container {
+  .link {
     width: 50px;
     padding: 0;
     border-radius: 30px;
     flex-direction: row;
     justify-content: space-around;
   }
-  .header-list-text {
+  .text {
     display: none;
   }
 }
 @media (min-width: 1300px) {
-  header {
+  .header {
     width: 200px;
   }
-  .header-list-container {
+  .link {
     width: 190px;
     padding: 10px;
     border-radius: 5px;
     flex-direction: row;
     justify-content: flex-start;
   }
-  .header-list-text {
+  .text {
     display: inline-block;
   }
 }
