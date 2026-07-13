@@ -7,7 +7,7 @@ import { useToast } from '@/providers/ToastProvider';
 import { useFeeds } from '@/providers/FeedsProvider';
 import { usePosts } from '@/providers/PostsProvider';
 import { PostType } from '@/types/post';
-import Post from './post';
+import Post from '@/features/post/components/ListedPost';
 import DrawingEditor from './DrawingEditor';
 import "./form.css";
 
@@ -149,7 +149,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         <div className="post-form-target">
           <div style={{ fontSize: '0.8rem', color: 'var(--font-color)', marginBottom: '0.5rem' }}>返信先:</div>
           <div style={{ pointerEvents: 'none', opacity: 0.8, transform: 'scale(0.9)', transformOrigin: 'top left' }}>
-            <Post {...replyPost} />
+            <Post post={replyPost} />
           </div>
         </div>
       )}
@@ -157,7 +157,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
         <div className="post-form-target">
           <div style={{ fontSize: '0.8rem', color: 'var(--font-color)', marginBottom: '0.5rem' }}>引用元:</div>
           <div style={{ pointerEvents: 'none', opacity: 0.8, transform: 'scale(0.9)', transformOrigin: 'top left' }}>
-            <Post {...quotePost} />
+            <Post post={quotePost} />
           </div>
         </div>
       )}

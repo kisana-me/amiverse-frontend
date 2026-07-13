@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useOverlay } from "@/providers/OverlayProvider";
 import { useTrends } from "@/providers/TrendsProvider";
 import { TrendType } from "@/types/trend";
-import SkeletonBox from "../skeletons/skeleton_box";
+import SkeletonLoading from "@/components/skeleton_loading/SkeletonLoading";
 
 export default function Aside() {
   const { isAsideMenuOpen } = useOverlay();
@@ -26,13 +26,13 @@ export default function Aside() {
               {[...Array(5)].map((_, index) => (
                 <div className="aside-trend-item" key={index}>
                   <div className="aside-trend-rank">
-                    <SkeletonBox width="30px" height="14px" />
+                    <SkeletonLoading width="20px" height="18px" padding="4px 0" borderRadius="2px" />
                   </div>
                   <div className="aside-trend-word">
-                    <SkeletonBox width="100px" height="16px" />
+                    <SkeletonLoading width="100px" height="21px" padding="4px 0" borderRadius="2px" />
                   </div>
                   <div className="aside-trend-count">
-                    <SkeletonBox width="40px" height="14px" />
+                    <SkeletonLoading width="40px" height="18px" padding="4px 0" borderRadius="2px" />
                   </div>
                 </div>
               ))}
