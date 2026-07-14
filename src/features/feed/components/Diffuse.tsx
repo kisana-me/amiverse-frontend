@@ -10,11 +10,15 @@ export default function Diffuse({ diffuse }: { diffuse: FeedItemType | undefined
 
   return (
     <div className={styles.diffuse}>
-      <img src={diffuse.account.icon_url || '/ast-imgs/icon.png'} alt="" className={styles.icon} />
-      <Link prefetch={false} href={`/@${diffuse.account.name_id}`} style={{ fontWeight: 'bold' }}>
+      <Link prefetch={false} href={`/@${diffuse.account.name_id}`} className={styles.icon}>
+        <img src={diffuse.account.icon_url || '/ast-imgs/icon.png'} alt="拡散者のアイコン" />
+      </Link>
+      <Link prefetch={false} href={`/@${diffuse.account.name_id}`} className={styles.name}>
         {diffuse.account.name}
       </Link>
-      <span>@{diffuse.account.name_id}</span>
+      <Link prefetch={false} href={`/@${diffuse.account.name_id}`}>
+        @{diffuse.account.name_id}
+      </Link>
       <div>
         {diffuse.created_at && formatRelativeTime(new Date(diffuse.created_at))} 拡散
       </div>

@@ -3,7 +3,6 @@
 import SkeletonItem from '@/components/post/skeleton_item'
 import MainHeader from '@/components/main_header/MainHeader'
 import { api } from '@/lib/axios'
-import { useRouter } from 'next/navigation'
 import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePosts } from '@/providers/PostsProvider'
 import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
@@ -25,6 +24,8 @@ export default function PostDetail({ params }: Props) {
   const { currentAccountStatus } = useCurrentAccount()
 
   const post = posts[aid] || null
+  const cachedReply = post?.reply ? posts[post.reply.aid] : null
+  const mergedReply = post?.reply ? (cachedReply ? { ...cachedReply, ...post.reply } : post.reply) : null
   const [postLoading, setPostLoading] = useState<boolean>(() => !post)
   const [scrollAdjusted, setScrollAdjusted] = useState<boolean>(false)
   const replyRef = useRef<HTMLDivElement>(null)
@@ -75,7 +76,7 @@ export default function PostDetail({ params }: Props) {
     }
     // scrollAdjusted is intentionally checked but not in deps to avoid unnecessary re-runs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [post?.reply])
+  }, [mergedReply])
 
   return (
     <>
@@ -84,9 +85,9 @@ export default function PostDetail({ params }: Props) {
         <SkeletonItem />
       ) : post ? (
         <>
-          {post?.reply ? (
-            <div ref={replyRef} style={{ padding: '8px' }}>
-              <Post post={post.reply} />
+          {mergedReply ? (
+            <div ref={replyRef}>
+              <Post post={mergedReply} />
             </div>
           ) : (
             post.reply_presence &&
