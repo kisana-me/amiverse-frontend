@@ -1,80 +1,73 @@
-"use client";
+'use client'
 
-import "./style.css"
-import Link from "next/link";
-import { useOverlay } from "@/providers/OverlayProvider";
-import { useTrends } from "@/providers/TrendsProvider";
-import { TrendType } from "@/types/trend";
-import SkeletonLoading from "@/components/skeleton_loading/SkeletonLoading";
+import styles from './styles.module.css'
+import Link from 'next/link'
+import { useOverlay } from '@/providers/OverlayProvider'
+import { useTrends } from '@/providers/TrendsProvider'
+import { TrendType } from '@/types/trend'
+import SkeletonLoading from '@/components/skeleton_loading/SkeletonLoading'
 
 export default function Aside() {
-  const { isAsideMenuOpen } = useOverlay();
-  const { trends, trendsLoading } = useTrends();
+  const { isAsideMenuOpen } = useOverlay()
+  const { trends, trendsLoading } = useTrends()
 
-  // Get the first trend category and display its top 5 items
-  const trendData = trends.length > 0 ? trends[0] : null;
-  const topTrends = trendData?.ranking.slice(0, 5) || [];
+  const trendData = trends.length > 0 ? trends[0] : null
+  const topTrends = trendData?.ranking.slice(0, 5) || []
 
   return (
-    <aside className={isAsideMenuOpen ? 'show-aside' : ''}>
-      <div className="aside-content">
-        {/* Trends Section */}
-        <div className="aside-section">
-          <h2 className="aside-section-title">トレンド</h2>
-          {trendsLoading ? (
-            <div className="aside-trend-list">
+    <aside className={`${styles.aside} ${isAsideMenuOpen ? styles.show_aside : ''}`}>
+      <div className={styles.trends}>
+        <h2>トレンド</h2>
+        {trendsLoading ? (
+          <>
+            <div className={styles.trend_list}>
               {[...Array(5)].map((_, index) => (
-                <div className="aside-trend-item" key={index}>
-                  <div className="aside-trend-rank">
+                <div className={styles.trend_item} key={index}>
+                  <div className={styles.trend_rank}>
                     <SkeletonLoading width="20px" height="18px" padding="4px 0" borderRadius="2px" />
                   </div>
-                  <div className="aside-trend-word">
+                  <div className={styles.trend_word}>
                     <SkeletonLoading width="100px" height="21px" padding="4px 0" borderRadius="2px" />
                   </div>
-                  <div className="aside-trend-count">
+                  <div className={styles.trend_count}>
                     <SkeletonLoading width="40px" height="18px" padding="4px 0" borderRadius="2px" />
                   </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <>
-              <div className="aside-trend-list">
-                {topTrends.map((trend: TrendType['ranking'][number], index: number) => (
-                  <Link prefetch={false} 
-                    href={`/search?query=${encodeURIComponent(trend.word)}`}
-                    className="aside-trend-item" 
-                    key={index}
-                  >
-                    <div className="aside-trend-rank">{index + 1}位</div>
-                    <div className="aside-trend-word">{trend.word}</div>
-                    <div className="aside-trend-count">{trend.count}件</div>
-                  </Link>
-                ))}
-              </div>
-              <Link prefetch={false} href="/discovery" className="aside-more-link">
-                もっと見る
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Links Section */}
-        <footer className="aside-section">
-          <h2 className="aside-section-title">リンク</h2>
-          <div className="aside-links">
-            <Link prefetch={false} href="/terms-of-service" className="aside-link-item">
-              <div className="aside-link-text">利用規約</div>
+            <Link prefetch={false} href="/discovery" className={styles.trend_more}>
+              もっと見る
             </Link>
-            <Link prefetch={false} href="/privacy-policy" className="aside-link-item">
-              <div className="aside-link-text">プライバシーポリシー</div>
+          </>
+        ) : (
+          <>
+            <div className={styles.trend_list}>
+              {topTrends.map((trend: TrendType['ranking'][number], index: number) => (
+                <Link prefetch={false} href={`/search?query=${encodeURIComponent(trend.word)}`} className={styles.trend_item} key={index}>
+                  <div className={styles.trend_rank}>{index + 1}位</div>
+                  <div className={styles.trend_word}>{trend.word}</div>
+                  <div className={styles.trend_count}>{trend.count}件</div>
+                </Link>
+              ))}
+            </div>
+            <Link prefetch={false} href="/discovery" className={styles.trend_more}>
+              もっと見る
             </Link>
-            <Link prefetch={false} href="/contact" className="aside-link-item">
-              <div className="aside-link-text">お問い合わせ</div>
-            </Link>
-          </div>
-        </footer>
+          </>
+        )}
       </div>
+
+      <footer className={styles.footer}>
+        <Link prefetch={false} href="/terms-of-service">
+          利用規約
+        </Link>
+        <Link prefetch={false} href="/privacy-policy">
+          プライバシーポリシー
+        </Link>
+        <Link prefetch={false} href="/contact">
+          お問い合わせ
+        </Link>
+      </footer>
     </aside>
-  );
-};
+  )
+}

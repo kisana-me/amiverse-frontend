@@ -154,7 +154,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       --button-color:                   #000000;
       --button-font-color:              #ffffff;
       --hover-color:                    #d8d8d8;
-      --inconspicuous-font-color:       #6b6b6b;
+      --inconspicuous-font-color:       #646464;
       --inconspicuous-background-color: #e4e4e4;
     }
   `
