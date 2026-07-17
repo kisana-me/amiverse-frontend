@@ -21,6 +21,7 @@ type AccountsContextType = {
   fetchAccount: (name_id: string, options?: { force?: boolean }) => Promise<AccountType | null>;
   getAccount: (name_id: string) => CachedAccount | undefined;
   updateAccount: (name_id: string, data: Partial<AccountType>) => void;
+  seedAccount: (name_id: string, account: AccountType) => void;
 };
 
 const AccountsContext = createContext<AccountsContextType | null>(null);
@@ -44,6 +45,16 @@ export const AccountsProvider = ({ children }: { children: ReactNode }) => {
       return {
         ...prev,
         [name_id]: { ...current, ...data },
+      };
+    });
+  }, []);
+
+  const seedAccount = useCallback((name_id: string, account: AccountType) => {
+    setAccounts((prev) => {
+      if (prev[name_id]) return prev;
+      return {
+        ...prev,
+        [name_id]: { ...account, fetched_at: Date.now() },
       };
     });
   }, []);
@@ -78,6 +89,7 @@ export const AccountsProvider = ({ children }: { children: ReactNode }) => {
     fetchAccount,
     getAccount,
     updateAccount,
+    seedAccount,
   };
 
   return (

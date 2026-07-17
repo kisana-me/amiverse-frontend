@@ -3,7 +3,7 @@
 import SkeletonItem from '@/components/post/skeleton_item'
 import MainHeader from '@/components/main_header/MainHeader'
 import { api } from '@/lib/axios'
-import { use, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePosts } from '@/providers/PostsProvider'
 import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { useToast } from '@/providers/ToastProvider'
@@ -11,19 +11,18 @@ import Post from '@/features/post/components/ListedPost'
 import FeaturedPost from '@/features/post/components/FeaturedPost'
 import Feed from '@/features/feed/components/Feed'
 import styles from './PostDetail.module.css'
+import { PostType } from '@/types/post'
 
 type Props = {
-  params: Promise<{
-    aid: string
-  }>
+  aid: string
+  initialPost?: PostType | null
 }
 
-export default function PostDetail({ params }: Props) {
-  const { aid } = use(params)
+export default function PostDetail({ aid, initialPost }: Props) {
   const { posts, addPosts } = usePosts()
   const { currentAccountStatus } = useCurrentAccount()
 
-  const post = posts[aid] || null
+  const post = posts[aid] || initialPost || null
   const cachedReply = post?.reply ? posts[post.reply.aid] : null
   const mergedReply = post?.reply ? (cachedReply ? { ...cachedReply, ...post.reply } : post.reply) : null
   const [postLoading, setPostLoading] = useState<boolean>(() => !post)
@@ -48,6 +47,14 @@ export default function PostDetail({ params }: Props) {
         setPostLoading(false)
       })
   }, [aid, addPosts, currentAccountStatus])
+
+  useEffect(() => {
+    if (initialPost && !posts[aid]) {
+      addPosts([initialPost])
+      if (initialPost.replies) addPosts(initialPost.replies)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aid])
 
   useEffect(() => {
     setScrollAdjusted(false)

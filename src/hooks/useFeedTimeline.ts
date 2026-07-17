@@ -22,6 +22,8 @@ export type UseFeedTimelineOptions = {
   pageSize?: number;
   /** 取得失敗時のトーストメッセージ */
   errorMessage?: string;
+  /** SSR で先読みした1ページ目。指定時は初回フェッチをスキップしこのデータから描画する */
+  initialData?: FeedPage | null;
 };
 
 export type UseFeedTimelineReturn = {
@@ -53,6 +55,7 @@ export function useFeedTimeline({
   enabled,
   pageSize = DEFAULT_PAGE_SIZE,
   errorMessage = "読み込みエラー",
+  initialData,
 }: UseFeedTimelineOptions): UseFeedTimelineReturn {
   const { addPosts, getPost } = usePosts();
   const { addFeed, appendFeed, feeds } = useFeeds();
@@ -65,16 +68,6 @@ export function useFeedTimeline({
 
   const feed = feeds[feedKey];
 
-  // キャッシュからこのフィードの投稿を導出
-  const posts = useMemo((): CachedPost[] => {
-    if (feed && Array.isArray(feed.objects)) {
-      return feed.objects
-        .map((item) => getPost(item.post_aid))
-        .filter((p): p is CachedPost => !!p);
-    }
-    return [];
-  }, [feed, getPost]);
-
   // data.feed があればそれを、無ければ posts から feed を生成する
   const normalizeFeed = useCallback((data: FeedPage): FeedItemType[] => {
     if (data.feed) return data.feed;
@@ -83,6 +76,23 @@ export function useFeedTimeline({
       post_aid: post.aid,
     }));
   }, []);
+
+  // キャッシュ未 seed の間は initialData から導出し、SSR と初回クライアント描画を一致させる（ハイドレーション不整合防止）
+  const posts = useMemo((): CachedPost[] => {
+    if (feed && Array.isArray(feed.objects)) {
+      return feed.objects
+        .map((item) => getPost(item.post_aid))
+        .filter((p): p is CachedPost => !!p);
+    }
+    if (initialData) {
+      const byAid = new Map((initialData.posts || []).map((p) => [p.aid, p]));
+      return normalizeFeed(initialData)
+        .map((item) => byAid.get(item.post_aid))
+        .filter((p): p is PostType => !!p)
+        .map((p) => ({ ...p, fetched_at: 0 }));
+    }
+    return [];
+  }, [feed, getPost, initialData, normalizeFeed]);
 
   const refresh = useCallback(async () => {
     // キャッシュが無い場合のみスケルトンローディングを表示
@@ -156,9 +166,18 @@ export function useFeedTimeline({
     }
   }, [isLoadingMore, hasMore, posts, fetchPage, addPosts, appendFeed, normalizeFeed, feedKey, pageSize, addToast, errorMessage]);
 
-  // enabled かつキャッシュが無いとき自動で初回フェッチ
+  // initialData をハイドレーション後に一度だけキャッシュへ seed する
+  useEffect(() => {
+    if (!initialData) return;
+    if (feeds[feedKey]) return;
+    if (initialData.posts) addPosts(initialData.posts);
+    addFeed({ type: feedKey, objects: normalizeFeed(initialData) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [feedKey]);
+
   useEffect(() => {
     if (!enabled) return;
+    if (initialData) return;
     if (!feeds[feedKey]) {
       refresh();
     }

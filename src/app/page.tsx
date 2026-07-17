@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import HomeClient from './home_client';
+import HomeGuest from './home_guest';
+import { hasAuthCookie, getGuestFeedSSR } from '@/lib/server/backend';
+import { isGuestTab, GuestTabKey } from './home_tabs';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -10,9 +13,9 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
   const tab = resolvedSearchParams.tab as string;
-  
-  let title = '人気 | Amiverse';
-  if (tab === 'follow') {
+
+  let title = 'おすすめ | Amiverse';
+  if (tab === 'following') {
     title = 'フォロー中 | Amiverse';
   } else if (tab === 'current') {
     title = '最新 | Amiverse';
@@ -57,6 +60,17 @@ export async function generateMetadata(
   };
 }
 
-export default function Page() {
-  return <HomeClient />;
+export default async function Page({ searchParams }: Props) {
+  // Cookie があればサインインの可能性があるためクライアント描画、無ければ確実に未サインインなので SSR
+  if (await hasAuthCookie()) {
+    return <HomeClient />;
+  }
+
+  const resolvedSearchParams = await searchParams;
+  const tabParam = resolvedSearchParams.tab;
+  const initialTab: GuestTabKey = isGuestTab(tabParam) ? tabParam : 'recommended';
+
+  const initialFeedPage = await getGuestFeedSSR(initialTab);
+
+  return <HomeGuest initialTab={initialTab} initialFeedPage={initialFeedPage} />;
 }

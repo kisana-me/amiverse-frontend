@@ -15,12 +15,7 @@ import { api } from "@/lib/axios";
 import Link from "next/link";
 import ActionPrompt from "@/components/action_prompt/ActionPrompt";
 import PullToRefresh from "@/components/pull_to_refresh/PullToRefresh";
-
-const HOME_TABS: { key: FeedTypeKey; label: string }[] = [
-  { key: 'current', label: '最新' },
-  { key: 'following', label: 'フォロー中' },
-  { key: 'recommended', label: 'おすすめ' },
-];
+import { SIGNED_IN_HOME_TABS as HOME_TABS } from "./home_tabs";
 
 function HomeContent() {
   const { setCurrentFeedType } = useFeeds();
