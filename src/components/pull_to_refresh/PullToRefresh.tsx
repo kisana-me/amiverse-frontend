@@ -84,6 +84,8 @@ export default function PullToRefresh({ onRefresh, refreshing, disabled = false,
       if (!touch.isVertical) return
 
       if (!isPullingRef.current) {
+        if (document.querySelector('dialog[open]')) return
+
         // ページ最上部で下方向に引いたときだけプルを開始する。
         // スクロール途中から最上部に戻ってきた場合もここで拾う
         if (dy > 0 && window.scrollY <= 0 && !disabledRef.current && !refreshingRef.current) {
