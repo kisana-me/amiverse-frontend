@@ -1,10 +1,10 @@
 .header {
   width: 200px;
-  height: 100svh;
+  height: 100vh;
   top: 0;
   left: -200px;
   position: fixed;
-  padding: 30px 5px;
+  padding: 30px 5px calc(100vh - 100svh + 30px);
   border-right: 1px solid var(--border-color);
   box-sizing: border-box;
   backdrop-filter: blur(3px);

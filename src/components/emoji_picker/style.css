@@ -1,34 +1,39 @@
-.emoji-picker {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* タブバー（グループ切替）。ヘッダーとして TabContent の上部に配置する */
+.emoji-picker-tabbar {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
 }
-.emoji-groups-tabs {
+/* 肌の色セレクター（該当グループのみコンテンツ上部に表示） */
+.emoji-skin-tone-selector {
   display: flex;
-  gap: 5px;
-  overflow-x: auto;
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--border-color, #333);
+  gap: 4px;
+  margin-bottom: 8px;
 }
-.emoji-group-tab {
-  padding: 5px 10px;
+.emoji-skin-tone {
   border: none;
   background: none;
   cursor: pointer;
-  white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  color: var(--font-color, #fff);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 4px;
+  border: 2px solid transparent;
 }
-.emoji-group-tab.active {
-  border-bottom-color: var(--link-color);
-  font-weight: bold;
+.emoji-skin-tone:hover {
+  background-color: var(--inconspicuous-background-color);
+}
+.emoji-skin-tone.active {
+  border-color: var(--border-color);
+  background-color: var(--inconspicuous-background-color);
 }
 .emoji-menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
   gap: 5px;
   height: 300px;
+  overflow-x: hidden;
   overflow-y: auto;
+  align-content: start;
 }
 .emoji-item {
   width: 32px;

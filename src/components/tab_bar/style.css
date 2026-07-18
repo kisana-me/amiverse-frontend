@@ -15,6 +15,12 @@
   scrollbar-width: none;
 }
 
+/* マウスドラッグでの横スクロール中 */
+.tab-bar--dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
 .tab-bar-item {
   font-size: 0.8rem;
   font-weight: normal;

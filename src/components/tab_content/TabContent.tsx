@@ -35,6 +35,14 @@ type TabContentBaseProps<K extends string = string> = {
    * タブバーが画面上端に来る位置を基準にしたい場合に使う。
    */
   defaultScrollTop?: () => number;
+  /**
+   * 開いている <dialog> 内で始まったジェスチャーを無視するか（デフォルト true）。
+   * モーダルはインラインでレンダリングされ、モーダル上のスワイプが背後の
+   * TabContent までバブリングしてタブが誤爆するのを防ぐための既定動作。
+   * この TabContent 自体がモーダル内に置かれる場合は false にして、
+   * ダイアログ内でもスワイプを処理できるようにする。
+   */
+  ignoreDialogGestures?: boolean;
 };
 
 /**
@@ -173,6 +181,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
   const isSwipingRef = useRef(false);
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const defaultScrollTopRef = useRef(props.defaultScrollTop);
+  const ignoreDialogGesturesRef = useRef(props.ignoreDialogGestures ?? true);
 
   // タッチイベントハンドラと後続の layout effect から最新値を参照するための同期
   useLayoutEffect(() => {
@@ -180,6 +189,7 @@ export default function TabContent<K extends string = string>(props: TabContentP
     tabKeysRef.current = keys;
     onTabChangeRef.current = handleTabChange;
     defaultScrollTopRef.current = props.defaultScrollTop;
+    ignoreDialogGesturesRef.current = props.ignoreDialogGestures ?? true;
   });
 
   // まだ表示していないタブの基準スクロール位置。未指定なら最上部(0)。
@@ -266,7 +276,9 @@ export default function TabContent<K extends string = string>(props: TabContentP
     const handleTouchStart = (e: TouchEvent) => {
       // モーダル(<dialog>)はインラインでレンダリングされるためタッチイベントが
       // ここまでバブリングしてくる。モーダル内で始まったジェスチャーは無視する。
-      touch.ignored = !!(e.target as Element | null)?.closest?.("dialog[open]");
+      // ただしこの TabContent 自体がモーダル内にある場合（ignoreDialogGestures=false）は
+      // ダイアログ内のスワイプを自分で処理する必要があるため無視しない。
+      touch.ignored = ignoreDialogGesturesRef.current && !!(e.target as Element | null)?.closest?.("dialog[open]");
       if (touch.ignored) return;
 
       const t = e.touches[0];

@@ -967,14 +967,14 @@
   },
   {
     "name": "#️⃣",
-    "name_id": "keycap",
+    "name_id": "keycap_number_sign",
     "description": "0023 FE0F 20E3\nE0.6",
     "group": "Symbols",
     "subgroup": "keycap"
   },
   {
     "name": "*️⃣",
-    "name_id": "keycap",
+    "name_id": "keycap_asterisk",
     "description": "002A FE0F 20E3\nE2.0",
     "group": "Symbols",
     "subgroup": "keycap"
