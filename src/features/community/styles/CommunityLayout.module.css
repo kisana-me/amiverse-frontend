@@ -1,0 +1,26 @@
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.tab {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.content {
+  min-height: 200px;
+}
+
+.tab_selector {
+  padding: 10px 16px;
+  font-weight: bold;
+  color: var(--inconspicuous-font-color);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.tab_selector:hover {
+  background: var(--hover-color);
+}

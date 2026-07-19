@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
 import "./style.css";
 
-export default function ActionPrompt() {
+export default function ActionPrompt({ href = "/posts/new" }: { href?: string }) {
   const { currentAccountStatus } = useCurrentAccount();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -26,7 +26,7 @@ export default function ActionPrompt() {
   if (currentAccountStatus === "signed_in") {
     return (
       <div className="action-prompt-container">
-        <Link prefetch={false} href="/posts/new" className="new-post-fab" aria-label="新規投稿">
+        <Link prefetch={false} href={href} className="new-post-fab" aria-label="新規投稿">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

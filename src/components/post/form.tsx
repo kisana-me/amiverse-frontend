@@ -14,6 +14,7 @@ import "./form.css";
 interface PostFormProps {
   replyPost?: PostType;
   quotePost?: PostType;
+  community?: string;
   onSuccess?: () => void;
 }
 
@@ -26,7 +27,7 @@ type MediaItem = {
   description: string;
 };
 
-export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormProps) {
+export default function PostForm({ replyPost, quotePost, community, onSuccess }: PostFormProps) {
   const router = useRouter();
   const { prependFeedItem } = useFeeds();
   const { addPosts } = usePosts();
@@ -99,6 +100,9 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
     if (quotePost) {
       formData.append('post[quote_aid]', quotePost.aid);
     }
+    if (community) {
+      formData.append('post[community_aid]', community);
+    }
 
     if (drawingData) {
       formData.append('post[drawing_attributes][data]', drawingData.packed);
@@ -123,7 +127,11 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
       
       const newPost = res.data;
       addPosts([newPost]);
-      prependFeedItem('current', { type: 'post', post_aid: newPost.aid });
+      if (community) {
+        prependFeedItem(`community:${community}:current`, { type: 'post', post_aid: newPost.aid });
+      } else {
+        prependFeedItem('current', { type: 'post', post_aid: newPost.aid });
+      }
 
       addToast({ message: '投稿しました' });
       setContent('');
@@ -132,7 +140,7 @@ export default function PostForm({ replyPost, quotePost, onSuccess }: PostFormPr
       setRating('general');
       setDrawingRating('general');
       if (onSuccess) onSuccess();
-      router.push('/?tab=current');
+      if (!community) router.push('/?tab=current');
     } catch (error: unknown) {
       console.error(error);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

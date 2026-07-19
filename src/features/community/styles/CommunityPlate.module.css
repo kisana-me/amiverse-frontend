@@ -1,0 +1,36 @@
+.plate {
+  margin: 0 14px;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon_container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.icon_image {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.nameplate {
+  margin-bottom: 12px;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 1.2;
+}

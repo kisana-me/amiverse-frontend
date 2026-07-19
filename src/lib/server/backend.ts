@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 import type { AccountType } from '@/types/account'
 import type { PostType } from '@/types/post'
+import type { CommunityType } from '@/types/community'
 import type { FeedPage } from '@/hooks/useFeedTimeline'
 
 const AUTH_COOKIE = 'amiverse'
@@ -100,6 +101,8 @@ export async function serverFetch<T>(path: string, opts: ServerFetchOptions = {}
 export const getAccountSSR = cache((name_id: string) => serverFetch<AccountType>(`/accounts/@${name_id}`, { forwardCookie: true }))
 
 export const getPostSSR = cache((aid: string) => serverFetch<PostType>(`/posts/${aid}`, { forwardCookie: true }))
+
+export const getCommunitySSR = cache((aid: string) => serverFetch<CommunityType>(`/communities/${aid}`, { forwardCookie: true }))
 
 // ゲストのトップフィードは公開データのため unstable_cache で revalidate 秒キャッシュし、バックエンドへの二重リクエスト（/start + feed）を全ゲストで共有する。cookies() を読まない匿名ブートストラップを使う。
 async function fetchGuestFeed(type: 'current' | 'recommended'): Promise<FeedPage | null> {

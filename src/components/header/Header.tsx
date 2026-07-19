@@ -92,7 +92,7 @@ export default function Header() {
         </Link>
         <Link prefetch={false} href="/communities" className={styles.link}>
           <div className={styles.icon}>
-            <CommunitiesIcon active={pathname == '/communities'} />
+            <CommunitiesIcon active={pathname.startsWith('/communities')} />
           </div>
           <div className={styles.text}>つながり</div>
         </Link>
