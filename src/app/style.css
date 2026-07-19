@@ -45,6 +45,11 @@ main {
   background: rgba(0, 0, 0, 0.5);
   z-index: 86;
 }
+@media (min-width: 700px) and (min-height: 720px) {
+  main {
+  padding-bottom: 0;
+  }
+}
 @media (max-width: 770px) {
   .main-content {
     border-right: none;

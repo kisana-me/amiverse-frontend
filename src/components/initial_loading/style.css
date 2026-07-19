@@ -1,6 +1,7 @@
 .show-loading {
   width: 100vw;
   height: 100svh;
+  left: 0;
   background: var(--background-color);
   position: fixed;
   display: flex;
