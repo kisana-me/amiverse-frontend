@@ -1,4 +1,6 @@
 .wrap {
+  max-width: 770px;
+  margin: auto;
   display: flex;
 }
 main {
@@ -10,8 +12,9 @@ main {
   justify-content: center;
 }
 .main-content {
-  max-width: 800px;
+  max-width: 700px;
   width: 100%;
+  border-right: 1px solid var(--border-color);
 }
 .flash {
   border: 1px solid #000;
@@ -22,7 +25,6 @@ main {
   background-color: #4fff67bb;
   z-index: 200;
 }
-
 .global-overlay {
   position: fixed;
   top: 0;
@@ -42,4 +44,27 @@ main {
   backdrop-filter: blur(2px);
   background: rgba(0, 0, 0, 0.5);
   z-index: 86;
+}
+@media (max-width: 770px) {
+  .main-content {
+    border-right: none;
+  }
+}
+@media (min-width: 1000px) {
+  .wrap {
+    max-width: 1030px;
+  }
+  .main-content {
+    border-right: none;
+  }
+}
+@media (min-width: 1150px) {
+  .wrap {
+    max-width: 1110px;
+  }
+}
+@media (min-width: 1300px) {
+  .wrap {
+    max-width: 1240px;
+  }
 }
