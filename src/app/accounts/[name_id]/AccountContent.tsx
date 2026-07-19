@@ -47,15 +47,12 @@ export default function AccountContent({ name_id, initialAccount }: { name_id: s
     if (!name_id) return
     if (currentAccountStatus === 'loading') return
 
-    if (accounts[name_id] || initialAccount) {
+    setLoading(!(accounts[name_id] || initialAccount))
+    fetchAccount(name_id, { force: true }).finally(() => {
       setLoading(false)
-    } else {
-      setLoading(true)
-      fetchAccount(name_id).finally(() => {
-        setLoading(false)
-      })
-    }
-  }, [name_id, currentAccountStatus, fetchAccount, accounts, initialAccount])
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name_id, currentAccountStatus, fetchAccount])
 
   const { tabs, activeTab, changeTab } = useTabs<AccountTabKey>({
     tabs: ACCOUNT_TABS,
