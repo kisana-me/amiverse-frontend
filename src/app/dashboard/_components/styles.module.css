@@ -1,0 +1,137 @@
+.container {
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--background-color);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--font-color);
+}
+
+.total {
+  font-size: 12px;
+  color: var(--inconspicuous-font-color);
+}
+
+/* 左＝曜日ラベル / 右＝（上に月ラベル + 下にセル）をまとめて横スクロール */
+.chart {
+  display: flex;
+  gap: 4px;
+}
+
+.weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 18px; /* 月ラベル行ぶんのオフセット */
+  flex: 0 0 auto;
+}
+
+.weekday {
+  height: 10px;
+  line-height: 10px;
+  font-size: 9px;
+  color: var(--inconspicuous-font-color);
+  text-align: right;
+}
+
+.scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.months {
+  display: flex;
+  gap: 3px;
+  height: 18px;
+  width: max-content;
+}
+
+.month {
+  flex: 0 0 10px;
+  min-width: 0;
+  width: 10px;
+  font-size: 9px;
+  line-height: 18px;
+  color: var(--inconspicuous-font-color);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* 週=列（1年分）。狭い画面では横スクロール、初期位置は右端（今日）。 */
+.grid {
+  display: flex;
+  gap: 3px;
+  width: max-content;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 0 0 10px;
+}
+
+.cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--border-color) 35%, transparent);
+  cursor: pointer;
+}
+
+/* ログインのみの日: 投稿は無いが訪問あり → 少し明るい中間色 */
+.visited {
+  background: var(--inconspicuous-background-color);
+}
+
+/* 投稿あり: --link-color をベースに濃淡（背景色に混ぜてテーマ両対応） */
+.level1 {
+  background: color-mix(in srgb, var(--link-color) 30%, var(--background-color));
+}
+
+.level2 {
+  background: color-mix(in srgb, var(--link-color) 50%, var(--background-color));
+}
+
+.level3 {
+  background: color-mix(in srgb, var(--link-color) 75%, var(--background-color));
+}
+
+.level4 {
+  background: var(--link-color);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--inconspicuous-font-color);
+}
+
+.legendLabel {
+  margin: 0 2px;
+}
+
+.legendGap {
+  width: 12px;
+}
+
+.selected {
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--font-color);
+}

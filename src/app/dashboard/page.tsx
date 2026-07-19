@@ -9,6 +9,7 @@ import MainHeader from '@/components/main_header/MainHeader';
 import { Modal } from "@/components/modal/Modal";
 import { useUI } from "@/providers/UIProvider";
 import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
+import Heatmap from "./_components/heatmap";
 
 export default function Page() {
   const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
@@ -112,6 +113,11 @@ export default function Page() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* アクティビティ（草ヒートマップ） */}
+        <div style={{ marginTop: 16 }}>
+          <Heatmap />
         </div>
 
         {/* 機能カードグリッド */}

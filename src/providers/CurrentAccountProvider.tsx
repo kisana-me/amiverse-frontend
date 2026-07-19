@@ -15,6 +15,9 @@ import { useToast } from "./ToastProvider";
 
 export type CurrentAccountStatus = "loading" | "signed_out" | "signed_in";
 
+export type HeatmapDay = { date: string; count: number; visited: boolean };
+export type Heatmap = { days: HeatmapDay[]; max: number };
+
 export type CurrentAccount = {
   aid: string;
   name: string;
@@ -28,6 +31,7 @@ export type CurrentAccount = {
   followers_count: number;
   following_count: number;
   posts_count: number;
+  heatmap?: Heatmap;
 } | null;
 
 type CurrentAccountContextType = {
