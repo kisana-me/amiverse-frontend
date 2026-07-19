@@ -1,7 +1,7 @@
 "use client";
 
 import "./style.css";
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import MainHeader from '@/components/main_header/MainHeader';
 import PostForm from '@/components/post/form';
@@ -9,6 +9,14 @@ import { useCurrentAccount } from '@/providers/CurrentAccountProvider';
 import { useToast } from '@/providers/ToastProvider';
 
 export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <PageContent />
+    </Suspense>
+  );
+}
+
+function PageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const community = searchParams.get('community') || undefined;
