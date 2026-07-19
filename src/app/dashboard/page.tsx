@@ -1,227 +1,145 @@
-"use client";
+'use client'
 
-import "./style.css";
-import Link from "next/link";
-import { useState } from "react";
-import { api } from "@/lib/axios";
-import { useToast } from "@/providers/ToastProvider";
-import MainHeader from '@/components/main_header/MainHeader';
-import { Modal } from "@/components/modal/Modal";
-import { useUI } from "@/providers/UIProvider";
-import { useCurrentAccount } from "@/providers/CurrentAccountProvider";
-import Heatmap from "./_components/heatmap";
+import styles from './styles.module.css'
+import Link from 'next/link'
+import { useState } from 'react'
+import { api } from '@/lib/axios'
+import { useToast } from '@/providers/ToastProvider'
+import MainHeader from '@/components/main_header/MainHeader'
+import { Modal } from '@/components/modal/Modal'
+import { useUI } from '@/providers/UIProvider'
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
+import Heatmap from './_components/heatmap'
+
+const FEATURES = [
+  { icon: '🎨✏️', title: 'お絵描き', description: 'あなたの作品展', href: '/', linkLabel: '---' },
+  { icon: '🫧🦄', title: '絵文字', description: 'リアクション探し', href: '/', linkLabel: '---' },
+  { icon: '📸🌈', title: 'メディア', description: 'メディアを管理', href: '/', linkLabel: '---' },
+  { icon: '🪙💴', title: 'お財布', description: 'コインの残高と履歴', href: '/coin', linkLabel: '詳細を見る' },
+  { icon: '📚🔖', title: '保存済み', description: '保存したもの', href: '/', linkLabel: '---' },
+  { icon: '🏆🎖️', title: '実績', description: '達成の歴史', href: '/', linkLabel: '---' },
+]
 
 export default function Page() {
-  const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
-  const { userTheme, toggleTheme } = useUI();
-  const { currentAccount, currentAccountStatus } = useCurrentAccount();
-  const { addToast } = useToast();
+  const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false)
+  const { userTheme, toggleTheme } = useUI()
+  const { currentAccount, currentAccountStatus } = useCurrentAccount()
+  const { addToast } = useToast()
 
   const handleSignout = () => {
-    if (currentAccountStatus) {
-      api.delete('/signout').then((res) => {
-        const data = res.data as { status: string; message: string; };
-        addToast({
-          message: 'サインアウトしました',
-          detail: '1秒後に再読み込みします'
-        });
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1000);
-      }).catch((error) => {
-          addToast({
-            message: 'サインアウトできませんでした',
-            detail: error.message
-          });
-      });
-    }else{
-      addToast({
-        message: 'サインアウトできませんでした',
-        detail: 'サインインしていません'
-      });
+    if (!currentAccountStatus) {
+      addToast({ message: 'サインアウトできませんでした', detail: 'サインインしていません' })
+      return
     }
+    api
+      .delete('/signout')
+      .then(() => {
+        addToast({ message: 'サインアウトしました', detail: '1秒後に再読み込みします' })
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 1000)
+      })
+      .catch((error) => {
+        addToast({ message: 'サインアウトできませんでした', detail: error.message })
+      })
   }
 
   return (
     <>
-      <MainHeader>
-        ダッシュボード
-      </MainHeader>
-      <div className="dashboard">
-        {/* プロフィールカード */}
-        <div className="dashboard-profile-card">
-          <div className="dashboard-profile-banner">
-            {currentAccount?.banner_url ? (
-              <img 
-                src={currentAccount.banner_url} 
-                alt="Banner" 
-                className="dashboard-banner-image"
-              />
-            ) : (
-              <div className="dashboard-banner-placeholder" />
-            )}
+      <MainHeader>ダッシュボード</MainHeader>
+      <div className={styles.page}>
+        <section className={styles.profile}>
+          <div className={styles.banner}>
+            {currentAccount?.banner_url ? <img src={currentAccount.banner_url} alt="Banner" className={styles.banner_image} /> : <div className={styles.banner_placeholder} />}
           </div>
-          <div className="dashboard-profile-content">
-            <div className="dashboard-profile-avatar">
-              {currentAccount?.icon_url ? (
-                <img 
-                  src={currentAccount.icon_url} 
-                  alt={currentAccount.name} 
-                  className="dashboard-avatar-image"
-                />
-              ) : (
-                <div className="dashboard-avatar-placeholder">
-                  <span>👤</span>
-                </div>
-              )}
+          <div className={styles.profile_content}>
+            <div className={styles.avatar}>
+              {currentAccount?.icon_url ? <img src={currentAccount.icon_url} alt={currentAccount.name} className={styles.avatar_image} /> : <div className={styles.avatar_placeholder}>👤</div>}
             </div>
-            <div className="dashboard-profile-info">
-              <div className="dashboard-profile-header">
-                <div className="dashboard-profile-names">
-                  <h2 className="dashboard-profile-name">
-                    {currentAccountStatus === "loading" ? "読み込み中..." : currentAccount?.name || "ゲスト"}
-                  </h2>
-                  <span className="dashboard-profile-handle">
-                    @{currentAccount?.name_id || "unknown"}
-                  </span>
+            <div className={styles.profile_info}>
+              <div className={styles.profile_header}>
+                <div className={styles.names}>
+                  <h2 className={styles.name}>{currentAccountStatus === 'loading' ? '読み込み中...' : currentAccount?.name || 'ゲスト'}</h2>
+                  <span className={styles.handle}>@{currentAccount?.name_id || 'unknown'}</span>
                 </div>
-                <div>
-                  <Link prefetch={false} href={`/@${currentAccount?.name_id || "/"}`} className="dashboard-profile-button">
+                <div className={styles.actions}>
+                  <Link prefetch={false} href={`/@${currentAccount?.name_id || '/'}`} className={styles.action}>
                     プロフページ
                   </Link>
-                  <Link prefetch={false} href="/settings/account" className="dashboard-profile-button">
+                  <Link prefetch={false} href="/settings/account" className={styles.action}>
                     プロフ設定
                   </Link>
                 </div>
               </div>
-              <p className="dashboard-profile-description">
-                {currentAccount?.description || "自己紹介文がまだ設定されていません。"}
-              </p>
-              <div className="dashboard-profile-stats">
-                <div className="dashboard-stat">
-                  <span className="dashboard-stat-value">{currentAccount?.followers_count ?? 0}</span>
-                  <span className="dashboard-stat-label">フォロワー</span>
+              <p className={styles.description}>{currentAccount?.description || '自己紹介文がまだ設定されていません。'}</p>
+              <div className={styles.stats}>
+                <div className={styles.stat}>
+                  <span className={styles.stat_value}>{currentAccount?.followers_count ?? 0}</span>
+                  <span className={styles.stat_label}>フォロワー</span>
                 </div>
-                <div className="dashboard-stat">
-                  <span className="dashboard-stat-value">{currentAccount?.following_count ?? 0}</span>
-                  <span className="dashboard-stat-label">フォロー中</span>
+                <div className={styles.stat}>
+                  <span className={styles.stat_value}>{currentAccount?.following_count ?? 0}</span>
+                  <span className={styles.stat_label}>フォロー中</span>
                 </div>
-                <div className="dashboard-stat">
-                  <span className="dashboard-stat-value">{currentAccount?.posts_count ?? 0}</span>
-                  <span className="dashboard-stat-label">投稿</span>
+                <div className={styles.stat}>
+                  <span className={styles.stat_value}>{currentAccount?.posts_count ?? 0}</span>
+                  <span className={styles.stat_label}>投稿</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* アクティビティ（草ヒートマップ） */}
         <Heatmap />
 
-        {/* 機能カードグリッド */}
-        <div className="dashboard-features-grid">
-          {/* お絵かき */}
-          <div className="dashboard-feature-card dashboard-feature-canvas">
-            <div className="dashboard-feature-icon">🎨✏️</div>
-            <h3 className="dashboard-feature-title">お絵かき</h3>
-            <p className="dashboard-feature-description">新しいのを描く</p>
-            <Link prefetch={false} href="/" className="dashboard-feature-link">
-              みんなのを見る
-            </Link>
-          </div>
+        <section className={styles.features}>
+          {FEATURES.map((feature) => (
+            <div className={styles.feature} key={feature.title}>
+              <div className={styles.feature_icon}>{feature.icon}</div>
+              <h3 className={styles.feature_title}>{feature.title}</h3>
+              <p className={styles.feature_description}>{feature.description}</p>
+              <Link prefetch={false} href={feature.href} className={styles.feature_link}>
+                {feature.linkLabel}
+              </Link>
+            </div>
+          ))}
+        </section>
 
-          {/* 絵文字 */}
-          <div className="dashboard-feature-card dashboard-feature-emoji">
-            <div className="dashboard-feature-icon">🫧🦄</div>
-            <h3 className="dashboard-feature-title">絵文字</h3>
-            <p className="dashboard-feature-description">新しいのを作る</p>
-            <Link prefetch={false} href="/" className="dashboard-feature-link">
-              みんなのを見る
-            </Link>
-          </div>
-
-          {/* お財布 */}
-          <div className="dashboard-feature-card dashboard-feature-wallet">
-            <div className="dashboard-feature-icon">🪙💴</div>
-            <h3 className="dashboard-feature-title">お財布</h3>
-            <p className="dashboard-feature-description">残高 {(currentAccount?.coin_balance ?? 0).toLocaleString()} AMV</p>
-            <Link prefetch={false} href="/coin" className="dashboard-feature-link">
-              詳細を見る
-            </Link>
-          </div>
-
-          {/* 現在地 */}
-          <div className="dashboard-feature-card dashboard-feature-location">
-            <div className="dashboard-feature-icon">📍🗺️</div>
-            <h3 className="dashboard-feature-title">現在地</h3>
-            <p className="dashboard-feature-description">実装予定</p>
-            <span className="dashboard-feature-coming-soon">実装予定</span>
-          </div>
-
-          {/* コレクション */}
-          <div className="dashboard-feature-card dashboard-feature-collection">
-            <div className="dashboard-feature-icon">📚✨</div>
-            <h3 className="dashboard-feature-title">コレクション</h3>
-            <p className="dashboard-feature-description">お気に入りをまとめる</p>
-            <Link prefetch={false} href="/" className="dashboard-feature-link">
-              コレクションを見る
-            </Link>
-          </div>
-
-          {/* アチーブメント */}
-          <div className="dashboard-feature-card dashboard-feature-achievement">
-            <div className="dashboard-feature-icon">🏆🎖️</div>
-            <h3 className="dashboard-feature-title">アチーブメント</h3>
-            <p className="dashboard-feature-description">達成した実績</p>
-            <Link prefetch={false} href="/" className="dashboard-feature-link">
-              実績を見る
-            </Link>
-          </div>
-        </div>
-
-        {/* ボタン一覧 */}
-        <div className="dashboard-apps-container">
-          <h3 className="dashboard-apps-title">ボタン一覧</h3>
-          <div className="dashboard-apps-grid">
-            <button onClick={()=> toggleTheme()} className="dashboard-app-item">
-              <div className="dashboard-app-icon">{userTheme === "light" ? "☀️" : userTheme === "dark" ? "🌙" : "💻"}</div>
-              <span className="dashboard-app-name">色モード変更</span>
+        <section>
+          <div className={styles.apps_grid}>
+            <button onClick={() => toggleTheme()} className={styles.app}>
+              <div className={styles.app_icon}>{userTheme === 'light' ? '☀️' : userTheme === 'dark' ? '🌙' : '💻'}</div>
+              <span className={styles.app_name}>色モード</span>
             </button>
-            <button onClick={()=> setIsSignoutModalOpen(true)} className="dashboard-app-item">
-              <div className="dashboard-app-icon">👋</div>
-              <span className="dashboard-app-name">サインアウト</span>
+            <button onClick={() => setIsSignoutModalOpen(true)} className={styles.app}>
+              <div className={styles.app_icon}>👋</div>
+              <span className={styles.app_name}>サインアウト</span>
             </button>
-            <Modal
-              isOpen={isSignoutModalOpen}
-              onClose={() => setIsSignoutModalOpen(false)}
-              title="サインアウト確認"
-            >
-              <p>本当にサインアウトしますか？</p>
-              <div className="modal-buttons">
-                <button
-                  className="cursor-pointer rounded mt-6 px-6 pb-2 pt-2.5 text-red-500 border-1 border-red-500"
-                  onClick={() => {
-                    handleSignout();
-                    setIsSignoutModalOpen(false);
-                  }}
-                >
-                  サインアウト
-                </button>
-                <button
-                  className="cursor-pointer rounded ml-4 mt-6 px-6 pb-2 pt-2.5 border-1"
-                  onClick={() => setIsSignoutModalOpen(false)}
-                >
-                  キャンセル
-                </button>
-              </div>
-            </Modal>
-            <Link prefetch={false} href="/settings" className="dashboard-app-item">
-              <div className="dashboard-app-icon">⚙️</div>
-              <span className="dashboard-app-name">設定</span>
+            <Link prefetch={false} href="/settings" className={styles.app}>
+              <div className={styles.app_icon}>⚙️</div>
+              <span className={styles.app_name}>設定</span>
             </Link>
           </div>
-        </div>
+        </section>
       </div>
+
+      <Modal isOpen={isSignoutModalOpen} onClose={() => setIsSignoutModalOpen(false)} title="サインアウト確認">
+        <p>本当にサインアウトしますか？</p>
+        <div className={styles.modal_buttons}>
+          <button
+            className={`${styles.modal_button} ${styles.modal_button_danger}`}
+            onClick={() => {
+              handleSignout()
+              setIsSignoutModalOpen(false)
+            }}
+          >
+            サインアウト
+          </button>
+          <button className={styles.modal_button} onClick={() => setIsSignoutModalOpen(false)}>
+            キャンセル
+          </button>
+        </div>
+      </Modal>
     </>
-  );
+  )
 }

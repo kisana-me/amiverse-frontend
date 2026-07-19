@@ -2,7 +2,6 @@
   padding: 16px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: var(--background-color);
 }
 
 .header {
@@ -122,11 +121,11 @@
   color: var(--inconspicuous-font-color);
 }
 
-.legendLabel {
+.legend_label {
   margin: 0 2px;
 }
 
-.legendGap {
+.legend_gap {
   width: 12px;
 }
 

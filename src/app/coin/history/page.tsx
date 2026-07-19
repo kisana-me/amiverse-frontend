@@ -20,8 +20,10 @@ type CoinTransaction = {
 
 const KIND_LABELS: Record<string, string> = {
   login_bonus: 'ログインボーナス',
+  grant: '付与',
   admin_grant: '運営付与',
   spend: '使用',
+  admin_spend: '運営徴収',
 }
 
 export default function Page() {

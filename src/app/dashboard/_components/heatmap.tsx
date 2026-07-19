@@ -134,15 +134,15 @@ export default function Heatmap() {
       </div>
 
       <div className={styles.legend}>
-        <span className={styles.legendLabel}>少</span>
+        <span className={styles.legend_label}>少</span>
         <span className={`${styles.cell} ${styles.level1}`} />
         <span className={`${styles.cell} ${styles.level2}`} />
         <span className={`${styles.cell} ${styles.level3}`} />
         <span className={`${styles.cell} ${styles.level4}`} />
-        <span className={styles.legendLabel}>多</span>
-        <span className={styles.legendGap} />
+        <span className={styles.legend_label}>多</span>
+        <span className={styles.legend_gap} />
         <span className={`${styles.cell} ${styles.visited}`} />
-        <span className={styles.legendLabel}>ログインのみ</span>
+        <span className={styles.legend_label}>ログインのみ</span>
         {selected && (
           <span className={styles.selected}>
             {selected.date}・{selected.count}投稿{selected.visited ? '・ログイン' : ''}
