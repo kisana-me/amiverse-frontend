@@ -1,0 +1,71 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.balance_card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--inconspicuous-background-color);
+}
+
+.balance_label {
+  font-size: 13px;
+  color: var(--inconspicuous-font-color);
+}
+
+.balance_value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--font-color);
+}
+
+.coin_icon {
+  font-size: 32px;
+}
+
+.unit {
+  font-size: 16px;
+  color: var(--inconspicuous-font-color);
+}
+
+.history_link {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--link-color);
+}
+
+.about {
+  margin-top: 24px;
+}
+
+.about_title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--font-color);
+  margin-bottom: 8px;
+}
+
+.about_text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--font-color);
+}
+
+.about_list {
+  margin-top: 12px;
+  padding-left: 20px;
+  list-style: disc;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--inconspicuous-font-color);
+}

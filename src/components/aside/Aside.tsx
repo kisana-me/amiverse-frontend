@@ -4,18 +4,28 @@ import styles from './styles.module.css'
 import Link from 'next/link'
 import { useOverlay } from '@/providers/OverlayProvider'
 import { useTrends } from '@/providers/TrendsProvider'
+import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { TrendType } from '@/types/trend'
 import SkeletonLoading from '@/components/skeleton_loading/SkeletonLoading'
 
 export default function Aside() {
   const { isAsideMenuOpen } = useOverlay()
   const { trends, trendsLoading } = useTrends()
+  const { currentAccount, currentAccountStatus } = useCurrentAccount()
 
   const trendData = trends.length > 0 ? trends[0] : null
   const topTrends = trendData?.ranking.slice(0, 5) || []
 
   return (
     <aside className={`${styles.aside} ${isAsideMenuOpen ? styles.show_aside : ''}`}>
+      {currentAccountStatus === 'signed_in' && (
+        <Link prefetch={false} href="/coin" className={styles.wallet}>
+          <span className={styles.wallet_icon}>🪙</span>
+          <span className={styles.wallet_label}>コイン残高</span>
+          <span className={styles.wallet_balance}>{(currentAccount?.coin_balance ?? 0).toLocaleString()} AMV</span>
+        </Link>
+      )}
+
       <div className={styles.trends}>
         <h2>トレンド</h2>
         {trendsLoading ? (

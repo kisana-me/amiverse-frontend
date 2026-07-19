@@ -31,6 +31,7 @@ export type CurrentAccount = {
   followers_count: number;
   following_count: number;
   posts_count: number;
+  coin_balance: number;
   heatmap?: Heatmap;
 } | null;
 

@@ -116,9 +116,7 @@ export default function Page() {
         </div>
 
         {/* アクティビティ（草ヒートマップ） */}
-        <div style={{ marginTop: 16 }}>
-          <Heatmap />
-        </div>
+        <Heatmap />
 
         {/* 機能カードグリッド */}
         <div className="dashboard-features-grid">
@@ -146,8 +144,8 @@ export default function Page() {
           <div className="dashboard-feature-card dashboard-feature-wallet">
             <div className="dashboard-feature-icon">🪙💴</div>
             <h3 className="dashboard-feature-title">お財布</h3>
-            <p className="dashboard-feature-description">残高 000,000 AMV</p>
-            <Link prefetch={false} href="/" className="dashboard-feature-link">
+            <p className="dashboard-feature-description">残高 {(currentAccount?.coin_balance ?? 0).toLocaleString()} AMV</p>
+            <Link prefetch={false} href="/coin" className="dashboard-feature-link">
               詳細を見る
             </Link>
           </div>

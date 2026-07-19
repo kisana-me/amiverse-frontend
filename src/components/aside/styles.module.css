@@ -18,6 +18,38 @@
   right: 0;
 }
 
+/* Wallet section */
+
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 16px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--blur-color);
+  color: var(--font-color);
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.wallet:hover {
+  background: var(--hover-color);
+}
+.wallet_icon {
+  font-size: 18px;
+}
+.wallet_label {
+  font-size: 14px;
+  font-weight: bold;
+}
+.wallet_balance {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--link-color);
+  font-weight: bold;
+}
+
 /* Trends section */
 
 .trends {
