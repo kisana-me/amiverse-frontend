@@ -1,4 +1,4 @@
-.search-input {
+.search_input {
   min-width: 70%;
   height: 32px;
   border: 1px solid var(--border-color);
@@ -6,9 +6,8 @@
   padding: 0 7px;
   background: inherit;
   color: var(--font-color);
-  box-sizing: border-box;
 }
-.search-button {
+.search_button {
   width: 32px;
   height: 32px;
   margin-left: 4px;
@@ -16,5 +15,4 @@
   border-radius: 7px;
   background: inherit;
   color: var(--inconspicuous-font-color);
-  box-sizing: border-box;
 }
