@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import AccountContent from './AccountContent'
-import { getAccountSSR } from '@/lib/server/backend'
+import { getAccountSSR, hasAuthCookie } from '@/lib/server/backend'
 
 type Props = {
   params: Promise<{
@@ -42,6 +42,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { name_id } = await params
-  const initialAccount = await getAccountSSR(name_id)
+  const initialAccount = (await hasAuthCookie()) ? null : await getAccountSSR(name_id)
   return <AccountContent name_id={name_id} initialAccount={initialAccount} key={name_id} />
 }

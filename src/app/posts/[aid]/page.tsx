@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import PostDetail from './PostDetail'
-import { getPostSSR } from '@/lib/server/backend'
+import { getPostSSR, hasAuthCookie } from '@/lib/server/backend'
 
 type Props = {
   params: Promise<{
@@ -38,6 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { aid } = await params
-  const initialPost = await getPostSSR(aid)
+  const initialPost = (await hasAuthCookie()) ? null : await getPostSSR(aid)
   return <PostDetail aid={aid} initialPost={initialPost} />
 }

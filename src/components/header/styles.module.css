@@ -89,6 +89,7 @@
   position: absolute;
   top: -2px;
   right: -3px;
+  color: white;
   background-color: var(--attention-color);
   border-radius: 50%;
   width: 16px;

@@ -85,7 +85,7 @@ export default function Header() {
         </Link>
         <Link prefetch={false} href="/notifications" className={styles.link}>
           <div className={styles.icon} style={{ position: 'relative' }}>
-            {unreadCount > 0 && <div className={styles.notifications_count}>{unreadCount > 99 ? '99+' : unreadCount}</div>}
+            {unreadCount > 0 && <div className={styles.notifications_count}>{unreadCount > 99 ? '++' : unreadCount}</div>}
             <NotificationsIcon active={pathname == '/notifications'} />
           </div>
           <div className={styles.text}>通知</div>
