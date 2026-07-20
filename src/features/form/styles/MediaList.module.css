@@ -1,0 +1,46 @@
+.media_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.item {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+.thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  cursor: pointer;
+}
+
+.remove_button,
+.menu_button {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--blur-color);
+  color: var(--font-color);
+  cursor: pointer;
+}
+
+.remove_button {
+  top: 4px;
+  right: 4px;
+}
+
+.menu_button {
+  bottom: 4px;
+  right: 4px;
+}

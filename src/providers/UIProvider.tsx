@@ -27,7 +27,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
   // ユーザーの設定（永続化）
   // -------------------------
   const [userTheme, setUserTheme] = useState<UserTheme>('system')
-  const [hue, setHue] = useState<number>(200)
+  const [hue, setHue] = useState<number>(125)
   const [fontSize, setFontSize] = useState<FontSize>('medium')
 
   // -------------------------
@@ -52,7 +52,7 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
       if (storedHue) {
         const hueNum = Number(storedHue)
         if (!isNaN(hueNum) && hueNum >= 0 && hueNum < 360) {
-          setHue(hueNum)
+          // setHue(hueNum)
         } else {
           console.error('[UIProvider] Invalid themeHue in localStorage:', storedHue, '- clearing')
           localStorage.removeItem('themeHue')

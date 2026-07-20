@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import SkeletonItem from '@/components/post/skeleton_item'
 import MainHeader from '@/components/main_header/MainHeader'
 import { api } from '@/lib/axios'
@@ -9,6 +10,7 @@ import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { useToast } from '@/providers/ToastProvider'
 import Post from '@/features/post/components/ListedPost'
 import FeaturedPost from '@/features/post/components/FeaturedPost'
+import PostForm from '@/features/form/components/PostForm'
 import Feed from '@/features/feed/components/Feed'
 import styles from './PostDetail.module.css'
 import { PostType } from '@/types/post'
@@ -71,6 +73,13 @@ export default function PostDetail({ aid, initialPost }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aid, fetchPost, currentAccountStatus])
 
+  const handleReplySuccess = (newPost: PostType) => {
+    const parent = posts[aid]
+    if (parent) {
+      addPosts([{ ...parent, replies: [...(parent.replies || []), newPost], replies_count: parent.replies_count + 1 }])
+    }
+  }
+
   useLayoutEffect(() => {
     if (!scrollAdjusted && replyRef.current) {
       if (window.scrollY > 0) {
@@ -105,7 +114,22 @@ export default function PostDetail({ aid, initialPost }: Props) {
             )
           )}
           <FeaturedPost post={post} />
-          <div className={styles.reply}>返信</div>
+          {currentAccountStatus === 'signed_in' ? (
+            <div className={styles.reply}>
+              <div className="border-[1px] border-[var(--border-color)] rounded-[8px]">
+                <PostForm replyPost={post} placeholder="返信を投稿" onSuccess={handleReplySuccess} />
+              </div>
+            </div>
+          ) : (
+            <div className={styles.reply}>
+              <div className="border-[1px] border-[var(--border-color)] rounded-[8px] p-[8px] text-center text-[var(--inconspicuous-font-color)]">
+                <Link prefetch={false} href="/signin" className="text-[var(--link-color)] hover:underline">
+                  サインイン
+                </Link>
+                して返信しよう
+              </div>
+            </div>
+          )}
           <div style={{ minHeight: '80vh' }}>{post.replies && <Feed posts={post.replies} />}</div>
         </>
       ) : (

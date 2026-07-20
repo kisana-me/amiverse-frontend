@@ -1,0 +1,11 @@
+.target {
+  display: flow-root;
+}
+
+.quote_wrap {
+  margin: 0 8px 8px;
+}
+
+.form_area {
+  min-height: calc(100dvh - 50px);
+}

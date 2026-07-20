@@ -1,0 +1,115 @@
+.form {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+}
+
+.left {
+  flex-shrink: 0;
+}
+
+.account_icon {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: var(--font-color);
+  font-size: 1.1rem;
+  resize: none;
+  overflow: hidden;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: var(--inconspicuous-font-color);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.tool_button {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--font-color);
+  cursor: pointer;
+}
+
+.tool_button:hover {
+  background-color: var(--hover-color);
+}
+
+.tool_button:disabled,
+.tool_button_disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.file_input {
+  display: none;
+}
+
+.trigger_content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--font-color);
+  font-size: 0.85rem;
+}
+
+.trigger_content:hover {
+  background-color: var(--hover-color);
+}
+
+.submit {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 24px;
+  border: none;
+  border-radius: 9999px;
+  background-color: var(--button-color);
+  color: var(--button-font-color);
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .trigger_label {
+    display: none;
+  }
+}

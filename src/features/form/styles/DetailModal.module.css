@@ -1,0 +1,53 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: var(--inconspicuous-font-color);
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: none;
+  color: var(--font-color);
+  font-size: 0.9rem;
+}
+
+textarea.input {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.rating_group {
+  display: flex;
+  gap: 8px;
+}
+
+.rating_button {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  background: none;
+  color: var(--font-color);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.rating_button_active {
+  background-color: var(--button-color);
+  color: var(--button-font-color);
+  border-color: var(--button-color);
+}

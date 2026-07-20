@@ -1,0 +1,29 @@
+.wrap {
+  position: relative;
+}
+
+.remove_button,
+.menu_button {
+  position: absolute;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--blur-color);
+  color: var(--font-color);
+  cursor: pointer;
+}
+
+.remove_button {
+  top: 8px;
+  right: 8px;
+}
+
+.menu_button {
+  bottom: 8px;
+  right: 8px;
+}

@@ -1,25 +1,22 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import styles from '../styles/Console.module.css'
 import button_styles from '../styles/Button.module.css'
 import { PostType } from '@/types/post'
 import { Modal } from '@/components/modal/Modal'
-import PostForm from '@/components/post/form'
 import { useConsole } from '../hooks/useConsole'
 import ConsoleReaction from './ConsoleReaction'
 
 export default function Console({ post: initialPost }: { post: PostType }) {
+  const router = useRouter()
   const {
     post,
     currentAccount,
     currentAccountStatus,
     isPostMenuOpen,
     setIsPostMenuOpen,
-    isReplyModalOpen,
-    setIsReplyModalOpen,
-    isQuoteModalOpen,
-    setIsQuoteModalOpen,
     isSignInModalOpen,
     setIsSignInModalOpen,
     isDiffuseConfirmOpen,
@@ -41,7 +38,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
   return (
     <div className={styles.console}>
       <div className={styles.content}>
-        <button className={`${button_styles.button} ${styles.button_quote}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsQuoteModalOpen(true))}>
+        <button className={`${button_styles.button} ${styles.button_quote}`} disabled={post.is_busy === true} onClick={() => handleAction(() => router.push('/posts/new?quote=' + post.aid))}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M44 20H11V56H35V71L29 71V80H44V20ZM89.0002 20H56.0002L56.0002 56H80.0002V71L74.0002 71V80H89.0002V20Z" fill="currentColor" />
@@ -49,9 +46,6 @@ export default function Console({ post: initialPost }: { post: PostType }) {
           </div>
           <div className={styles.number}>{post.quotes_count}</div>
         </button>
-        <Modal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} title="引用">
-          <PostForm quotePost={post} onSuccess={() => setIsQuoteModalOpen(false)} />
-        </Modal>
       </div>
 
       <div className={styles.content}>
@@ -75,7 +69,7 @@ export default function Console({ post: initialPost }: { post: PostType }) {
       </div>
 
       <div className={styles.content}>
-        <button className={`${button_styles.button} ${styles.button_reply}`} disabled={post.is_busy === true} onClick={() => handleAction(() => setIsReplyModalOpen(true))}>
+        <button className={`${button_styles.button} ${styles.button_reply}`} disabled={post.is_busy === true} onClick={() => handleAction(() => router.push('/posts/new?reply=' + post.aid))}>
           <div className={styles.icon}>
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -88,9 +82,6 @@ export default function Console({ post: initialPost }: { post: PostType }) {
           </div>
           <div className={styles.number}>{post.replies_count}</div>
         </button>
-        <Modal isOpen={isReplyModalOpen} onClose={() => setIsReplyModalOpen(false)} title="返信">
-          <PostForm replyPost={post} onSuccess={() => setIsReplyModalOpen(false)} />
-        </Modal>
       </div>
 
       <div className={styles.content}>

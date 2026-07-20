@@ -7,8 +7,6 @@ import { deletePost as deletePostApi, addDiffuse, removeDiffuse, reportPost } fr
 
 export const useConsole = (initialPost: PostType) => {
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false)
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false)
   const [isDiffuseConfirmOpen, setIsDiffuseConfirmOpen] = useState(false)
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
@@ -114,10 +112,6 @@ export const useConsole = (initialPost: PostType) => {
     currentAccountStatus,
     isPostMenuOpen,
     setIsPostMenuOpen,
-    isReplyModalOpen,
-    setIsReplyModalOpen,
-    isQuoteModalOpen,
-    setIsQuoteModalOpen,
     isSignInModalOpen,
     setIsSignInModalOpen,
     isDiffuseConfirmOpen,
