@@ -1,0 +1,38 @@
+{
+  "projectId": "7df672c0-3e07-4e76-9bbe-8352ccd00bca",
+  "shape": "package",
+  "pkg": "Amiverse",
+  "globalName": "Amiverse",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".design-sync/.cache/ds-styles.css",
+  "componentSrcMap": {
+    "AccountsProvider": null,
+    "CurrentAccountProvider": null,
+    "EmojiProvider": null,
+    "FeedsProvider": null,
+    "NotificationsProvider": null,
+    "PostsProvider": null,
+    "TrendsProvider": null,
+    "Form": null
+  },
+  "provider": {
+    "component": "DesignRoot"
+  },
+  "libOverrides": {
+    "source-kit.mjs": "Next.js app: exclude src/app/ route entries; re-export default exports so they reach window.Amiverse"
+  },
+  "docsMap": {
+    "Feed": ".design-sync/docs/Feed.md"
+  },
+  "extraEntries": [
+    "./.design-sync/design-runtime.tsx"
+  ],
+  "overrides": {
+    "Modal": {
+      "cardMode": "single",
+      "primaryStory": "Default"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

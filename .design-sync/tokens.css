@@ -1,0 +1,68 @@
+/*
+ * Amiverse design tokens.
+ *
+ * Mirrors the CSS custom properties that src/providers/UIProvider.tsx injects at
+ * runtime, so designs are styled even when they are not wrapped in <UIProvider>.
+ * UIProvider renders its <style> inside <body>, so when it IS present its values
+ * win over this stylesheet by document order.
+ *
+ * --content-color is deliberately NOT defined here: it is retired from the
+ * design system. Use --background-color / --inconspicuous-background-color.
+ *
+ * Keep in sync with UIProvider.tsx (see .design-sync/NOTES.md — Re-sync risks).
+ */
+
+:root {
+  --primary-hue: 125;
+  --font-size-base: 16px;
+
+  --background-color: #ffffff;
+  --font-color: #000000;
+  --link-color: #46be1b;
+  --border-color: #d6d6d6;
+  --attention-color: #f4212e;
+  --shadow-color: #808080;
+  --blur-color: #ffffff88;
+  --button-color: #000000;
+  --button-font-color: #ffffff;
+  --hover-color: #d8d8d8;
+  --inconspicuous-font-color: #646464;
+  --inconspicuous-background-color: #e4e4e4;
+}
+
+/*
+ * Aliases. These names are referenced by shipped component CSS/inline styles
+ * (AccountPlate, AccountMainHeader, FeedTimeline, InfiniteScrollSentinel,
+ * MainHeader) but UIProvider never defines them. Mapped onto the real tokens so
+ * the design system is self-consistent. Prefer the canonical names on the right.
+ */
+:root {
+  --text-primary: var(--font-color);
+  --text-secondary: var(--inconspicuous-font-color);
+  --bg-secondary: var(--background-color);
+  --bg-color: var(--background-color);
+  --main-container-background-color: var(--background-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #000000;
+    --font-color: #ffffff;
+    --link-color: #6ef744;
+    --border-color: #373737;
+    --attention-color: #f4212e;
+    --shadow-color: #808080;
+    --blur-color: #00000088;
+    --button-color: #ffffff;
+    --button-font-color: #000000;
+    --hover-color: #777777;
+    --inconspicuous-font-color: #bcbcbc;
+    --inconspicuous-background-color: #444444;
+  }
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--font-color);
+  font-size: var(--font-size-base);
+}
