@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCurrentAccount } from '@/providers/CurrentAccountProvider'
 import { useToast } from '@/providers/ToastProvider'
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/axios'
@@ -131,7 +132,7 @@ export default function Page() {
       .post('/signup', { account: { name: formName, name_id: formNameId, email: formEmail, is_agreed: isAgreed }, code })
       .then((response) => {
         if (response.data.status === 'success') {
-          addToast({ message: 'アカウント作成完了', detail: response.data.message })
+          addToast({ message: 'サインアップ完了', detail: '再読み込みします' })
           setTimeout(() => {
             window.location.href = '/'
           }, 2000)
@@ -155,9 +156,12 @@ export default function Page() {
       <MainHeader>サインアップ</MainHeader>
       <div className={styles.background}>
         <div className={styles.container}>
+          <div className={styles.logo}>
+            <Image src="/static-assets/images/amiverse-logo-alpha-400.png" alt="Amiverseのロゴ" width={80} height={80} />
+          </div>
           <div className={styles.header}>
             <h1>アカウント作成</h1>
-            <p>あなたのプロフィールを入力してください</p>
+            <p>あなたの情報を入力してください</p>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit}>
@@ -244,6 +248,13 @@ export default function Page() {
               </button>
             )}
           </form>
+
+          <div className={styles.footer}>
+            アカウントがある場合:
+            <Link prefetch={false} href="/signin">
+              サインイン
+            </Link>
+          </div>
         </div>
       </div>
     </>

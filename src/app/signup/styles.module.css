@@ -15,6 +15,18 @@
   padding: 10px;
 }
 
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.logo img {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+}
+
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -114,12 +126,12 @@
   overflow: hidden;
 }
 
-.agreement a {
+.agreement a, .footer a {
   color: var(--link-color);
   text-decoration: none;
 }
 
-.agreement a:hover {
+.agreement a:hover, .footer a:hover {
   text-decoration: underline;
 }
 
@@ -186,6 +198,12 @@
 
 .divider span {
   padding: 0 1rem;
+}
+
+.footer {
+  margin: 1.5rem 0;
+  font-size: 0.8rem;
+  color: var(--inconspicuous-font-color);
 }
 
 @media (min-width: 700px) {

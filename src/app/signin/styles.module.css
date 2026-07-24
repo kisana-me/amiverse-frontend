@@ -1,0 +1,55 @@
+.background {
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 20% 20%, rgba(120, 119, 198, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+}
+
+.anyur_button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 12px;
+  font-weight: bold;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px #6366f166;
+  position: relative;
+  overflow: hidden;
+}
+
+.anyur_button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #6366f166, transparent);
+  transition: left 0.5s ease;
+}
+
+.anyur_button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px #6366f180;
+}
+
+.anyur_button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.anyur_button:active {
+  transform: translateY(0);
+}
+
+.anyur_button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
